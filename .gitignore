@@ -31,3 +31,8 @@ dist/
 build/
 .next/
 __pycache__/
+
+# Written by scripts/deploy-prod.sh to record which commit is running.
+# Deliberately untracked: it describes the tree, so tracking it would make every
+# deploy dirty the very tree the gate is checking.
+.deployed-commit

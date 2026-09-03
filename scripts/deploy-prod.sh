@@ -41,6 +41,92 @@ warn() {
   echo "Warning: $*" >&2
 }
 
+# ---------------------------------------------------------------------------
+# Deployment provenance.
+#
+# This tree was edited in place for months with no version control, so "which
+# commit is actually running in production?" had no answer at all. Record it on
+# every deploy, before anything is built or restarted. The stamp file is
+# gitignored, so writing it never dirties the tree it is describing.
+#
+# REQUIRE_CLEAN_TREE=1 promotes the record into a gate: refuse to deploy
+# anything that is not committed AND merged into origin/main. Off by default so
+# the team can move onto the branch workflow without deploys suddenly failing;
+# turn it on once everyone is going through pull requests.
+# ---------------------------------------------------------------------------
+REQUIRE_CLEAN_TREE="${REQUIRE_CLEAN_TREE:-0}"
+DEPLOY_STAMP="${DEPLOY_STAMP:-.deployed-commit}"
+
+require_clean_tree_enabled() {
+  [ "$REQUIRE_CLEAN_TREE" = "1" ] || [ "$REQUIRE_CLEAN_TREE" = "true" ]
+}
+
+record_deploy_provenance() {
+  if ! git -C "$ROOT_DIR" rev-parse --git-dir >/dev/null 2>&1; then
+    warn "$ROOT_DIR is not a git repository; cannot record which commit is deployed."
+    if require_clean_tree_enabled; then
+      echo "REQUIRE_CLEAN_TREE is set, but this tree is not under version control." >&2
+      exit 1
+    fi
+    return 0
+  fi
+
+  local commit branch dirty_count upstream ahead deployed_from
+  commit="$(git -C "$ROOT_DIR" rev-parse HEAD 2>/dev/null || echo unknown)"
+  branch="$(git -C "$ROOT_DIR" rev-parse --abbrev-ref HEAD 2>/dev/null || echo unknown)"
+  dirty_count="$(git -C "$ROOT_DIR" status --porcelain 2>/dev/null | wc -l | tr -d ' ' || echo 0)"
+
+  echo "==> Deploying commit $commit (branch $branch, $dirty_count uncommitted change(s))"
+  if [ "$dirty_count" != "0" ]; then
+    git -C "$ROOT_DIR" status --porcelain 2>/dev/null | sed 's/^/    /' >&2 || true
+  fi
+
+  # An unpushed commit is just as unreviewed as an uncommitted edit, so check
+  # reachability from origin/main rather than only cleanliness.
+  if git -C "$ROOT_DIR" rev-parse --verify --quiet origin/main >/dev/null 2>&1; then
+    if git -C "$ROOT_DIR" merge-base --is-ancestor HEAD origin/main 2>/dev/null; then
+      upstream="on origin/main"
+    else
+      ahead="$(git -C "$ROOT_DIR" rev-list --count origin/main..HEAD 2>/dev/null || echo '?')"
+      upstream="NOT on origin/main ($ahead commit(s) ahead)"
+    fi
+  else
+    upstream="no origin/main ref (never fetched?)"
+  fi
+  echo "    upstream: $upstream"
+
+  deployed_from="${SSH_CLIENT:-local}"
+  deployed_from="${deployed_from%% *}"
+  {
+    printf 'commit=%s\n' "$commit"
+    printf 'branch=%s\n' "$branch"
+    printf 'dirty_files=%s\n' "$dirty_count"
+    printf 'upstream=%s\n' "$upstream"
+    printf 'deployed_at=%s\n' "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+    printf 'deployed_from=%s\n' "$deployed_from"
+  } > "$ROOT_DIR/$DEPLOY_STAMP"
+
+  if ! require_clean_tree_enabled; then
+    if [ "$dirty_count" != "0" ]; then
+      warn "Deploying $dirty_count uncommitted change(s). Set REQUIRE_CLEAN_TREE=1 to make this fatal."
+    fi
+    return 0
+  fi
+
+  if [ "$dirty_count" != "0" ]; then
+    echo "Refusing to deploy: $dirty_count uncommitted change(s) in $ROOT_DIR." >&2
+    echo "Commit them on a branch and merge via pull request, or discard with 'git checkout -- <file>'." >&2
+    exit 1
+  fi
+  if [ "$upstream" != "on origin/main" ]; then
+    echo "Refusing to deploy: HEAD is $upstream." >&2
+    echo "Run 'git fetch origin', then deploy only what is merged into main." >&2
+    exit 1
+  fi
+}
+
+record_deploy_provenance
+
 app_env="$(env_value APP_ENV)"
 public_api_url="$(env_value NEXT_PUBLIC_API_URL)"
 database_url="$(env_value DATABASE_URL)"
