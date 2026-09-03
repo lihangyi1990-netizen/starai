@@ -4,6 +4,11 @@ on:
   push:
     branches: [main]
   pull_request:
+  # Lets deploy.yml run this exact job as a gate. Branch protection is not
+  # available on free private repos, so a pull request whose checks are red can
+  # still be merged -- making these tests a precondition of deploying is the
+  # only thing standing between a red merge and production.
+  workflow_call:
 
 jobs:
   verify:

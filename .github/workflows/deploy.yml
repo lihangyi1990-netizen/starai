@@ -1,0 +1,145 @@
+name: deploy
+
+# Merging a pull request pushes to main, which triggers this.
+on:
+  push:
+    branches: [main]
+
+# One deploy at a time, and never cancel one that is already running: this box
+# is 4C8G and deploy-prod.sh stops containers, builds, migrates and restarts.
+# Interrupting it halfway leaves a half-built stack. Queue instead.
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+jobs:
+  # Gate. Deploy is downstream of this, so a merge with failing tests stops here
+  # instead of reaching production.
+  verify:
+    uses: ./.github/workflows/verify.yml
+
+  # Work out which images actually need rebuilding. Rebuilding all four on a
+  # 4C8G box takes many minutes and is where the OOM risk lives, so a change to
+  # apps/web should not rebuild the Go services -- and a docs-only merge should
+  # not deploy at all.
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      services: ${{ steps.detect.outputs.services }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - id: detect
+        env:
+          BEFORE: ${{ github.event.before }}
+          AFTER: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+
+          # github.event.before is all zeros on the first push to a branch and
+          # after a force push. No usable base means no safe way to narrow the
+          # set, so rebuild everything.
+          if [ -z "$BEFORE" ] || [ "$BEFORE" = "0000000000000000000000000000000000000000" ] \
+             || ! git cat-file -e "$BEFORE^{commit}" 2>/dev/null; then
+            echo "no usable base commit; rebuilding everything"
+            echo "services=api worker web admin" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          files="$(git diff --name-only "$BEFORE" "$AFTER")"
+          echo "changed files:"
+          echo "$files" | sed 's/^/  /'
+
+          api=""; worker=""; web=""; admin=""
+          while IFS= read -r f; do
+            [ -n "$f" ] || continue
+            case "$f" in
+              services/api/*)            api="api" ;;
+              services/worker/*)         worker="worker" ;;
+              apps/web/*)                web="web" ;;
+              apps/admin/*)              admin="admin" ;;
+              # The migration runner is compiled into the api image, and
+              # deploy-prod.sh only runs migrations when api is being built.
+              infra/migrations/*)        api="api" ;;
+              # Shared TypeScript types are consumed by both frontends.
+              packages/shared-types/*)   web="web"; admin="admin" ;;
+              # Lockfile / workspace changes alter both frontend builds.
+              pnpm-lock.yaml|package.json|pnpm-workspace.yaml|turbo.json)
+                                         web="web"; admin="admin" ;;
+              # Compose or Dockerfile changes can affect any image.
+              infra/docker/*|Dockerfile|*/Dockerfile)
+                                         api="api"; worker="worker"; web="web"; admin="admin" ;;
+              # Everything else -- docs, scripts, CI config -- needs no rebuild.
+              *) ;;
+            esac
+          done <<< "$files"
+
+          services="$(echo "$api $worker $web $admin" | tr -s ' ' | sed 's/^ //;s/ $//')"
+          echo "services to build: '${services:-<none>}'"
+          echo "services=$services" >> "$GITHUB_OUTPUT"
+
+  deploy:
+    needs: [verify, changes]
+    if: needs.changes.outputs.services != ''
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Install sshpass
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq sshpass
+
+      - name: Pin the server host key
+        # Pinning rather than accept-new: this job hands over a root password,
+        # so it must be certain of who it is talking to.
+        run: |
+          cat > known_hosts <<'EOF'
+          [64.83.24.126]:65432 ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHDlOt5qZMqMTyonXf+v8PyM6U4hFzpDmhEVQUQ0nvwI
+          EOF
+
+      - name: Pull and deploy
+        env:
+          SSHPASS: ${{ secrets.SSH_PASSWORD }}
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_PORT: ${{ secrets.SSH_PORT }}
+          SSH_USER: ${{ secrets.SSH_USER }}
+          SERVICES: ${{ needs.changes.outputs.services }}
+        run: |
+          set -euo pipefail
+          echo "Deploying ${{ github.sha }} -- services: $SERVICES"
+
+          # REQUIRE_CLEAN_TREE=1: refuse to deploy if someone hand-edited the
+          # server or if HEAD is not on origin/main. An automated deploy has no
+          # human to notice that warning scroll past, so here it is a hard stop.
+          sshpass -e ssh -p "$SSH_PORT" \
+            -o StrictHostKeyChecking=yes \
+            -o UserKnownHostsFile=known_hosts \
+            -o ConnectTimeout=30 \
+            "$SSH_USER@$SSH_HOST" \
+            "bash -lc 'set -euo pipefail
+              cd /opt/starai
+              git fetch origin --prune
+              git merge --ff-only origin/main
+              REQUIRE_CLEAN_TREE=1 BUILD_SERVICES=\"$SERVICES\" bash scripts/deploy-prod.sh'"
+
+      - name: Report what is now running
+        if: always()
+        env:
+          SSHPASS: ${{ secrets.SSH_PASSWORD }}
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_PORT: ${{ secrets.SSH_PORT }}
+          SSH_USER: ${{ secrets.SSH_USER }}
+        run: |
+          sshpass -e ssh -p "$SSH_PORT" \
+            -o StrictHostKeyChecking=yes \
+            -o UserKnownHostsFile=known_hosts \
+            "$SSH_USER@$SSH_HOST" \
+            "bash -lc 'cd /opt/starai && git log --oneline -1 && cat .deployed-commit 2>/dev/null; docker ps --filter name=starai --format \"{{.Names}}  {{.Status}}\"'"
+
+  # Make a docs-only merge say so, rather than looking like a job that vanished.
+  skipped:
+    needs: [changes]
+    if: needs.changes.outputs.services == ''
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "No service code changed; nothing to deploy."
