@@ -20,9 +20,11 @@ const root = path.resolve(__dirname, "..");
 const dir = path.join(root, "infra", "migrations");
 const manifestPath = path.join(dir, "checksums.sha256");
 
+// Must use the same filter as verify-migrations.js and cmd/migrate/main.go:
+// skip dotfiles so macOS AppleDouble sidecars are never mistaken for migrations.
 const ups = fs
   .readdirSync(dir)
-  .filter((name) => name.endsWith(".up.sql"))
+  .filter((name) => !name.startsWith(".") && name.endsWith(".up.sql"))
   .sort();
 
 const lines = ups.map((name) => {

@@ -4,7 +4,12 @@ const crypto = require("node:crypto");
 
 const root = path.resolve(__dirname, "..");
 const dir = path.join(root, "infra", "migrations");
-const files = fs.readdirSync(dir);
+// Drop dotfiles before anything else looks at this list. macOS AppleDouble
+// sidecars (._097_x.up.sql) end in .up.sql and would be reported as migrations
+// missing a checksum entry -- which is how they announce themselves, loudly and
+// misleadingly, instead of as the junk they are. cmd/migrate/main.go filters the
+// same way; the two must agree or the verifier stops predicting the runner.
+const files = fs.readdirSync(dir).filter((name) => !name.startsWith("."));
 const ups = files.filter((name) => name.endsWith(".up.sql")).sort();
 const downs = new Set(files.filter((name) => name.endsWith(".down.sql")));
 const errors = [];

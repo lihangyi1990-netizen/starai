@@ -89,7 +89,13 @@ func listMigrations(dir, suffix string, reverse bool) []string {
 	}
 	var files []string
 	for _, e := range entries {
-		if e.IsDir() || !strings.HasSuffix(e.Name(), suffix) {
+		// Skip dotfiles. macOS writes AppleDouble sidecars named ._<original>
+		// when copying onto a non-HFS filesystem, so a copy of this directory
+		// from a Mac leaves ._097_x.up.sql next to 097_x.up.sql. It carries the
+		// suffix, so a suffix-only filter treats 163 bytes of resource fork as a
+		// migration -- and since '.' (0x2E) sorts before '0' (0x30), every one of
+		// them is attempted before the first real migration.
+		if e.IsDir() || strings.HasPrefix(e.Name(), ".") || !strings.HasSuffix(e.Name(), suffix) {
 			continue
 		}
 		files = append(files, filepath.Join(dir, e.Name()))
