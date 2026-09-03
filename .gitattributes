@@ -1,0 +1,5 @@
+# This repo is a byte-for-byte mirror of a Linux production server
+# (/opt/starai on 64.83.24.126). Any EOL translation would make the working
+# tree stop matching PROVENANCE-SHA256.txt, which is the only thing proving
+# these files equal what is actually running. So: no conversion, ever.
+* -text

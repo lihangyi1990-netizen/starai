@@ -1,0 +1,78 @@
+package queue
+
+import (
+	"encoding/json"
+	"time"
+
+	"github.com/hibiken/asynq"
+)
+
+const (
+	TypeImageTask    = "image:generate"
+	TypeComposeTask  = "media:compose"
+	TypeWorkflowTask = "workflow:run"
+	QueueDefault     = "default"
+	QueueImage       = "image"
+	QueueWorkflow    = "workflow"
+)
+
+type ImageTaskPayload struct {
+	TaskNo    string                 `json:"task_no"`
+	UserID    int64                  `json:"user_id"`
+	ModelID   int64                  `json:"model_id"`
+	ModelCode string                 `json:"model_code"`
+	Input     map[string]interface{} `json:"input"`
+}
+
+type WorkflowTaskPayload struct {
+	ProjectID int64 `json:"project_id"`
+	UserID    int64 `json:"user_id"`
+}
+
+type ComposeTaskPayload struct {
+	TaskNo string                 `json:"task_no"`
+	UserID int64                  `json:"user_id"`
+	Input  map[string]interface{} `json:"input"`
+}
+
+func NewClient(redisURL string) (*asynq.Client, error) {
+	opt, err := asynq.ParseRedisURI(redisURL)
+	if err != nil {
+		return nil, err
+	}
+	return asynq.NewClient(opt), nil
+}
+
+func EnqueueImageTask(client *asynq.Client, payload ImageTaskPayload) error {
+	data, err := json.Marshal(payload)
+	if err != nil {
+		return err
+	}
+	task := asynq.NewTask(TypeImageTask, data)
+	// 视频异步轮询默认 15 分钟，但模型可通过 poll_timeout_sec 覆盖，
+	// 需高于 asynq 默认 30 分钟任务超时以兼容长轮询配置。
+	_, err = client.Enqueue(task, asynq.Queue(QueueImage), asynq.MaxRetry(3), asynq.Timeout(90*time.Minute))
+	return err
+}
+
+func EnqueueWorkflowTask(client *asynq.Client, payload WorkflowTaskPayload) error {
+	data, err := json.Marshal(payload)
+	if err != nil {
+		return err
+	}
+	task := asynq.NewTask(TypeWorkflowTask, data)
+	// AI 漫剧会串行经历规划、关键帧、视频片段和合成，默认 30 分钟不足以
+	// 覆盖正常的第三方视频轮询。阶段状态由数据库持久化，超时仍保留兜底重试。
+	_, err = client.Enqueue(task, asynq.Queue(QueueWorkflow), asynq.MaxRetry(1), asynq.Timeout(6*time.Hour))
+	return err
+}
+
+func EnqueueComposeTask(client *asynq.Client, payload ComposeTaskPayload) error {
+	data, err := json.Marshal(payload)
+	if err != nil {
+		return err
+	}
+	task := asynq.NewTask(TypeComposeTask, data)
+	_, err = client.Enqueue(task, asynq.Queue(QueueImage), asynq.MaxRetry(1), asynq.Timeout(90*time.Minute))
+	return err
+}

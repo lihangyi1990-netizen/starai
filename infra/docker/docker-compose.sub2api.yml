@@ -1,0 +1,91 @@
+# Optional PICO ↔ Sub2API gateway stack.
+# Start it with the base compose file and the "sub2api" profile. The service
+# stays on the internal Docker network; only its local administration port is
+# exposed on 127.0.0.1 by default.
+services:
+  sub2api:
+    image: weishaw/sub2api:latest
+    profiles: ["sub2api"]
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    ports:
+      - "127.0.0.1:${SUB2API_PORT:-8081}:8080"
+    volumes:
+      - sub2api_data:/app/data
+    environment:
+      # Keep automatic bootstrap as the default. Set SUB2API_AUTO_SETUP=false
+      # when an operator needs the first-run web wizard to choose credentials.
+      AUTO_SETUP: ${SUB2API_AUTO_SETUP:-true}
+      SERVER_HOST: 0.0.0.0
+      SERVER_PORT: 8080
+      SERVER_MODE: release
+      DATABASE_HOST: sub2api-postgres
+      DATABASE_PORT: 5432
+      DATABASE_USER: ${SUB2API_POSTGRES_USER:-sub2api}
+      DATABASE_PASSWORD: ${SUB2API_POSTGRES_PASSWORD:?Set SUB2API_POSTGRES_PASSWORD in infra/docker/.env.sub2api}
+      DATABASE_DBNAME: ${SUB2API_POSTGRES_DB:-sub2api}
+      DATABASE_SSLMODE: disable
+      REDIS_HOST: sub2api-redis
+      REDIS_PORT: 6379
+      ADMIN_EMAIL: ${SUB2API_ADMIN_EMAIL:-admin@pico.local}
+      # Optional. When empty, Sub2API exposes its one-time local setup screen
+      # so the operator can choose the administrator password themselves.
+      ADMIN_PASSWORD: ${SUB2API_ADMIN_PASSWORD:-}
+      JWT_SECRET: ${SUB2API_JWT_SECRET:?Set SUB2API_JWT_SECRET in infra/docker/.env.sub2api}
+      TOTP_ENCRYPTION_KEY: ${SUB2API_TOTP_ENCRYPTION_KEY:?Set SUB2API_TOTP_ENCRYPTION_KEY in infra/docker/.env.sub2api}
+      TZ: ${TZ:-Asia/Shanghai}
+      # A fresh install accepts no upstream hosts until the operator allowlists
+      # the provider endpoints they are authorized to use.
+      SECURITY_URL_ALLOWLIST_ENABLED: "true"
+      SECURITY_URL_ALLOWLIST_ALLOW_INSECURE_HTTP: "false"
+      SECURITY_URL_ALLOWLIST_ALLOW_PRIVATE_HOSTS: "false"
+      SECURITY_URL_ALLOWLIST_UPSTREAM_HOSTS: ${SUB2API_UPSTREAM_HOSTS:-}
+    depends_on:
+      sub2api-postgres:
+        condition: service_healthy
+      sub2api-redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-T", "5", "-O", "/dev/null", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 45s
+
+  sub2api-postgres:
+    image: postgres:18-alpine
+    profiles: ["sub2api"]
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${SUB2API_POSTGRES_USER:-sub2api}
+      POSTGRES_PASSWORD: ${SUB2API_POSTGRES_PASSWORD:?Set SUB2API_POSTGRES_PASSWORD in infra/docker/.env.sub2api}
+      POSTGRES_DB: ${SUB2API_POSTGRES_DB:-sub2api}
+      TZ: ${TZ:-Asia/Shanghai}
+    # PostgreSQL 18 stores clusters in a versioned subdirectory. Mount the
+    # parent directory so a fresh volume starts correctly and future upgrades
+    # can use the image's supported layout.
+    volumes:
+      - sub2api_postgres_data:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${SUB2API_POSTGRES_USER:-sub2api} -d ${SUB2API_POSTGRES_DB:-sub2api}"]
+      interval: 10s
+      timeout: 5s
+      retries: 8
+
+  sub2api-redis:
+    image: redis:8-alpine
+    profiles: ["sub2api"]
+    restart: unless-stopped
+    volumes:
+      - sub2api_redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 8
+
+volumes:
+  sub2api_data:
+  sub2api_postgres_data:
+  sub2api_redis_data:

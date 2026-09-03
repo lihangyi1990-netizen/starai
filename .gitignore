@@ -1,0 +1,33 @@
+# Production credentials. Present on the server, never committed here.
+# Their paths/sizes/hashes are recorded in SECRETS-INVENTORY.txt so config
+# drift is still detectable without the plaintext entering git history.
+# NOTE: .env.example and .env.preprod.example ARE tracked -- they are templates.
+.env.production
+.env.production.*
+
+# User-generated media and backup tarballs: 151 of the server's 157 MB.
+/data/
+/backups/
+
+# Deploy-time and build-time snapshots. Not what runs.
+.codex-*
+.deploy-backup-*
+
+# macOS AppleDouble resource forks. 163 bytes of junk per real file.
+._*
+
+# Debris from hand-editing files in place on the server.
+*.orig
+*.rej
+*.before
+*.bak-*
+
+# Build output and logs.
+*.log
+*.exe
+*.tsbuildinfo
+node_modules/
+dist/
+build/
+.next/
+__pycache__/

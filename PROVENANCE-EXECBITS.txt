@@ -1,0 +1,12 @@
+# files that are executable on the production server
+scripts/clean-ui-translation-overrides.js
+scripts/deploy-prod.sh
+scripts/docker-disk-maintenance.sh
+scripts/export-full-backup.sh
+scripts/export-settings-pack.sh
+scripts/git-diagnose.sh
+scripts/import-full-backup.sh
+scripts/import-settings-pack.sh
+scripts/integration-test.sh
+scripts/release-stuck-tasks.sh
+scripts/verify-full-backup.sh

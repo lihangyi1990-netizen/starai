@@ -1,0 +1,939 @@
+package service
+
+import (
+	"context"
+	"encoding/json"
+	"errors"
+	"fmt"
+	"strings"
+	"time"
+
+	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/starai/api/internal/billing"
+	"github.com/starai/api/internal/runtime"
+	"github.com/starai/api/internal/util"
+)
+
+type ChatService struct {
+	db      *pgxpool.Pool
+	models  *ModelService
+	billing *billing.Service
+	runtime *runtime.Client
+	ops     *OpsService
+}
+
+func NewChatService(db *pgxpool.Pool, models *ModelService, billing *billing.Service, rt *runtime.Client, ops *OpsService) *ChatService {
+	return &ChatService{db: db, models: models, billing: billing, runtime: rt, ops: ops}
+}
+
+func (s *ChatService) RuntimeClient() *runtime.Client {
+	return s.runtime
+}
+
+type ConversationDTO struct {
+	PublicID  string  `json:"public_id"`
+	Title     *string `json:"title,omitempty"`
+	ModelCode *string `json:"model_code,omitempty"`
+	CreatedAt string  `json:"created_at"`
+	UpdatedAt string  `json:"updated_at"`
+}
+
+const (
+	conversationDefaultPage     = 1
+	conversationDefaultPageSize = 50
+	conversationMaxPage         = 100000
+	conversationMaxPageSize     = 100
+)
+
+// normalizeConversationPagination keeps the service safe for older callers
+// that did not pass pagination arguments while also bounding the SQL offset
+// for callers that do. The HTTP handler validates explicit query parameters and
+// returns a 400; this fallback is only for internal/legacy calls.
+func normalizeConversationPagination(page, pageSize int) (int, int) {
+	if page < 1 || page > conversationMaxPage {
+		page = conversationDefaultPage
+	}
+	if pageSize < 1 || pageSize > conversationMaxPageSize {
+		pageSize = conversationDefaultPageSize
+	}
+	return page, pageSize
+}
+
+func (s *ChatService) CreateConversation(ctx context.Context, userID int64, modelCode, title string) (*ConversationDTO, error) {
+	publicID := util.NewPublicID("conv")
+	var modelID *int64
+	if modelCode != "" {
+		m, err := s.models.GetByCode(ctx, modelCode, true)
+		if err != nil {
+			return nil, err
+		}
+		modelID = &m.ID
+	}
+	var id int64
+	err := s.db.QueryRow(ctx,
+		`INSERT INTO conversations (public_id, user_id, model_id, title) VALUES ($1,$2,$3,$4) RETURNING id`,
+		publicID, userID, modelID, title).Scan(&id)
+	if err != nil {
+		return nil, err
+	}
+	now := time.Now().Format(time.RFC3339)
+	return &ConversationDTO{PublicID: publicID, Title: &title, ModelCode: &modelCode, CreatedAt: now, UpdatedAt: now}, nil
+}
+
+// ListConversations returns one page of the user's conversations, newest
+// first. The variadic pagination arguments preserve compatibility with older
+// internal callers that only supplied (ctx, userID, modelCode):
+// [page, pageSize].
+func (s *ChatService) ListConversations(ctx context.Context, userID int64, modelCode string, pagination ...int) ([]ConversationDTO, error) {
+	page, pageSize := conversationDefaultPage, conversationDefaultPageSize
+	if len(pagination) > 0 {
+		page = pagination[0]
+	}
+	if len(pagination) > 1 {
+		pageSize = pagination[1]
+	}
+	page, pageSize = normalizeConversationPagination(page, pageSize)
+	offset := (page - 1) * pageSize
+
+	args := []interface{}{userID}
+	where := "c.user_id=$1"
+	if modelCode != "" {
+		args = append(args, modelCode)
+		where += fmt.Sprintf(" AND m.code=$%d", len(args))
+	}
+	args = append(args, pageSize, offset)
+	rows, err := s.db.Query(ctx, fmt.Sprintf(`
+		SELECT c.public_id, c.title, m.code, c.created_at, c.updated_at
+		FROM conversations c LEFT JOIN models m ON m.id = c.model_id
+		WHERE %s ORDER BY c.updated_at DESC, c.id DESC LIMIT $%d OFFSET $%d`, where, len(args)-1, len(args)), args...)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := make([]ConversationDTO, 0, pageSize)
+	for rows.Next() {
+		var item ConversationDTO
+		var created, updated time.Time
+		if err := rows.Scan(&item.PublicID, &item.Title, &item.ModelCode, &created, &updated); err != nil {
+			return nil, err
+		}
+		item.CreatedAt = created.Format(time.RFC3339)
+		item.UpdatedAt = updated.Format(time.RFC3339)
+		items = append(items, item)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+type CompletionInput struct {
+	Model          string                 `json:"model"`
+	ModelCode      string                 `json:"model_code"`
+	ConversationID string                 `json:"conversation_id"`
+	Messages       []runtime.ChatMessage  `json:"messages"`
+	Params         map[string]interface{} `json:"params"`
+	Stream         bool                   `json:"stream"`
+	Ephemeral      bool                   `json:"ephemeral"`
+}
+
+type CompletionResult struct {
+	RequestID        string                   `json:"request_id"`
+	ConversationID   string                   `json:"conversation_id"`
+	Content          string                   `json:"content"`
+	ReasoningContent string                   `json:"reasoning_content,omitempty"`
+	ContentBlocks    []interface{}            `json:"content_blocks,omitempty"`
+	ToolCalls        []map[string]interface{} `json:"tool_calls,omitempty"`
+	Usage            runtime.ChatUsage        `json:"usage"`
+	Cost             float64                  `json:"cost"`
+}
+
+type BalanceError struct {
+	ConversationID string
+	RequestID      string
+}
+
+func (e *BalanceError) Error() string {
+	return billing.InsufficientBalanceMsg
+}
+
+func (s *ChatService) ResolveInputModel(ctx context.Context, input *CompletionInput) (*ModelFull, error) {
+	if input == nil {
+		return nil, errors.New("model not found")
+	}
+	model, err := s.models.ResolveChatModel(ctx, input.modelIdentifier())
+	if err != nil {
+		return nil, err
+	}
+	input.ModelCode = model.Code
+	if input.Model == "" {
+		input.Model = model.Code
+	}
+	return model, nil
+}
+
+func (in CompletionInput) modelIdentifier() string {
+	if strings.TrimSpace(in.ModelCode) != "" {
+		return strings.TrimSpace(in.ModelCode)
+	}
+	return strings.TrimSpace(in.Model)
+}
+
+func (s *ChatService) Completion(ctx context.Context, userID int64, input CompletionInput) (*CompletionResult, error) {
+	model, err := s.ResolveInputModel(ctx, &input)
+	if err != nil {
+		return nil, err
+	}
+	upstreamParams, err := buildChatUpstreamParams(model, input.Params)
+	if err != nil {
+		return nil, err
+	}
+	prepareChatBillingParams(&input)
+	estimated := s.models.EstimateCost(model, input.Params, 0, 0)
+	requestID := util.NewRequestID()
+
+	if err := s.billing.Freeze(ctx, userID, estimated, "chat", requestID); err != nil {
+		if errors.Is(err, billing.ErrInsufficientBalance) {
+			return nil, s.balanceError(ctx, userID, input, requestID)
+		}
+		return nil, err
+	}
+
+	var temperature *float64
+	if v, ok := input.Params["temperature"].(float64); ok {
+		temperature = runtime.Float64Ptr(v)
+	}
+	req := runtime.ChatRequest{
+		Model:       model.NewAPIModel,
+		Messages:    chatRequestMessages(input.Messages, input.Params),
+		Temperature: temperature,
+		Extra:       upstreamParams,
+	}
+	start := time.Now()
+	resp, selectedRoute, err := s.chatCompletionWithFailover(ctx, requestID, model, req)
+	duration := int(time.Since(start).Milliseconds())
+	if err != nil {
+		if unfreezeErr := s.billing.Unfreeze(ctx, userID, estimated, "chat", requestID); unfreezeErr != nil {
+			s.logCall(ctx, requestID, userID, model.ID, nil, 0, 0, 0, 0, "billing_failed", unfreezeErr, duration)
+			return nil, fmt.Errorf("模型调用失败: %v；释放冻结额度失败: %w", err, unfreezeErr)
+		}
+		s.logCallWithRoute(ctx, requestID, userID, model.ID, routeID(selectedRoute), nil, 0, 0, 0, 0, 0, "failed", err, duration)
+		return nil, err
+	}
+	content := ""
+	reasoningContent := ""
+	if len(resp.Choices) > 0 {
+		content = resp.Choices[0].Message.Content
+		reasoningContent = resp.Choices[0].Message.ReasoningContent
+	}
+	usage := normalizedChatUsage(resp.Usage, input, content)
+	actualCost := s.models.EstimateCostWithTokenDetails(model, input.Params, usage.PromptTokens, usage.CompletionTokens, usage.CachedInputTokens(), usage.CacheCreationInputTokens)
+	providerCost := EstimateRouteProviderCostWithTokenDetails(selectedRoute, input.Params, usage.PromptTokens, usage.CompletionTokens, usage.CachedInputTokens(), usage.CacheCreationInputTokens)
+	if selectedRoute != nil {
+		s.models.UpdateSuccessfulRouteAttemptCost(ctx, requestID, selectedRoute.ID, providerCost)
+	}
+	if err := s.billing.Charge(ctx, userID, estimated, actualCost, "chat", requestID, "chat_usage", "对话消费"); err != nil {
+		s.logCall(ctx, requestID, userID, model.ID, nil, usage.PromptTokens, usage.CompletionTokens, usage.TotalTokens, 0, "billing_failed", err, duration)
+		return nil, fmt.Errorf("对话结算失败: %w", err)
+	}
+	s.logCallWithRoute(ctx, requestID, userID, model.ID, routeID(selectedRoute), nil, usage.PromptTokens, usage.CompletionTokens, usage.TotalTokens, actualCost, providerCost, "success", nil, duration)
+
+	convID := input.ConversationID
+	if !input.Ephemeral {
+		convID = s.saveMessages(ctx, convID, userID, input.ModelCode, input.Messages, content, reasoningContent)
+	}
+
+	var blocks []interface{}
+	var toolCalls []map[string]interface{}
+	if len(resp.ContentBlocks) > 0 {
+		blocks = resp.ContentBlocks
+	}
+	if len(resp.Choices) > 0 {
+		toolCalls = resp.Choices[0].ToolCalls
+	}
+	return &CompletionResult{RequestID: requestID, ConversationID: convID, Content: content, ReasoningContent: reasoningContent, ContentBlocks: blocks, ToolCalls: toolCalls, Usage: usage, Cost: actualCost}, nil
+}
+
+func (s *ChatService) CompletionStream(ctx context.Context, userID int64, input CompletionInput) (string, <-chan runtime.StreamChunk, float64, error) {
+	model, err := s.ResolveInputModel(ctx, &input)
+	if err != nil {
+		return "", nil, 0, err
+	}
+	upstreamParams, err := buildChatUpstreamParams(model, input.Params)
+	if err != nil {
+		return "", nil, 0, err
+	}
+	prepareChatBillingParams(&input)
+	estimated := s.models.EstimateCost(model, input.Params, 0, 0)
+	requestID := util.NewRequestID()
+	if err := s.billing.Freeze(ctx, userID, estimated, "chat", requestID); err != nil {
+		if errors.Is(err, billing.ErrInsufficientBalance) {
+			return "", nil, 0, s.balanceError(ctx, userID, input, requestID)
+		}
+		return "", nil, 0, err
+	}
+	var temperature *float64
+	if v, ok := input.Params["temperature"].(float64); ok {
+		temperature = runtime.Float64Ptr(v)
+	}
+	req := runtime.ChatRequest{Model: model.NewAPIModel, Messages: chatRequestMessages(input.Messages, input.Params), Temperature: temperature, Extra: upstreamParams}
+	// per-request timeout override (seconds)
+	if v, ok := input.Params["timeout_sec"].(float64); ok && v > 0 && v <= 600 {
+		var cancel context.CancelFunc
+		ctx, cancel = context.WithTimeout(ctx, time.Duration(v)*time.Second)
+		defer cancel()
+	}
+	ch, _, err := s.chatCompletionStreamWithFailover(ctx, requestID, model, req)
+	if err != nil {
+		if unfreezeErr := s.billing.Unfreeze(ctx, userID, estimated, "chat", requestID); unfreezeErr != nil {
+			return "", nil, 0, fmt.Errorf("模型流启动失败: %v；释放冻结额度失败: %w", err, unfreezeErr)
+		}
+		return "", nil, 0, err
+	}
+	return requestID, ch, estimated, nil
+}
+
+func chatRequestMessages(messages []runtime.ChatMessage, params map[string]interface{}) interface{} {
+	images := stringSliceParam(params["reference_images"])
+	videos := stringSliceParam(params["reference_videos"])
+	if len(images) == 0 && len(videos) == 0 {
+		return messages
+	}
+	out := make([]map[string]interface{}, 0, len(messages))
+	lastUser := -1
+	for index, message := range messages {
+		if message.Role == "user" {
+			lastUser = index
+		}
+	}
+	for index, message := range messages {
+		if index != lastUser {
+			out = append(out, map[string]interface{}{"role": message.Role, "content": message.Content})
+			continue
+		}
+		content := []map[string]interface{}{
+			{"type": "text", "text": message.Content},
+		}
+		for _, url := range images {
+			content = append(content, map[string]interface{}{
+				"type":      "image_url",
+				"image_url": map[string]interface{}{"url": url},
+			})
+		}
+		for _, url := range videos {
+			content = append(content, map[string]interface{}{
+				"type":      "video_url",
+				"video_url": map[string]interface{}{"url": url},
+			})
+		}
+		out = append(out, map[string]interface{}{"role": message.Role, "content": content})
+	}
+	return out
+}
+
+func chatUpstreamParams(params map[string]interface{}) map[string]interface{} {
+	allowed := []string{
+		"max_tokens", "max_completion_tokens", "top_p", "response_format", "tools", "tool_choice",
+		"reasoning_effort", "seed", "stop", "presence_penalty", "frequency_penalty", "user", "n",
+	}
+	out := make(map[string]interface{}, len(allowed))
+	for _, key := range allowed {
+		if value, ok := params[key]; ok && value != nil {
+			out[key] = value
+		}
+	}
+	return out
+}
+
+func buildChatUpstreamParams(model *ModelFull, params map[string]interface{}) (map[string]interface{}, error) {
+	merged := make(map[string]interface{}, len(model.DefaultParams)+len(params))
+	for key, value := range model.DefaultParams {
+		merged[key] = value
+	}
+	for key, value := range params {
+		merged[key] = value
+	}
+	out := chatUpstreamParams(merged)
+	reasoning, _ := model.RuntimeRule["reasoning"].(map[string]interface{})
+	if strings.ToLower(strings.TrimSpace(stringValue(reasoning["mode"]))) != "nvidia_chat_template" {
+		return out, nil
+	}
+
+	enabled, err := reasoningEnabled(merged, reasoning)
+	if err != nil {
+		return nil, err
+	}
+	out["chat_template_kwargs"] = map[string]interface{}{"enable_thinking": enabled}
+	if !enabled {
+		return out, nil
+	}
+	budget, err := reasoningBudget(merged, reasoning)
+	if err != nil {
+		return nil, err
+	}
+	if budget > 0 {
+		out["reasoning_budget"] = budget
+	}
+	return out, nil
+}
+
+func reasoningEnabled(params, config map[string]interface{}) (bool, error) {
+	if raw, ok := params["deep_think"]; ok && raw != nil {
+		value, ok := raw.(bool)
+		if !ok {
+			return false, errors.New("deep_think must be a boolean")
+		}
+		return value, nil
+	}
+	if raw, ok := params["chat_template_kwargs"].(map[string]interface{}); ok {
+		if value, exists := raw["enable_thinking"]; exists {
+			enabled, ok := value.(bool)
+			if !ok {
+				return false, errors.New("chat_template_kwargs.enable_thinking must be a boolean")
+			}
+			return enabled, nil
+		}
+	}
+	if value, ok := config["default_enabled"].(bool); ok {
+		return value, nil
+	}
+	return false, nil
+}
+
+func reasoningBudget(params, config map[string]interface{}) (int, error) {
+	budget := firstPositiveIntValue(params, "reasoning_budget")
+	if raw, supplied := params["reasoning_budget"]; supplied && raw != nil && budget <= 0 {
+		return 0, errors.New("reasoning_budget must be a positive integer")
+	}
+	if budget <= 0 {
+		budget = firstPositiveIntValue(config, "default_budget")
+	}
+	maximum := firstPositiveIntValue(config, "max_budget")
+	if maximum > 0 && budget > maximum {
+		return 0, errors.New("reasoning_budget exceeds the model limit")
+	}
+	return budget, nil
+}
+
+func stringSliceParam(value interface{}) []string {
+	raw, ok := value.([]interface{})
+	if !ok {
+		if typed, typedOK := value.([]string); typedOK {
+			return typed
+		}
+		return nil
+	}
+	out := make([]string, 0, len(raw))
+	for _, item := range raw {
+		if text, textOK := item.(string); textOK && strings.TrimSpace(text) != "" {
+			out = append(out, strings.TrimSpace(text))
+		}
+	}
+	return out
+}
+
+func routeID(route *ModelRoute) int64 {
+	if route == nil {
+		return 0
+	}
+	return route.ID
+}
+
+func legacyModelRoute(model *ModelFull) ModelRoute {
+	conn, _ := model.NewAPIExtraParams["connection"].(map[string]interface{})
+	return ModelRoute{
+		ModelID: model.ID, RouteName: "legacy", UpstreamModel: model.NewAPIModel,
+		Endpoint: model.NewAPIEndpoint, BaseURL: stringValue(conn["base_url"]),
+		APIKey: stringValue(conn["api_key"]), AuthType: stringValue(conn["auth_type"]),
+		APIKeyHeader: stringValue(conn["api_key_header"]), Protocol: stringValue(conn["protocol"]),
+		Headers: mapValue(conn["headers"]), ExtraParams: copyMap(model.NewAPIExtraParams),
+		TimeoutSeconds: 120, IsEnabled: true, HealthStatus: "healthy", Weight: 100,
+	}
+}
+
+func mapValue(value interface{}) map[string]interface{} {
+	if typed, ok := value.(map[string]interface{}); ok {
+		return typed
+	}
+	return map[string]interface{}{}
+}
+
+func routeErrorDetails(err error) (int, string) {
+	var platformErr *runtime.PlatformError
+	if errors.As(err, &platformErr) {
+		return platformErr.StatusCode, platformErr.Code
+	}
+	return 0, "UNKNOWN"
+}
+
+func isRouteFailoverError(err error) bool {
+	var platformErr *runtime.PlatformError
+	if !errors.As(err, &platformErr) {
+		return true
+	}
+	if platformErr.Code == "CONTENT_REJECTED" {
+		return false
+	}
+	if platformErr.StatusCode == 400 || platformErr.StatusCode == 422 {
+		return false
+	}
+	return true
+}
+
+func shouldRetrySameRoute(err error) bool {
+	var platformErr *runtime.PlatformError
+	if !errors.As(err, &platformErr) {
+		return true
+	}
+	if platformErr.StatusCode == 408 || platformErr.StatusCode >= 500 {
+		return true
+	}
+	return platformErr.StatusCode == 0 && (platformErr.Code == "MODEL_TIMEOUT" || platformErr.Code == "MODEL_PROVIDER_ERROR")
+}
+
+func waitRouteRetry(ctx context.Context, retry int) bool {
+	delay := time.Duration(retry+1) * 200 * time.Millisecond
+	timer := time.NewTimer(delay)
+	defer timer.Stop()
+	select {
+	case <-ctx.Done():
+		return false
+	case <-timer.C:
+		return true
+	}
+}
+
+const maxRouteAttemptsPerRequest = 8
+
+func (s *ChatService) modelRuntimeRoutes(ctx context.Context, model *ModelFull) ([]ModelRoute, error) {
+	routes, err := s.models.RuntimeRoutes(ctx, model)
+	if err != nil {
+		return nil, &runtime.PlatformError{Code: "MODEL_PROVIDER_ERROR", Message: "模型所有线路暂时不可用，请稍后重试"}
+	}
+	if len(routes) == 0 {
+		routes = []ModelRoute{legacyModelRoute(model)}
+	}
+	return routes, nil
+}
+
+func (s *ChatService) chatCompletionWithFailover(ctx context.Context, requestID string, model *ModelFull, req runtime.ChatRequest) (*runtime.ChatResponse, *ModelRoute, error) {
+	routes, err := s.modelRuntimeRoutes(ctx, model)
+	if err != nil {
+		return nil, nil, err
+	}
+	var lastErr error
+	attempt := 0
+routeLoop:
+	for i := range routes {
+		route := &routes[i]
+		if !s.models.AcquireRouteProbe(ctx, route) {
+			continue
+		}
+		for retry := 0; retry <= route.MaxRetries; retry++ {
+			if attempt >= maxRouteAttemptsPerRequest {
+				break routeLoop
+			}
+			attempt++
+			attemptReq := req
+			attemptReq.Model = route.UpstreamModel
+			started := time.Now()
+			attemptCtx := ctx
+			var cancel context.CancelFunc
+			if route.TimeoutSeconds > 0 {
+				attemptCtx, cancel = context.WithTimeout(ctx, time.Duration(route.TimeoutSeconds)*time.Second)
+			}
+			response, callErr := s.runtime.ChatCompletionWithConfig(attemptCtx, route.Endpoint, attemptReq, route.RequestExtraForRequest(model, requestID))
+			if cancel != nil {
+				cancel()
+			}
+			latency := int(time.Since(started).Milliseconds())
+			if callErr == nil {
+				s.models.MarkRouteSuccess(ctx, route.ID)
+				s.models.LogRouteAttempt(ctx, requestID, model.ID, route.ID, attempt, "success", 200, "", latency, 0)
+				return response, route, nil
+			}
+			lastErr = callErr
+			statusCode, errorCode := routeErrorDetails(callErr)
+			if !isRouteFailoverError(callErr) {
+				s.models.LogRouteAttempt(ctx, requestID, model.ID, route.ID, attempt, "rejected", statusCode, errorCode, latency, 0)
+				return nil, route, callErr
+			}
+			s.models.MarkRouteFailure(ctx, route.ID)
+			s.models.LogRouteAttempt(ctx, requestID, model.ID, route.ID, attempt, "failed", statusCode, errorCode, latency, 0)
+			if retry < route.MaxRetries && shouldRetrySameRoute(callErr) && waitRouteRetry(ctx, retry) {
+				continue
+			}
+			break
+		}
+	}
+	if lastErr == nil {
+		lastErr = &runtime.PlatformError{Code: "MODEL_PROVIDER_ERROR", Message: "模型线路正在恢复探测，请稍后重试"}
+	}
+	return nil, nil, lastErr
+}
+
+func (s *ChatService) chatCompletionStreamWithFailover(ctx context.Context, requestID string, model *ModelFull, req runtime.ChatRequest) (<-chan runtime.StreamChunk, *ModelRoute, error) {
+	routes, err := s.modelRuntimeRoutes(ctx, model)
+	if err != nil {
+		return nil, nil, err
+	}
+	var lastErr error
+	attempt := 0
+routeLoop:
+	for i := range routes {
+		route := &routes[i]
+		if !s.models.AcquireRouteProbe(ctx, route) {
+			continue
+		}
+		for retry := 0; retry <= route.MaxRetries; retry++ {
+			if attempt >= maxRouteAttemptsPerRequest {
+				break routeLoop
+			}
+			attempt++
+			attemptReq := req
+			attemptReq.Model = route.UpstreamModel
+			started := time.Now()
+			chunks, callErr := s.runtime.ChatCompletionStreamWithConfig(ctx, route.Endpoint, attemptReq, route.RequestExtraForRequest(model, requestID))
+			latency := int(time.Since(started).Milliseconds())
+			if callErr == nil {
+				s.models.MarkRouteSuccess(ctx, route.ID)
+				s.models.LogRouteAttempt(ctx, requestID, model.ID, route.ID, attempt, "success", 200, "", latency, 0)
+				forwarded := make(chan runtime.StreamChunk, 32)
+				go func(selectedRouteID int64, selectedAttempt int) {
+					defer close(forwarded)
+					streamFailed := false
+					for chunk := range chunks {
+						if chunk.Error != nil {
+							streamFailed = true
+						}
+						forwarded <- chunk
+					}
+					if streamFailed {
+						s.models.MarkRouteFailure(context.Background(), selectedRouteID)
+						s.models.MarkStreamRouteAttemptFailed(context.Background(), requestID, selectedRouteID, selectedAttempt)
+					}
+				}(route.ID, attempt)
+				return forwarded, route, nil
+			}
+			lastErr = callErr
+			statusCode, errorCode := routeErrorDetails(callErr)
+			if !isRouteFailoverError(callErr) {
+				s.models.LogRouteAttempt(ctx, requestID, model.ID, route.ID, attempt, "rejected", statusCode, errorCode, latency, 0)
+				return nil, route, callErr
+			}
+			s.models.MarkRouteFailure(ctx, route.ID)
+			s.models.LogRouteAttempt(ctx, requestID, model.ID, route.ID, attempt, "failed", statusCode, errorCode, latency, 0)
+			if retry < route.MaxRetries && shouldRetrySameRoute(callErr) && waitRouteRetry(ctx, retry) {
+				continue
+			}
+			break
+		}
+	}
+	if lastErr == nil {
+		lastErr = &runtime.PlatformError{Code: "MODEL_PROVIDER_ERROR", Message: "模型线路正在恢复探测，请稍后重试"}
+	}
+	return nil, nil, lastErr
+}
+
+func (s *ChatService) FinalizeStream(ctx context.Context, userID int64, requestID string, input CompletionInput, fullContent, reasoningContent string, usage *runtime.ChatUsage, estimated float64) (string, error) {
+	model, err := s.ResolveInputModel(ctx, &input)
+	if err != nil {
+		return "", err
+	}
+	normalized := runtime.ChatUsage{}
+	if usage != nil {
+		normalized = *usage
+	}
+	normalized = normalizedChatUsage(normalized, input, fullContent)
+	actualCost := s.models.EstimateCostWithTokenDetails(model, input.Params, normalized.PromptTokens, normalized.CompletionTokens, normalized.CachedInputTokens(), normalized.CacheCreationInputTokens)
+	selectedRoute, _ := s.models.SuccessfulRouteForRequest(ctx, requestID)
+	providerCost := EstimateRouteProviderCostWithTokenDetails(selectedRoute, input.Params, normalized.PromptTokens, normalized.CompletionTokens, normalized.CachedInputTokens(), normalized.CacheCreationInputTokens)
+	if selectedRoute != nil {
+		s.models.UpdateSuccessfulRouteAttemptCost(ctx, requestID, selectedRoute.ID, providerCost)
+	}
+	if err := s.billing.Charge(ctx, userID, estimated, actualCost, "chat", requestID, "chat_usage", "对话消费"); err != nil {
+		s.logCall(ctx, requestID, userID, model.ID, nil, normalized.PromptTokens, normalized.CompletionTokens, normalized.TotalTokens, 0, "billing_failed", err, 0)
+		return "", fmt.Errorf("对话结算失败: %w", err)
+	}
+	s.logCallWithRoute(ctx, requestID, userID, model.ID, routeID(selectedRoute), nil, normalized.PromptTokens, normalized.CompletionTokens, normalized.TotalTokens, actualCost, providerCost, "success", nil, 0)
+
+	convID := input.ConversationID
+	if len(input.Messages) > 0 {
+		convID = s.saveMessages(ctx, convID, userID, input.ModelCode, input.Messages, fullContent, reasoningContent)
+	}
+	return convID, nil
+}
+
+func (s *ChatService) UnfreezeStream(ctx context.Context, userID int64, requestID string, estimated float64) error {
+	return s.billing.Unfreeze(ctx, userID, estimated, "chat", requestID)
+}
+
+func (s *ChatService) EstimateModelsCost(ctx context.Context, modelCodes []string, params map[string]interface{}) float64 {
+	total := 0.0
+	for _, code := range modelCodes {
+		model, err := s.models.GetFullByCode(ctx, code)
+		if err != nil {
+			continue
+		}
+		total += s.models.EstimateCost(model, params, 0, 0)
+	}
+	return total
+}
+
+func (s *ChatService) BeginMultiChat(ctx context.Context, userID int64, input CompletionInput, modelCodes []string) (requestID string, estimated float64, err error) {
+	prepareChatBillingParams(&input)
+	requestID = util.NewRequestID()
+	if len(modelCodes) == 0 {
+		model, mErr := s.ResolveInputModel(ctx, &input)
+		if mErr != nil {
+			return "", 0, mErr
+		}
+		estimated = s.models.EstimateCost(model, input.Params, 0, 0)
+	} else {
+		estimated = s.EstimateModelsCost(ctx, modelCodes, input.Params)
+		if collaborationModel, modelErr := s.models.GetFullByCode(ctx, input.ModelCode); modelErr == nil && collaborationModel.Category == "multi_collab" {
+			estimated += s.models.EstimateCost(collaborationModel, input.Params, 0, 0)
+		}
+	}
+	if freezeErr := s.billing.Freeze(ctx, userID, estimated, "chat", requestID); freezeErr != nil {
+		if errors.Is(freezeErr, billing.ErrInsufficientBalance) {
+			return "", 0, s.balanceError(ctx, userID, input, requestID)
+		}
+		return "", 0, freezeErr
+	}
+	return requestID, estimated, nil
+}
+
+func (s *ChatService) FinalizeMultiChat(ctx context.Context, userID int64, requestID string, modelCode string, estimated, actualCost float64, promptTokens, completionTokens, totalTokens int) error {
+	model, err := s.models.GetFullByCode(ctx, modelCode)
+	if err != nil {
+		return s.billing.Unfreeze(ctx, userID, estimated, "chat", requestID)
+	}
+	if err := s.billing.Charge(ctx, userID, estimated, actualCost, "chat", requestID, "chat_usage", "多模型协作消费"); err != nil {
+		s.logCall(ctx, requestID, userID, model.ID, nil, promptTokens, completionTokens, totalTokens, 0, "billing_failed", err, 0)
+		return err
+	}
+	s.logCall(ctx, requestID, userID, model.ID, nil, promptTokens, completionTokens, totalTokens, actualCost, "success", nil, 0)
+	return nil
+}
+
+func prepareChatBillingParams(input *CompletionInput) {
+	if input.Params == nil {
+		input.Params = map[string]interface{}{}
+	}
+	if firstPositiveIntValue(input.Params, "_estimated_input_tokens") <= 0 {
+		parts := make([]string, 0, len(input.Messages)*2)
+		for _, message := range input.Messages {
+			parts = append(parts, message.Role, message.Content)
+		}
+		input.Params["_estimated_input_tokens"] = estimateTextTokens(strings.Join(parts, "\n"))
+	}
+	if firstPositiveIntValue(input.Params, "_estimated_output_tokens") <= 0 {
+		if output := firstPositiveIntValue(input.Params, "max_completion_tokens", "max_tokens"); output > 0 {
+			input.Params["_estimated_output_tokens"] = output
+		}
+	}
+}
+
+func normalizedChatUsage(usage runtime.ChatUsage, input CompletionInput, content string) runtime.ChatUsage {
+	if usage.PromptTokens <= 0 {
+		prepareChatBillingParams(&input)
+		usage.PromptTokens = firstPositiveIntValue(input.Params, "_estimated_input_tokens")
+	}
+	if usage.CompletionTokens <= 0 {
+		usage.CompletionTokens = estimateTextTokens(content)
+	}
+	if usage.TotalTokens <= 0 {
+		usage.TotalTokens = usage.PromptTokens + usage.CompletionTokens
+	}
+	return usage
+}
+
+func (s *ChatService) balanceError(ctx context.Context, userID int64, input CompletionInput, requestID string) *BalanceError {
+	convID := s.recordBalanceFailure(ctx, userID, input, requestID)
+	return &BalanceError{ConversationID: convID, RequestID: requestID}
+}
+
+func (s *ChatService) recordBalanceFailure(ctx context.Context, userID int64, input CompletionInput, requestID string) string {
+	modelCode := input.modelIdentifier()
+	if modelCode == "" {
+		modelCode = "chat"
+	}
+	var modelID int64
+	if model, err := s.models.ResolveChatModel(ctx, modelCode); err == nil {
+		modelCode = model.Code
+		modelID = model.ID
+	}
+	convID := input.ConversationID
+	if convID == "" && len(input.Messages) > 0 {
+		title := truncate(input.Messages[len(input.Messages)-1].Content, 30)
+		conv, _ := s.CreateConversation(ctx, userID, modelCode, title)
+		if conv != nil {
+			convID = conv.PublicID
+		}
+	}
+	errMsg := fmt.Sprintf("[%s]", billing.InsufficientBalanceMsg)
+	if convID != "" && len(input.Messages) > 0 {
+		convID = s.saveMessages(ctx, convID, userID, modelCode, input.Messages, errMsg, "")
+	}
+	s.db.Exec(ctx, `
+		INSERT INTO ai_call_logs (request_id, user_id, model_id, conversation_id, prompt_tokens, completion_tokens, total_tokens, cost, status, error_code, duration_ms)
+		VALUES ($1,$2,$3,$4,0,0,0,0,'failed','INSUFFICIENT_BALANCE',0)`,
+		requestID, userID, modelID, nil)
+	if s.ops != nil {
+		_ = s.ops.CreateNotification(ctx, userID, "对话失败", billing.InsufficientBalanceMsg, "billing")
+	}
+	return convID
+}
+
+func (s *ChatService) logCall(ctx context.Context, requestID string, userID, modelID int64, convID *int64, prompt, completion, total int, cost float64, status string, err error, duration int) {
+	s.logCallWithRoute(ctx, requestID, userID, modelID, 0, convID, prompt, completion, total, cost, 0, status, err, duration)
+}
+
+func (s *ChatService) logCallWithRoute(ctx context.Context, requestID string, userID, modelID, selectedRouteID int64, convID *int64, prompt, completion, total int, cost, providerCost float64, status string, err error, duration int) {
+	errCode := ""
+	if err != nil {
+		if pe, ok := err.(*runtime.PlatformError); ok {
+			errCode = pe.Code
+		} else {
+			errCode = "UNKNOWN"
+		}
+		status = "failed"
+	}
+	var routeRef interface{} = selectedRouteID
+	if selectedRouteID <= 0 {
+		routeRef = nil
+	}
+	s.db.Exec(ctx, `
+		INSERT INTO ai_call_logs (request_id, user_id, model_id, route_id, conversation_id, prompt_tokens, completion_tokens, total_tokens, cost, provider_cost, gross_profit, status, error_code, duration_ms)
+		VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$9-$10,$11,$12,$13)`,
+		requestID, userID, modelID, routeRef, convID, prompt, completion, total, cost, providerCost, status, errCode, duration)
+}
+
+// resolveConversationID verifies that a client-supplied conversation belongs
+// to the current user. A stale/deleted ID is replaced with a fresh conversation
+// so a successful model request cannot disappear from history.
+func (s *ChatService) resolveConversationID(ctx context.Context, convPublicID string, userID int64, modelCode, title string) (string, error) {
+	convPublicID = strings.TrimSpace(convPublicID)
+	if convPublicID != "" {
+		var id int64
+		err := s.db.QueryRow(ctx, `SELECT id FROM conversations WHERE public_id=$1 AND user_id=$2`, convPublicID, userID).Scan(&id)
+		if err == nil {
+			return convPublicID, nil
+		}
+		if !errors.Is(err, pgx.ErrNoRows) {
+			return "", err
+		}
+	}
+	conv, err := s.CreateConversation(ctx, userID, modelCode, title)
+	if err != nil {
+		return "", err
+	}
+	return conv.PublicID, nil
+}
+
+func (s *ChatService) saveMessages(ctx context.Context, convPublicID string, userID int64, modelCode string, messages []runtime.ChatMessage, assistantContent, reasoningContent string) string {
+	if len(messages) == 0 {
+		return convPublicID
+	}
+	last := messages[len(messages)-1]
+	resolvedID, err := s.resolveConversationID(ctx, convPublicID, userID, modelCode, truncate(last.Content, 30))
+	if err != nil {
+		return convPublicID
+	}
+	var convID int64
+	err = s.db.QueryRow(ctx, `SELECT id FROM conversations WHERE public_id=$1 AND user_id=$2`, resolvedID, userID).Scan(&convID)
+	if err != nil {
+		return resolvedID
+	}
+	s.db.Exec(ctx, `INSERT INTO conversation_messages (conversation_id, role, content) VALUES ($1,$2,$3)`, convID, last.Role, last.Content)
+	s.db.Exec(ctx, `INSERT INTO conversation_messages (conversation_id, role, content, reasoning_content) VALUES ($1,'assistant',$2,$3)`, convID, assistantContent, reasoningContent)
+	s.db.Exec(ctx, `UPDATE conversations SET updated_at=now() WHERE id=$1`, convID)
+	return resolvedID
+}
+
+// SaveMultiMessages stores the user question plus a structured assistant snapshot
+// (summary + per-model answers) so history can restore the full multi-collab view.
+
+func (s *ChatService) SaveMultiMessages(ctx context.Context, convPublicID string, userID int64, modelCode string, messages []runtime.ChatMessage, results interface{}, summary string) string {
+	if len(messages) == 0 {
+		return convPublicID
+	}
+	var lastUser runtime.ChatMessage
+	for i := len(messages) - 1; i >= 0; i-- {
+		if messages[i].Role == "user" {
+			lastUser = messages[i]
+			break
+		}
+	}
+	if lastUser.Role == "" {
+		return convPublicID
+	}
+	resolvedID, err := s.resolveConversationID(ctx, convPublicID, userID, modelCode, truncate(lastUser.Content, 30))
+	if err != nil {
+		return convPublicID
+	}
+	var convID int64
+	err = s.db.QueryRow(ctx, `SELECT id FROM conversations WHERE public_id=$1 AND user_id=$2`, resolvedID, userID).Scan(&convID)
+	if err != nil {
+		return resolvedID
+	}
+	s.db.Exec(ctx, `INSERT INTO conversation_messages (conversation_id, role, content) VALUES ($1,$2,$3)`, convID, lastUser.Role, lastUser.Content)
+	// Always retain the structured snapshot, even when the optional summary
+	// model returned no text.  A bare JSON array cannot be distinguished from a
+	// legacy plain assistant message when the conversation is restored.
+	snapshot, _ := json.Marshal(map[string]interface{}{
+		"type":    "multi_collab",
+		"summary": summary,
+		"results": results,
+	})
+	out := string(snapshot)
+	s.db.Exec(ctx, `INSERT INTO conversation_messages (conversation_id, role, content) VALUES ($1,'assistant',$2)`, convID, out)
+	s.db.Exec(ctx, `UPDATE conversations SET updated_at=now() WHERE id=$1`, convID)
+	return resolvedID
+}
+
+func truncate(s string, n int) string {
+	runes := []rune(s)
+	if len(runes) <= n {
+		return s
+	}
+	return string(runes[:n]) + "..."
+}
+
+func (s *ChatService) GetConversation(ctx context.Context, userID int64, publicID string) (map[string]interface{}, error) {
+	var convID int64
+	var title *string
+	var created, updated time.Time
+	err := s.db.QueryRow(ctx, `SELECT id, title, created_at, updated_at FROM conversations WHERE public_id=$1 AND user_id=$2`, publicID, userID).Scan(&convID, &title, &created, &updated)
+	if err != nil {
+		return nil, err
+	}
+	rows, err := s.db.Query(ctx, `SELECT role, content, COALESCE(reasoning_content, ''), created_at FROM conversation_messages WHERE conversation_id=$1 ORDER BY created_at, id`, convID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var messages []map[string]string
+	for rows.Next() {
+		var role, content, reasoningContent string
+		var t time.Time
+		rows.Scan(&role, &content, &reasoningContent, &t)
+		messages = append(messages, map[string]string{"role": role, "content": content, "reasoning_content": reasoningContent, "created_at": t.Format(time.RFC3339)})
+	}
+	result, _ := json.Marshal(messages)
+	_ = result
+	return map[string]interface{}{
+		"public_id":  publicID,
+		"title":      title,
+		"messages":   messages,
+		"created_at": created.Format(time.RFC3339),
+		"updated_at": updated.Format(time.RFC3339),
+	}, nil
+}
+
+func (s *ChatService) DeleteConversation(ctx context.Context, userID int64, publicID string) error {
+	_, err := s.db.Exec(ctx, `DELETE FROM conversations WHERE public_id=$1 AND user_id=$2`, publicID, userID)
+	return err
+}

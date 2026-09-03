@@ -1,0 +1,2 @@
+ALTER TABLE api_tokens
+  ADD COLUMN IF NOT EXISTS protocol VARCHAR(20) NOT NULL DEFAULT 'universal';

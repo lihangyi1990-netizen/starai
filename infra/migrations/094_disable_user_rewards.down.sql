@@ -1,0 +1,2 @@
+-- Deliberately keep both rewards disabled on rollback. Re-enabling either
+-- reward is an explicit administrator decision and cannot be inferred safely.

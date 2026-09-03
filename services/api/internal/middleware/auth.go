@@ -1,0 +1,136 @@
+package middleware
+
+import (
+	"context"
+	"net/http"
+	"strings"
+
+	"github.com/gin-gonic/gin"
+	"github.com/golang-jwt/jwt/v5"
+	"github.com/starai/api/internal/util"
+)
+
+// TokenBlacklist checks whether a token has been revoked (e.g. via logout).
+type TokenBlacklist interface {
+	IsBlacklisted(ctx context.Context, token string) bool
+}
+
+// UserStatusChecker lets the authentication middleware re-check an account's
+// current status after a JWT has been issued. Without this hook, a user that
+// an administrator freezes or bans could keep using an already-issued session
+// until the JWT naturally expires.
+type UserStatusChecker interface {
+	IsUserActive(ctx context.Context, userID int64) (bool, error)
+}
+
+type UserClaims struct {
+	UserID   int64  `json:"user_id"`
+	PublicID string `json:"public_id"`
+	jwt.RegisteredClaims
+}
+
+type AdminClaims struct {
+	AdminID int64  `json:"admin_id"`
+	Email   string `json:"email"`
+	Role    string `json:"role"`
+	jwt.RegisteredClaims
+}
+
+func UserAuth(secret string, blacklist TokenBlacklist, checkers ...UserStatusChecker) gin.HandlerFunc {
+	var statusChecker UserStatusChecker
+	if len(checkers) > 0 {
+		statusChecker = checkers[0]
+	}
+	return func(c *gin.Context) {
+		token := extractToken(c, "starai_session")
+		if token == "" {
+			util.Unauthorized(c, "未登录")
+			c.Abort()
+			return
+		}
+		if blacklist != nil && blacklist.IsBlacklisted(c.Request.Context(), token) {
+			util.Unauthorized(c, "登录已失效")
+			c.Abort()
+			return
+		}
+		claims := &UserClaims{}
+		parsed, err := jwt.ParseWithClaims(token, claims, func(t *jwt.Token) (interface{}, error) {
+			return []byte(secret), nil
+		})
+		if err != nil || !parsed.Valid {
+			util.Unauthorized(c, "登录已过期")
+			c.Abort()
+			return
+		}
+		if statusChecker != nil {
+			active, statusErr := statusChecker.IsUserActive(c.Request.Context(), claims.UserID)
+			if statusErr != nil {
+				util.Fail(c, http.StatusServiceUnavailable, http.StatusServiceUnavailable, "登录状态暂时无法验证，请稍后重试")
+				c.Abort()
+				return
+			}
+			if !active {
+				util.Unauthorized(c, "账号已被停用")
+				c.Abort()
+				return
+			}
+		}
+		c.Set("user_id", claims.UserID)
+		c.Set("public_id", claims.PublicID)
+		c.Next()
+	}
+}
+
+func AdminAuth(secret string) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		token := extractToken(c, "starai_admin_session")
+		if token == "" {
+			util.Unauthorized(c, "未登录")
+			c.Abort()
+			return
+		}
+		claims := &AdminClaims{}
+		parsed, err := jwt.ParseWithClaims(token, claims, func(t *jwt.Token) (interface{}, error) {
+			return []byte(secret), nil
+		})
+		if err != nil || !parsed.Valid {
+			util.Unauthorized(c, "登录已过期")
+			c.Abort()
+			return
+		}
+		c.Set("admin_id", claims.AdminID)
+		c.Set("admin_email", claims.Email)
+		c.Set("admin_role", claims.Role)
+		c.Next()
+	}
+}
+
+func RequireAdminRole(roles ...string) gin.HandlerFunc {
+	allowed := make(map[string]struct{}, len(roles))
+	for _, role := range roles {
+		if role = strings.TrimSpace(role); role != "" {
+			allowed[role] = struct{}{}
+		}
+	}
+	return func(c *gin.Context) {
+		if _, ok := allowed[c.GetString("admin_role")]; !ok {
+			util.Fail(c, 403, 403, "当前管理员无权执行此操作")
+			c.Abort()
+			return
+		}
+		c.Next()
+	}
+}
+
+func extractToken(c *gin.Context, cookieName string) string {
+	auth := c.GetHeader("Authorization")
+	if strings.HasPrefix(auth, "Bearer ") {
+		return strings.TrimPrefix(auth, "Bearer ")
+	}
+	if cookieName != "" {
+		if token, err := c.Cookie(cookieName); err == nil {
+			return strings.TrimSpace(token)
+		}
+	}
+	return ""
+}

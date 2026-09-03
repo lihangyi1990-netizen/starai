@@ -1,0 +1,1 @@
+-- Intentionally left empty: rolling back must not overwrite a custom brand.
