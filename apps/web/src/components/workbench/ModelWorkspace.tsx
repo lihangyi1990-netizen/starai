@@ -640,6 +640,26 @@ function compactCostNumber(value: unknown) {
   return number >= 100 ? number.toFixed(0) : number >= 1 ? number.toFixed(2) : number.toFixed(4);
 }
 
+const TIPS_DISMISSED_KEY = "starai_tips_dismissed";
+
+const EXAMPLE_PROMPTS: Record<"chat" | "image" | "video", string[]> = {
+  chat: [
+    "用不超过 100 字介绍一下这周的科技新闻",
+    "帮我把这句话翻译成正式的英文邮件用语：「附件是我们这季度的报表，请查收」",
+    "写一段祝朋友生日快乐的话，带点冷幽默",
+  ],
+  image: [
+    "一只戴眼镜的橘猫坐在书桌前看书，暖色台灯，写实风格",
+    "极简几何风格的演示封面，留出标题位置，蓝白配色",
+    "手写感标题的活动海报，暖光实拍背景，竖版 3:4",
+  ],
+  video: [
+    "一只猫在雨中的城市街道奔跑，慢镜头，电影感，5 秒",
+    "无人机航拍海边悬崖日出，橙紫渐变天空，10 秒",
+    "一杯咖啡被缓缓搅拌，特写镜头，蒸汽升腾，3 秒",
+  ],
+};
+
 /** Mirrors ModelPlaza.tsx's priceSummary() but formatted for the compact generate-button label. */
 function estimatedCostLabel(model: Model): string | null {
   const rule = model.price_rule as unknown as Record<string, unknown> | undefined;
@@ -887,6 +907,22 @@ export function ModelWorkspace({
       return "";
     }
   });
+  const [tipsDismissed, setTipsDismissed] = useState(() => {
+    if (typeof window === "undefined") return true;
+    try {
+      return window.localStorage.getItem(TIPS_DISMISSED_KEY) === "1";
+    } catch {
+      return true;
+    }
+  });
+  const dismissTips = () => {
+    setTipsDismissed(true);
+    try {
+      window.localStorage.setItem(TIPS_DISMISSED_KEY, "1");
+    } catch {
+      // ignore storage failures (private mode, quota)
+    }
+  };
   const [historyOpen, setHistoryOpen] = useState(false);
   const [historyItems, setHistoryItems] = useState<HistoryItem[]>([]);
   const [historyLoading, setHistoryLoading] = useState(false);
@@ -923,9 +959,6 @@ export function ModelWorkspace({
   const clearUnread = useNotificationStore((s) => s.clearUnread);
   const [notifLoading, setNotifLoading] = useState(false);
   const [notifNeedLogin, setNotifNeedLogin] = useState(false);
-  const [homeCards, setHomeCards] = useState<
-    { key: string; title: string; description?: string; icon_url?: string; icon_emoji?: string; theme: string }[]
-  >([]);
   const [channelPresets, setChannelPresets] = useState<ChannelPreset[]>([]);
   const [chatModels, setChatModels] = useState<ChatModelOption[]>([]);
   const [selectedAnswerCodes, setSelectedAnswerCodes] = useState<string[]>([]);
@@ -1006,10 +1039,6 @@ export function ModelWorkspace({
     }
     onOpenModelPicker?.(category);
   };
-  const modelDescription = publicText(
-    td(`model.${model.code}.description`, model.description || t("workspace.defaultModelDesc")),
-    t("workspace.defaultModelDesc")
-  );
   const modelCategoryLabel = td(`modelCategory.${model.category}`, t(tag.labelKey), { category: model.category });
   const caps = (model.runtime_rule as any)?.capabilities || {};
   const capWebSearch = !!caps.web_search;
@@ -1146,15 +1175,6 @@ export function ModelWorkspace({
     setDeepThink(capDeepThink && reasoningConfig.default_enabled === true);
     setPrompt(initialPrompt || "");
   }, [cancelActiveChat, model.code, initialPrompt, isVideo, isAudio, isImage, workbenchInputSchema, model.default_params, model.runtime_rule, capDeepThink, reasoningConfig.default_enabled]);
-
-  useEffect(() => {
-    if (!isChat) return;
-    api<{ items: { key: string; title: string; description?: string; icon_url?: string; icon_emoji?: string; theme: string }[] }>(
-      "/api/home/cards"
-    )
-      .then((r) => setHomeCards(r.items || []))
-      .catch(() => setHomeCards([]));
-  }, [isChat]);
 
   useEffect(() => {
     if (!isChat) return;
@@ -2551,90 +2571,7 @@ export function ModelWorkspace({
 
       {/* Scrollable main */}
       <div className={`flex-1 px-3 sm:px-5 w-full ${hasConversation ? "overflow-y-auto pb-5 sm:pb-6" : "overflow-y-auto max-lg:overflow-y-auto pb-2 sm:pb-3"} min-h-0`}>
-        {isEmptyStudio ? (
-          <div className="flex min-h-full flex-col">
-            <div className="my-auto w-full py-3 max-lg:py-0">
-              {/* Hero banner */}
-              <div className="pico-pixel-hero pico-universal-welcome relative w-full max-w-[980px] mx-auto p-5 sm:p-7 text-center mb-3 max-lg:mb-3 rounded-2xl" style={{ background: "var(--pico-premium-panel-strong)", border: "1px solid var(--pico-premium-line)" }}>
-                <div className="tech-icon w-10 h-10 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl flex items-center justify-center text-xl sm:text-2xl mx-auto mb-3 sm:mb-4 overflow-hidden" style={{ background: "var(--pico-premium-panel)", border: "1px solid var(--pico-premium-line)" }}>
-                  {model.icon_url ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img src={model.icon_url} alt="" className="w-full h-full object-cover" />
-                  ) : (
-                    <ModelCategoryIcon category={model.category} className="h-5 w-5 sm:h-7 sm:w-7" />
-                  )}
-                </div>
-                <h1 className="text-base sm:text-xl font-bold mb-1 sm:mb-1.5" style={{ color: "var(--pico-premium-text)" }}>{modelName}</h1>
-                <p className="text-[12px] sm:text-[13px] max-w-md mx-auto leading-relaxed line-clamp-3 sm:line-clamp-none" style={{ color: "var(--pico-premium-muted)" }}>
-                  {modelDescription}
-                </p>
-                {model.tags?.length > 0 && (
-                  <div className="flex flex-wrap justify-center gap-1 sm:gap-1.5 mt-2 sm:mt-3">
-                    {model.tags.slice(0, 6).map((tagText) => {
-                      const label = publicText(td(`model.${model.code}.tag.${tagText}`, tagText), "");
-                      return label ? (
-                        <span key={tagText} className="px-1.5 sm:px-2 py-0.5 rounded-full text-[10px] sm:text-xs" style={{ background: "var(--pico-premium-panel)", border: "1px solid var(--pico-premium-line)", color: "var(--pico-premium-muted)" }}>
-                          {label}
-                        </span>
-                      ) : null;
-                    })}
-                  </div>
-                )}
-                <span className={`inline-block mt-2 sm:mt-3 px-2.5 sm:px-3 py-0.5 sm:py-1 rounded-full text-[10px] sm:text-xs font-medium ${tag.className}`}>
-                  {modelCategoryLabel}
-                </span>
-              </div>
-
-              {(isImage || isVideo) && (
-                <div className="mx-auto mb-3 flex w-full max-w-[980px] justify-center max-lg:mb-3">
-                  <div className="input-status-line">
-                    <span className="typing-status-text">
-                      {isVideo ? t("workspace.waitVideoInput") : t("workspace.waitImageInput")}
-                    </span>
-                    <span className="input-status-hint">
-                      {t("workspace.submitHint")}
-                    </span>
-                  </div>
-                </div>
-              )}
-
-              {/* Feature grid (multi-collab only) */}
-              {isMultiCollab && (
-                  <div className="pico-studio-feature-grid grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3 w-full max-w-[980px] mx-auto max-lg:mb-1">
-                  {(homeCards.length ? homeCards : []).map((f) => {
-                    const title = td(`homeCard.${f.key}.title`, f.title);
-                    const description = td(`homeCard.${f.key}.description`, f.description || "");
-                    // `f.theme` used to map to one of five hues (amber/purple/blue/pink/
-                    // green). Colour in this UI means "which channel" and nothing else,
-                    // so a per-card hue chosen in the admin panel competed with that
-                    // signal instead of adding to it - the cards are already told apart
-                    // by their icon and title. Existing `theme` values are ignored rather
-                    // than erroring, so no data change is needed; to bring the hues back,
-                    // restore the ternary and accept that a colour no longer identifies
-                    // a channel.
-                    const bg = "bg-sunk text-ink-mid";
-                    return (
-                      <div key={f.key} className="p-3 sm:p-4 flex gap-2.5 sm:gap-3 items-start rounded-2xl" style={{ background: "var(--pico-premium-panel)", border: "1px solid var(--pico-premium-line)" }}>
-                        <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl flex items-center justify-center text-base sm:text-lg shrink-0 ${bg} overflow-hidden`}>
-                          {f.icon_url ? (
-                            // eslint-disable-next-line @next/next/no-img-element
-                            <img src={f.icon_url} alt="" className="w-full h-full object-cover" />
-                          ) : (
-                            f.icon_emoji || "AI"
-                          )}
-                        </div>
-                        <div>
-                          <h3 className="font-semibold text-sm" style={{ color: "var(--pico-premium-text)" }}>{title}</h3>
-                          {description && <p className="text-xs mt-1 leading-relaxed" style={{ color: "var(--pico-premium-muted)" }}>{description}</p>}
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
-            </div>
-          </div>
-        ) : isChat ? (
+        {isEmptyStudio ? null : isChat ? (
           <div className="max-w-[980px] mx-auto space-y-4 py-4">
             {mmMode ? (
               <div className="rounded-2xl p-4" style={{ background: "var(--pico-premium-panel)", border: "1px solid var(--pico-premium-line)" }}>
@@ -2853,6 +2790,34 @@ export function ModelWorkspace({
 
       {/* Input section */}
       <div className="pico-universal-composer flex flex-col shrink-0 px-3 sm:px-5 pt-2 max-lg:pt-2 pb-4 sm:pb-6 max-lg:pb-4">
+        {isEmptyStudio && !tipsDismissed && (
+          <div
+            className="mx-auto mb-2.5 flex w-full max-w-[1080px] flex-col items-start gap-3 rounded-2xl px-4 py-3 sm:flex-row sm:items-center"
+            style={{ border: "1px solid var(--pico-premium-line)", background: "var(--pico-premium-panel-strong)" }}
+          >
+            <ol className="flex flex-1 flex-col gap-1.5 text-xs" style={{ color: "var(--pico-premium-muted)" }}>
+              {["先选你要做什么", "再挑一个模型，价格就写在旁边", "写下需求，点生成"].map((step, i) => (
+                <li key={step} className="flex items-center gap-2">
+                  <span
+                    className="flex h-[18px] w-[18px] shrink-0 items-center justify-center rounded-full text-[11px] font-semibold text-white"
+                    style={{ background: `var(--pico-ch-${activeCreationMode})` }}
+                  >
+                    {i + 1}
+                  </span>
+                  <span>{step}</span>
+                </li>
+              ))}
+            </ol>
+            <button
+              type="button"
+              onClick={dismissTips}
+              className="shrink-0 self-end rounded-lg px-3 py-1.5 text-xs sm:self-center"
+              style={{ border: "1px solid var(--pico-premium-line-strong)", color: "var(--pico-premium-muted)" }}
+            >
+              知道了
+            </button>
+          </div>
+        )}
         <div className="pico-workspace-actions relative z-30 mx-auto mb-2.5 w-full max-w-[1080px]">
           <div className="flex min-w-0 items-center justify-between gap-3 rounded-2xl px-3 py-2" style={{ border: "1px solid var(--pico-premium-line)", background: "var(--pico-premium-panel)" }}>
             <div className="flex min-w-0 items-center gap-2">
@@ -2861,10 +2826,23 @@ export function ModelWorkspace({
               </span>
               <div className="min-w-0">
                 <div className="truncate text-xs font-semibold" style={{ color: "var(--pico-premium-text)" }}>{modelCategoryLabel}</div>
-                <div className="hidden max-w-[260px] truncate text-[10px] sm:block" style={{ color: "var(--pico-premium-muted)" }}>{modelName}</div>
+                <div className="hidden max-w-[260px] truncate text-[10px] sm:block" style={{ color: "var(--pico-premium-muted)" }}>
+                  {modelName}
+                  {estimatedCostLabel(model) ? <span style={{ opacity: 0.75 }}> · {estimatedCostLabel(model)}</span> : null}
+                </div>
               </div>
             </div>
             <div ref={historyAnchorRef} className="relative flex shrink-0 items-center gap-1.5" data-starai-history>
+              {onSelectModel && (
+                <button
+                  type="button"
+                  onClick={() => openInlineModelMenu(activeCreationMode)}
+                  className="inline-flex h-8 items-center gap-1.5 rounded-lg px-2.5 text-xs font-medium transition"
+                  style={{ border: "1px solid var(--pico-premium-line-strong)", background: "var(--pico-premium-panel)", color: "var(--pico-premium-muted)" }}
+                >
+                  换模型
+                </button>
+              )}
               <button
                 type="button"
                 onClick={resetWorkspace}
@@ -3446,6 +3424,32 @@ export function ModelWorkspace({
               </div>
             </div>
           </div>
+          {isEmptyStudio && EXAMPLE_PROMPTS[activeCreationMode as "chat" | "image" | "video"] && (
+            <div className="mt-4 border-t pt-4" style={{ borderColor: "var(--pico-premium-line)" }}>
+              <h2 className="mb-2.5 text-sm font-medium" style={{ color: "var(--pico-premium-text)" }}>
+                第一次来？试试这三个
+              </h2>
+              <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-3">
+                {EXAMPLE_PROMPTS[activeCreationMode as "chat" | "image" | "video"].map((example) => (
+                  <div
+                    key={example}
+                    className="flex flex-col gap-2.5 rounded-lg p-3"
+                    style={{ border: "1px solid var(--pico-premium-line)", background: "var(--pico-premium-panel)" }}
+                  >
+                    <p className="flex-1 text-xs leading-relaxed" style={{ color: "var(--pico-premium-muted)" }}>{example}</p>
+                    <button
+                      type="button"
+                      onClick={() => setPrompt(example)}
+                      className="self-end rounded-lg px-2.5 py-1 text-[11px]"
+                      style={{ border: "1px solid var(--pico-premium-line-strong)", color: "var(--pico-premium-text)" }}
+                    >
+                      填进输入框
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
