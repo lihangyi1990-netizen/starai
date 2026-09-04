@@ -8,9 +8,7 @@ import {
   Compass,
   FileText,
   LogOut,
-  Moon,
   Settings,
-  Sun,
   Wallet,
   X,
 } from "lucide-react";
@@ -37,13 +35,6 @@ function QuickEntryIcon() {
   );
 }
 
-function initialDarkMode() {
-  if (typeof window === "undefined") return false;
-  const stored = localStorage.getItem("theme");
-  if (stored) return stored === "dark";
-  return window.matchMedia?.("(prefers-color-scheme: dark)").matches || false;
-}
-
 export function WorkbenchUserMenu({ onRecharge }: Props) {
   const { t } = useI18n();
   const { api_docs_enabled, api_docs_operations } = useSiteBranding();
@@ -54,7 +45,6 @@ export function WorkbenchUserMenu({ onRecharge }: Props) {
   const [wallet, setWallet] = useState<{ compute_balance?: number; cash_balance?: number } | null>(null);
   const [announceOpen, setAnnounceOpen] = useState(false);
   const [announcements, setAnnouncements] = useState<Announcement[]>([]);
-  const [darkMode, setDarkMode] = useState(false);
 
   const navItems = useMemo(
     () => [
@@ -65,13 +55,6 @@ export function WorkbenchUserMenu({ onRecharge }: Props) {
     ],
     [apiDocsVisible, t]
   );
-
-  useEffect(() => {
-    const isDark = initialDarkMode();
-    setDarkMode(isDark);
-    document.documentElement.classList.toggle("dark", isDark);
-
-  }, []);
 
   useEffect(() => {
     if (!open) return;
@@ -95,13 +78,6 @@ export function WorkbenchUserMenu({ onRecharge }: Props) {
       })
       .catch(() => {});
   }, [open]);
-
-  const toggleTheme = () => {
-    const next = !darkMode;
-    setDarkMode(next);
-    document.documentElement.classList.toggle("dark", next);
-    localStorage.setItem("theme", next ? "dark" : "light");
-  };
 
   const openAnnouncements = () => {
     setOpen(false);
@@ -158,18 +134,6 @@ export function WorkbenchUserMenu({ onRecharge }: Props) {
             </div>
 
             <div className="my-3 h-px bg-gray-100 dark:bg-white/10" />
-
-            <button
-              type="button"
-              onClick={toggleTheme}
-              className="mb-2 flex w-full items-center justify-between rounded-2xl border border-gray-100 bg-gray-50 px-3 py-2.5 text-sm text-gray-700 transition hover:border-gray-200 dark:border-white/10 dark:bg-white/5 dark:text-gray-200"
-            >
-              <span className="flex items-center gap-2">
-                {darkMode ? <Moon size={16} /> : <Sun size={16} />}
-                {darkMode ? t("common.theme.dark") : t("common.theme.light")}
-              </span>
-              <span className="text-xs text-gray-400">{darkMode ? t("common.theme.toLight") : t("common.theme.toDark")}</span>
-            </button>
 
             <div className="grid grid-cols-2 gap-2">
               {navItems.map((item) => {

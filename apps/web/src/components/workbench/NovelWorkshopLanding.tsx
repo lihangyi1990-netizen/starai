@@ -49,8 +49,7 @@ export function NovelWorkshopLanding({ workflowCode, workflowName, workflowDescr
   );
 
   return (
-    <div className="relative flex min-h-0 flex-1 flex-col overflow-hidden bg-[#eaf7fb] text-gray-900 dark:bg-[#05080f] dark:text-white">
-      <div className="pointer-events-none absolute inset-0 opacity-80 [background-image:linear-gradient(rgba(15,23,42,.08)_1px,transparent_1px),linear-gradient(90deg,rgba(15,23,42,.08)_1px,transparent_1px)] [background-size:40px_40px] dark:opacity-60 dark:[background-image:linear-gradient(rgba(34,211,238,.08)_1px,transparent_1px),linear-gradient(90deg,rgba(34,211,238,.08)_1px,transparent_1px)]" />
+    <div className="relative flex min-h-0 flex-1 flex-col overflow-hidden bg-white text-gray-900 dark:bg-[#05080f] dark:text-white">
       <div className="relative z-10 flex min-h-0 flex-1 flex-col overflow-y-auto px-3 py-1.5 sm:py-2 sm:px-5 lg:px-8">
         <div className="relative flex shrink-0 items-center gap-2">
           <button type="button" onClick={reset} className="inline-flex h-9 items-center gap-1.5 rounded-xl bg-primary px-3 text-sm font-semibold text-dark"><Plus size={15} />新任务</button>
@@ -145,7 +144,7 @@ function OnlineDot() {
 function MemberAvatar({ src, large = false }: { src: string; large?: boolean }) {
   return (
     <div className={`relative shrink-0 ${large ? "h-16 w-16" : "h-12 w-12"}`}>
-      <div className={`h-full w-full overflow-hidden rounded-full bg-indigo-100 shadow-sm ring-1 ring-indigo-200/80 dark:bg-indigo-500/10 dark:ring-indigo-400/30`}>
+      <div className={`h-full w-full overflow-hidden rounded-full bg-blue-100 shadow-sm ring-1 ring-blue-200/80 dark:bg-blue-600/10 dark:ring-blue-500/30`}>
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src={src} alt="" className="h-full w-full object-cover" />
       </div>
@@ -162,9 +161,9 @@ function NovelHeader({ name, description, roles }: { name: string; description: 
   return (
     <div className="mx-auto flex w-full max-w-[1040px] flex-1 flex-col justify-center py-2 lg:py-4">
       <div className="text-center">
-        <div className="inline-flex items-center gap-2 rounded-full bg-indigo-100 px-3 py-1 text-xs font-semibold text-indigo-700 dark:bg-indigo-500/15 dark:text-indigo-200"><span className="h-1.5 w-1.5 rounded-full bg-cyan-400" />文学智能体</div>
+        <div className="inline-flex items-center gap-2 rounded-full bg-blue-100 px-3 py-1 text-xs font-semibold text-blue-700 dark:bg-blue-600/15 dark:text-blue-200"><span className="h-1.5 w-1.5 rounded-full bg-blue-500" />文学智能体</div>
         <div className="mt-2 flex items-center justify-center gap-2.5 sm:gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-indigo-100 text-xl dark:bg-indigo-500/15 sm:h-12 sm:w-12 sm:text-2xl">📖</div>
+          <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-blue-100 text-xl dark:bg-blue-600/15 sm:h-12 sm:w-12 sm:text-2xl">📖</div>
           <h1 className="text-2xl font-black tracking-tight text-gray-900 dark:text-white sm:text-4xl">{name || "AI小说工坊"}</h1>
         </div>
         <p className="mx-auto mt-2 max-w-3xl text-[13px] leading-5 text-gray-500 dark:text-slate-300 sm:text-sm sm:leading-6">{description || "一句话创意，让 AI 帮你写完一整本书。"}</p>
@@ -173,7 +172,7 @@ function NovelHeader({ name, description, roles }: { name: string; description: 
       {/* 为你效力的 AI 编辑部（透明背景，与页面融为一体） */}
       <div className="mx-auto mt-4 w-full px-3 sm:mt-5 sm:px-0">
         <div className="flex items-center justify-center gap-3">
-          <h2 className="text-sm font-bold text-indigo-600 dark:text-indigo-300 sm:text-base">为你效力的 AI 编辑部</h2>
+          <h2 className="text-sm font-bold text-blue-600 dark:text-blue-300 sm:text-base">为你效力的 AI 编辑部</h2>
           <span className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-emerald-300 bg-emerald-50 px-2.5 py-1 text-[11px] font-semibold text-emerald-600 dark:border-emerald-400/25 dark:bg-emerald-400/10 dark:text-emerald-300">
             <span className="relative flex h-1.5 w-1.5"><span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" /><span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-emerald-500" /></span>
             {TEAM.length} 位成员在线
@@ -185,7 +184,7 @@ function NovelHeader({ name, description, roles }: { name: string; description: 
             <div className="min-w-0">
               <div className="flex items-center gap-1.5 sm:justify-center">
                 <span className="text-sm font-bold text-gray-900 dark:text-white">{roleName(chief[0], chief[1])}</span>
-                <span className="rounded-md bg-indigo-100 px-1.5 py-0.5 text-[10px] font-semibold text-indigo-600 dark:bg-indigo-500/20 dark:text-indigo-300">主控</span>
+                <span className="rounded-md bg-blue-100 px-1.5 py-0.5 text-[10px] font-semibold text-blue-600 dark:bg-blue-600/20 dark:text-blue-300">主控</span>
               </div>
               <p className="mt-0.5 text-[11px] leading-4 text-gray-500 dark:text-slate-400 sm:mt-1" title={roleTip(chief[0], chief[2])}>{roleTip(chief[0], chief[2])}</p>
             </div>

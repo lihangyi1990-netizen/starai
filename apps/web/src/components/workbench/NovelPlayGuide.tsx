@@ -32,15 +32,15 @@ export function NovelPlayGuide({ open, onClose }: NovelPlayGuideProps) {
   return createPortal(
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       {/* 背景遮罩 */}
-      <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={onClose} />
+      <div className="absolute inset-0 bg-black/80" onClick={onClose} />
 
       {/* 弹窗内容 */}
       <div className="relative w-full max-w-4xl max-h-[90vh] mx-4 bg-gray-900 rounded-2xl border border-gray-700/50 shadow-2xl overflow-hidden">
         {/* 头部 */}
-        <div className="sticky top-0 z-10 flex items-center justify-between px-6 py-4 bg-gray-900/95 backdrop-blur border-b border-gray-800">
+        <div className="sticky top-0 z-10 flex items-center justify-between px-6 py-4 bg-gray-900/95 border-b border-gray-800">
           <div>
             <div className="flex items-center gap-2 mb-1">
-              <span className="text-sm font-medium text-indigo-400 px-2 py-0.5 bg-indigo-500/10 rounded">
+              <span className="text-sm font-medium text-blue-500 px-2 py-0.5 bg-blue-600/10 rounded">
                 你的专属 AI 编辑部
               </span>
             </div>
@@ -59,19 +59,19 @@ export function NovelPlayGuide({ open, onClose }: NovelPlayGuideProps) {
         {/* 滚动内容 */}
         <div className="overflow-y-auto max-h-[calc(90vh-88px)] px-6 py-6">
           {/* 核心卖点 */}
-          <div className="mb-8 p-6 bg-gradient-to-br from-indigo-500/10 to-purple-500/10 rounded-xl border border-indigo-500/20">
+          <div className="mb-8 p-6 bg-gradient-to-br from-blue-600/10 to-purple-500/10 rounded-xl border border-blue-600/20">
             <p className="text-lg text-gray-200 leading-relaxed">
               总编领队，故事策划、节奏编排师、章节写手、文学润色师、审校员、档案员多位 AI 专家协同作战——大纲逐章确认、设定全程追踪、写完自动润色审校，几十万字也不崩设定、不漂文风。
             </p>
             <div className="grid grid-cols-3 gap-4 mt-6">
               <div className="text-center">
-                <div className="text-indigo-400 font-bold text-lg">设定台账全程追踪</div>
+                <div className="text-blue-500 font-bold text-lg">设定台账全程追踪</div>
               </div>
               <div className="text-center">
-                <div className="text-indigo-400 font-bold text-lg">文风指纹全书统一</div>
+                <div className="text-blue-500 font-bold text-lg">文风指纹全书统一</div>
               </div>
               <div className="text-center">
-                <div className="text-indigo-400 font-bold text-lg">全程对话可控</div>
+                <div className="text-blue-500 font-bold text-lg">全程对话可控</div>
               </div>
             </div>
           </div>
@@ -88,7 +88,7 @@ export function NovelPlayGuide({ open, onClose }: NovelPlayGuideProps) {
                 <div key={role.id} className="p-4 bg-gray-800/50 rounded-xl border border-gray-700/50">
                   <div className="flex items-start gap-3">
                     <div className="flex-shrink-0">
-                      <div className="w-12 h-12 flex items-center justify-center text-2xl bg-indigo-500/10 rounded-lg">
+                      <div className="w-12 h-12 flex items-center justify-center text-2xl bg-blue-600/10 rounded-lg">
                         {role.avatar}
                       </div>
                     </div>
@@ -117,7 +117,7 @@ export function NovelPlayGuide({ open, onClose }: NovelPlayGuideProps) {
             <div className="space-y-3">
               <div className="flex gap-3">
                 <div className="flex-shrink-0 w-16 text-center">
-                  <span className="text-xs text-indigo-400 font-medium">YOU</span>
+                  <span className="text-xs text-blue-500 font-medium">YOU</span>
                 </div>
                 <div className="flex-1 p-3 bg-gray-800/50 rounded-lg border border-gray-700">
                   <p className="text-gray-300">“第3章节奏太慢，冲突再激烈一点”</p>
@@ -142,7 +142,7 @@ export function NovelPlayGuide({ open, onClose }: NovelPlayGuideProps) {
               {WORKFLOW_STEPS.map((step) => (
                 <div key={step.number} className="flex gap-4">
                   <div className="flex-shrink-0">
-                    <div className="w-10 h-10 flex items-center justify-center bg-indigo-500/20 text-indigo-400 font-bold rounded-full">
+                    <div className="w-10 h-10 flex items-center justify-center bg-blue-600/20 text-blue-500 font-bold rounded-full">
                       {step.number}
                     </div>
                   </div>
@@ -172,7 +172,7 @@ export function NovelPlayGuide({ open, onClose }: NovelPlayGuideProps) {
           </section>
 
           {/* 底部CTA */}
-          <div className="mt-8 p-6 bg-gradient-to-r from-indigo-500/20 to-purple-500/20 rounded-xl border border-indigo-500/30 text-center">
+          <div className="mt-8 p-6 bg-gradient-to-r from-blue-600/20 to-purple-500/20 rounded-xl border border-blue-600/30 text-center">
             <p className="text-lg text-white font-medium">
               说出你的故事创意，剩下的交给你的 AI 编辑部。
             </p>

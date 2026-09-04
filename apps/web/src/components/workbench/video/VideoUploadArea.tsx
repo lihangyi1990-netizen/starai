@@ -459,14 +459,14 @@ export function VideoUploadArea({
         {showPortrait && (
           <div className="shrink-0">
             {portraitEditing || portraitAssetId ? (
-              <div className="flex h-14 w-44 items-center gap-1.5 rounded-xl border border-dashed border-cyan-300 bg-cyan-50/70 px-2 dark:border-cyan-400/30 dark:bg-cyan-400/10">
-                <UserRound size={16} className="shrink-0 text-cyan-600" />
+              <div className="flex h-14 w-44 items-center gap-1.5 rounded-xl border border-dashed border-blue-300 bg-blue-50/70 px-2 dark:border-blue-500/30 dark:bg-blue-500/10">
+                <UserRound size={16} className="shrink-0 text-blue-600" />
                 <div className="min-w-0 flex-1">
                   <div className="mb-1 flex items-center gap-1">
                     <select
                       value={portraitAssetType || "image"}
                       onChange={(e) => onPortraitAssetTypeChange?.(e.target.value as "image" | "video")}
-                      className="h-5 rounded border border-cyan-200 bg-white px-1 text-[10px] outline-none dark:border-white/10 dark:bg-gray-900"
+                      className="h-5 rounded border border-blue-200 bg-white px-1 text-[10px] outline-none dark:border-white/10 dark:bg-gray-900"
                     >
                       <option value="image">{t("video.portraitImage")}</option>
                       <option value="video">{t("video.portraitVideo")}</option>
@@ -487,7 +487,7 @@ export function VideoUploadArea({
                     value={portraitAssetId || ""}
                     onChange={(e) => onPortraitAssetIdChange?.(e.target.value)}
                     placeholder="asset://ASSET_ID"
-                    className="h-7 w-full rounded-lg border border-cyan-200 bg-white px-2 text-xs outline-none focus:border-cyan-400 dark:border-white/10 dark:bg-white/5"
+                    className="h-7 w-full rounded-lg border border-blue-200 bg-white px-2 text-xs outline-none focus:border-blue-500 dark:border-white/10 dark:bg-white/5"
                     title={t("video.portraitAssetHint")}
                   />
                 </div>
@@ -497,7 +497,7 @@ export function VideoUploadArea({
                 type="button"
                 onClick={() => setPortraitEditing(true)}
                 title={t("video.portraitAssetHint")}
-                className="flex h-14 w-16 flex-col items-center justify-center gap-0.5 rounded-xl border border-dashed border-cyan-300 bg-cyan-50/60 text-cyan-700 transition hover:bg-cyan-50 dark:border-cyan-400/30 dark:bg-cyan-400/10 dark:text-cyan-300"
+                className="flex h-14 w-16 flex-col items-center justify-center gap-0.5 rounded-xl border border-dashed border-blue-300 bg-blue-50/60 text-blue-700 transition hover:bg-blue-50 dark:border-blue-500/30 dark:bg-blue-500/10 dark:text-blue-300"
               >
                 <Plus size={17} />
                 <span className="text-[10px]">{t("video.portraitAsset")}</span>

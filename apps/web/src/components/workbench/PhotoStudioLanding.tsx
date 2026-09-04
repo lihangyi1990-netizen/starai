@@ -102,13 +102,13 @@ export function PhotoStudioLanding({ workflowCode, workflowName, workflowDescrip
 
       <div className="mx-auto flex w-full max-w-[1040px] flex-1 flex-col justify-center py-1.5 lg:py-3">
         <div className="text-center">
-          <div className="inline-flex items-center gap-2 rounded-full bg-fuchsia-100 px-3 py-1 text-xs font-semibold text-fuchsia-700 dark:bg-fuchsia-500/15 dark:text-fuchsia-200"><span className="h-1.5 w-1.5 rounded-full bg-fuchsia-400" />摄影智能体</div>
+          <div className="inline-flex items-center gap-2 rounded-full bg-blue-100 px-3 py-1 text-xs font-semibold text-blue-700 dark:bg-blue-600/15 dark:text-blue-200"><span className="h-1.5 w-1.5 rounded-full bg-blue-500" />摄影智能体</div>
           <div className="mt-2 flex items-center justify-center gap-2.5 sm:gap-3">
             {isImageAvatar(directorAvatar) ? (
               // eslint-disable-next-line @next/next/no-img-element
-              <img src={directorAvatar} alt="AI写真馆" className="h-10 w-10 rounded-2xl object-cover ring-1 ring-fuchsia-200 dark:ring-fuchsia-400/30 sm:h-12 sm:w-12" />
+              <img src={directorAvatar} alt="AI写真馆" className="h-10 w-10 rounded-2xl object-cover ring-1 ring-blue-200 dark:ring-blue-500/30 sm:h-12 sm:w-12" />
             ) : (
-              <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-fuchsia-100 text-xl dark:bg-fuchsia-500/15 sm:h-12 sm:w-12 sm:text-2xl">📸</div>
+              <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-blue-100 text-xl dark:bg-blue-600/15 sm:h-12 sm:w-12 sm:text-2xl">📸</div>
             )}
             <h1 className="text-2xl font-black tracking-tight text-gray-900 dark:text-white sm:text-4xl">{workflowName || "AI写真馆"}</h1>
           </div>
@@ -121,7 +121,7 @@ export function PhotoStudioLanding({ workflowCode, workflowName, workflowDescrip
         {(steps?.length ?? 0) > 0 && (
           <div className="mx-auto mt-3 grid w-full grid-cols-2 gap-2 px-3 sm:mt-4 sm:grid-cols-4 sm:px-0">
             {(steps || []).map((step, index) => (
-              <div key={index} className="rounded-2xl border border-white bg-white/70 p-2.5 backdrop-blur dark:border-white/10 dark:bg-white/5 sm:p-3">
+              <div key={index} className="rounded-2xl border border-white bg-white/70 p-2.5 dark:border-white/10 dark:bg-white/5 sm:p-3">
                 <div className="text-lg">{step.icon}</div>
                 <div className="mt-1 text-xs font-semibold text-gray-800 dark:text-gray-100">{step.title}</div>
                 <div className="mt-0.5 line-clamp-2 text-[10px] leading-4 text-gray-400">{step.subtitle}</div>
@@ -133,7 +133,7 @@ export function PhotoStudioLanding({ workflowCode, workflowName, workflowDescrip
         {/* AI 编辑部：为你效力的摄影团队（移动端一行四个居中） */}
         <div className="mx-auto mt-3 w-full px-3 sm:mt-4 sm:px-0">
           <div className="flex items-center justify-center gap-3">
-            <h2 className="text-sm font-bold text-fuchsia-600 dark:text-fuchsia-300 sm:text-base">为你效力的 AI 编辑部</h2>
+            <h2 className="text-sm font-bold text-blue-600 dark:text-blue-300 sm:text-base">为你效力的 AI 编辑部</h2>
             <span className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-emerald-300 bg-emerald-50 px-2.5 py-1 text-[11px] font-semibold text-emerald-600 dark:border-emerald-400/25 dark:bg-emerald-400/10 dark:text-emerald-300">
               <span className="relative flex h-1.5 w-1.5"><span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" /><span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-emerald-500" /></span>
               {team.length} 位成员在线
@@ -145,9 +145,9 @@ export function PhotoStudioLanding({ workflowCode, workflowName, workflowDescrip
                 <div className="relative">
                   {isImageAvatar(role.avatar) ? (
                     // eslint-disable-next-line @next/next/no-img-element
-                    <img src={role.avatar} alt={role.name || role.id} className="h-12 w-12 rounded-full object-cover shadow-sm ring-1 ring-fuchsia-200/80 dark:ring-fuchsia-400/30" />
+                    <img src={role.avatar} alt={role.name || role.id} className="h-12 w-12 rounded-full object-cover shadow-sm ring-1 ring-blue-200/80 dark:ring-blue-500/30" />
                   ) : (
-                    <div className="flex h-12 w-12 items-center justify-center rounded-full bg-fuchsia-100 text-xl shadow-sm ring-1 ring-fuchsia-200/80 dark:bg-fuchsia-500/10 dark:ring-fuchsia-400/30">{role.avatar || "📸"}</div>
+                    <div className="flex h-12 w-12 items-center justify-center rounded-full bg-blue-100 text-xl shadow-sm ring-1 ring-blue-200/80 dark:bg-blue-600/10 dark:ring-blue-500/30">{role.avatar || "📸"}</div>
                   )}
                   {/* 在线小绿点角标 */}
                   <span className="absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full border-2 border-white bg-emerald-400 dark:border-[#0a0510]" />
@@ -230,7 +230,7 @@ export function PhotoStudioInputBar({ defaultModelCode, error, featureTags, onSu
       {/* 特性标签：置于输入区块上方 */}
       {featureTags?.length ? (
         <div className="mx-auto mb-1.5 flex w-full max-w-[1040px] flex-wrap justify-center gap-1.5">
-          {featureTags.map((tag) => <span key={tag} className="rounded-full border border-fuchsia-100 bg-white/60 px-2.5 py-0.5 text-[10px] text-fuchsia-600 dark:border-fuchsia-400/20 dark:bg-white/5 dark:text-fuchsia-300">{tag}</span>)}
+          {featureTags.map((tag) => <span key={tag} className="rounded-full border border-blue-100 bg-white/60 px-2.5 py-0.5 text-[10px] text-blue-600 dark:border-blue-500/20 dark:bg-white/5 dark:text-blue-300">{tag}</span>)}
         </div>
       ) : null}
       <div className="mx-auto w-full max-w-[1040px]">
@@ -299,8 +299,8 @@ export function PhotoStudioInputBar({ defaultModelCode, error, featureTags, onSu
                 </button>
               </div>
             ) : (
-              <label className="relative flex h-16 w-20 shrink-0 cursor-pointer flex-col items-center justify-center gap-1 overflow-hidden rounded-2xl border border-dashed border-gray-200 bg-white text-[10px] text-gray-400 shadow-sm transition hover:border-fuchsia-300 hover:bg-fuchsia-50/40 dark:border-white/10 dark:bg-white/5 dark:text-gray-300 dark:hover:border-fuchsia-400/40 dark:hover:bg-fuchsia-400/5">
-                {uploading ? <Loader2 size={18} className="animate-spin text-fuchsia-400" /> : <Upload size={18} className="text-gray-400 dark:text-gray-300" />}
+              <label className="relative flex h-16 w-20 shrink-0 cursor-pointer flex-col items-center justify-center gap-1 overflow-hidden rounded-2xl border border-dashed border-gray-200 bg-white text-[10px] text-gray-400 shadow-sm transition hover:border-blue-300 hover:bg-blue-50/40 dark:border-white/10 dark:bg-white/5 dark:text-gray-300 dark:hover:border-blue-500/40 dark:hover:bg-blue-500/5">
+                {uploading ? <Loader2 size={18} className="animate-spin text-blue-500" /> : <Upload size={18} className="text-gray-400 dark:text-gray-300" />}
                 <span className="px-1 text-center leading-tight">{uploading ? "上传中…" : "上传本人照片"}</span>
                 <input type="file" accept="image/png,image/jpeg,image/webp,image/gif" className="hidden" disabled={uploading} onChange={(event) => { void upload(event.target.files?.[0]); event.currentTarget.value = ""; }} />
               </label>

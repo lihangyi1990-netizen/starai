@@ -2,9 +2,10 @@
 
 import { useMemo, useState } from "react";
 import { Search, Sparkles } from "lucide-react";
+import { ModelCategoryIcon } from "./CategoryIcon";
 import type { Model } from "@starai/shared-types";
 import { publicText } from "@/lib/publicText";
-import { CATEGORY_TAG, MODEL_ICONS, isStandaloneAudioModel } from "./categoryMeta";
+import { CATEGORY_TAG, isStandaloneAudioModel } from "./categoryMeta";
 
 type PlazaCategory = "all" | "chat" | "image" | "video" | "audio";
 
@@ -207,7 +208,7 @@ export function ModelPlaza({
                             // eslint-disable-next-line @next/next/no-img-element
                             <img src={model.icon_url} alt="" />
                           ) : (
-                            MODEL_ICONS[model.category] || "✦"
+                            <ModelCategoryIcon category={model.category} />
                           )}
                         </span>
                         <span>

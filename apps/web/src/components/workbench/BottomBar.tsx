@@ -135,7 +135,7 @@ function AssetGridCard({
             {k === "video" ? <Film size={28} /> : k === "doc" ? <FileText size={28} /> : <ImageIcon size={28} />}
           </div>
         )}
-        <span className="absolute left-1.5 top-1.5 px-1.5 py-0.5 rounded-md bg-pink-500 text-white text-[10px] font-medium leading-none">
+        <span className="absolute left-1.5 top-1.5 px-1.5 py-0.5 rounded-md bg-blue-600 text-white text-[10px] font-medium leading-none">
           {tag}
         </span>
         {onPreview && k === "image" && coverUrl && (
@@ -226,7 +226,7 @@ function ReferencePickCard({
             <ImageIcon size={28} />
           </div>
         )}
-        <span className="absolute left-1.5 top-1.5 px-1.5 py-0.5 rounded-md bg-pink-500 text-white text-[10px] font-medium leading-none">
+        <span className="absolute left-1.5 top-1.5 px-1.5 py-0.5 rounded-md bg-blue-600 text-white text-[10px] font-medium leading-none">
           {tag}
         </span>
         {paid && (
@@ -1449,7 +1449,7 @@ export function ChatTopTools({
 
             <div className="p-6">
               {referencePickMode ? (
-                <div className="px-4 py-2.5 rounded-2xl bg-blue-50 border border-blue-100 text-blue-700 text-sm dark:bg-sky-500/10 dark:border-sky-400/20 dark:text-sky-200">
+                <div className="px-4 py-2.5 rounded-2xl bg-blue-50 border border-blue-100 text-blue-700 text-sm dark:bg-blue-600/10 dark:border-blue-500/20 dark:text-blue-200">
                   {t("asset.currentReferenceImageOnly")}
                 </div>
               ) : (

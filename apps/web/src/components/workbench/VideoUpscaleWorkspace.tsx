@@ -109,18 +109,18 @@ function LegacyUtilityLanding({
   return (
     <div className="flex min-h-0 flex-1 flex-col justify-center overflow-y-auto overscroll-contain py-2">
       <div className="shrink-0 text-center">
-        <div className="mb-1.5 inline-flex items-center gap-2 rounded-full border border-white/60 bg-cyan-50/70 px-3 py-1 text-[11px] font-semibold text-cyan-700 backdrop-blur dark:border-white/10 dark:bg-cyan-400/10 dark:text-cyan-200 sm:px-4 sm:text-xs">
-          <span className="h-1.5 w-1.5 rounded-full bg-cyan-400" />
+        <div className="mb-1.5 inline-flex items-center gap-2 rounded-full border border-white/60 bg-blue-50/70 px-3 py-1 text-[11px] font-semibold text-blue-700 dark:border-white/10 dark:bg-blue-500/10 dark:text-blue-200 sm:px-4 sm:text-xs">
+          <span className="h-1.5 w-1.5 rounded-full bg-blue-500" />
           {label}
         </div>
         <div className="flex items-center justify-center gap-3">
-          <div className="flex h-9 w-9 items-center justify-center rounded-2xl bg-cyan-500/10 text-xl shadow-sm sm:h-11 sm:w-11 sm:text-2xl">{icon}</div>
+          <div className="flex h-9 w-9 items-center justify-center rounded-2xl bg-blue-600/10 text-xl shadow-sm sm:h-11 sm:w-11 sm:text-2xl">{icon}</div>
           <h1 title={name} className="max-w-[min(78vw,900px)] truncate text-xl font-black text-gray-900 dark:text-white sm:text-3xl">{name}</h1>
         </div>
         {description && <p className="mx-auto mt-2 max-w-2xl px-3 text-xs leading-5 text-gray-500 dark:text-gray-300 sm:text-sm">{description}</p>}
         <div className="mt-2 flex flex-wrap justify-center gap-1.5 sm:mt-3 sm:gap-2">
           {heroTags.map((tag, index) => (
-            <span key={`${tag}-${index}`} title={tag} className="max-w-[180px] truncate rounded-full border border-gray-200 bg-white/55 px-2.5 py-0.5 text-[11px] text-gray-500 backdrop-blur dark:border-white/10 dark:bg-white/5 dark:text-gray-300 sm:px-3 sm:py-1 sm:text-xs">
+            <span key={`${tag}-${index}`} title={tag} className="max-w-[180px] truncate rounded-full border border-gray-200 bg-white/55 px-2.5 py-0.5 text-[11px] text-gray-500 dark:border-white/10 dark:bg-white/5 dark:text-gray-300 sm:px-3 sm:py-1 sm:text-xs">
               {tag}
             </span>
           ))}
@@ -136,43 +136,43 @@ function LegacyUtilityLanding({
                 key={`${item.title}-${index}`}
                 type="button"
                 onClick={() => onSelect(index)}
-                className={`group w-full min-w-0 overflow-hidden rounded-2xl border p-3.5 text-left backdrop-blur transition duration-300 hover:-translate-y-0.5 hover:shadow-lg ${
+                className={`group w-full min-w-0 overflow-hidden rounded-2xl border p-3.5 text-left transition duration-300 hover:shadow-lg ${
                   selected
-                    ? "border-cyan-300 bg-white/80 shadow-md shadow-cyan-950/5 dark:border-cyan-400/40 dark:bg-white/10"
-                    : "border-gray-200 bg-white/55 hover:border-cyan-200 hover:bg-white/70 dark:border-white/10 dark:bg-transparent dark:hover:bg-cyan-400/5"
+                    ? "border-blue-300 bg-white/80 shadow-md shadow-blue-950/5 dark:border-blue-500/40 dark:bg-white/10"
+                    : "border-gray-200 bg-white/55 hover:border-blue-200 hover:bg-white/70 dark:border-white/10 dark:bg-transparent dark:hover:bg-blue-500/5"
                 }`}
               >
                 <div className="flex items-center gap-3">
-                  <div className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-lg ${selected ? "bg-cyan-500/10" : "bg-gray-500/10 text-gray-400 dark:bg-transparent"}`}>{item.icon || "•"}</div>
+                  <div className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-lg ${selected ? "bg-blue-600/10" : "bg-gray-500/10 text-gray-400 dark:bg-transparent"}`}>{item.icon || "•"}</div>
                   <div className="min-w-0">
                     <div title={item.title} className="truncate text-sm font-bold text-gray-900 dark:text-white">{item.title}</div>
                     {item.subtitle && <div title={item.subtitle} className="mt-0.5 truncate text-xs text-gray-400">{item.subtitle}</div>}
                   </div>
-                  {selected && <span className="ml-auto text-cyan-500">›</span>}
+                  {selected && <span className="ml-auto text-blue-600">›</span>}
                 </div>
               </button>
             );
           })}
         </div>
 
-        <div className="agent-feature-card group mx-auto flex min-h-[270px] w-full max-w-[640px] flex-col justify-center overflow-y-auto rounded-3xl border border-cyan-300/70 bg-white/65 p-5 shadow-xl shadow-cyan-950/10 backdrop-blur-xl transition dark:border-cyan-400/30 dark:bg-transparent dark:shadow-black/30 sm:min-h-[300px] sm:p-6">
+        <div className="agent-feature-card group mx-auto flex min-h-[270px] w-full max-w-[640px] flex-col justify-center overflow-y-auto rounded-3xl border border-blue-300/70 bg-white/65 p-5 shadow-xl shadow-blue-950/10 transition dark:border-blue-500/30 dark:bg-transparent dark:shadow-black/30 sm:min-h-[300px] sm:p-6">
           <div className="mb-4 flex items-center justify-between gap-3">
-            <span className="rounded-xl bg-cyan-500/10 px-3 py-2 text-sm font-black text-cyan-700 dark:text-cyan-200">{String(Math.min(activeIndex + 1, features.length)).padStart(2, "0")}</span>
+            <span className="rounded-xl bg-blue-600/10 px-3 py-2 text-sm font-black text-blue-700 dark:text-blue-200">{String(Math.min(activeIndex + 1, features.length)).padStart(2, "0")}</span>
             <span className="rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-600 dark:border-emerald-400/20 dark:bg-emerald-400/10 dark:text-emerald-200">{ts("支持视频处理链路")}</span>
           </div>
           <div className="flex items-start gap-4">
-            <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-cyan-500/10 text-2xl">{active?.icon || icon}</div>
+            <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-blue-600/10 text-2xl">{active?.icon || icon}</div>
             <div className="min-w-0">
               <h2 className="line-clamp-2 text-xl font-black text-gray-900 dark:text-white sm:text-2xl">{active?.title}</h2>
               <p className="mt-3 line-clamp-3 text-xs leading-6 text-gray-500 dark:text-gray-300 sm:text-sm">{active?.subtitle}</p>
               <div className="mt-4 flex flex-wrap gap-2">
-                {activeTags.map((tag, index) => <span key={`${tag}-${index}`} className="max-w-[170px] truncate rounded-lg bg-cyan-500/10 px-2.5 py-1 text-xs font-semibold text-cyan-700 dark:text-cyan-200">{tag}</span>)}
+                {activeTags.map((tag, index) => <span key={`${tag}-${index}`} className="max-w-[170px] truncate rounded-lg bg-blue-600/10 px-2.5 py-1 text-xs font-semibold text-blue-700 dark:text-blue-200">{tag}</span>)}
               </div>
             </div>
           </div>
           <div className="mt-5 flex justify-center gap-2">
             {features.slice(0, 4).map((feature, index) => (
-              <button key={`${feature.title}-dot-${index}`} type="button" onClick={() => onSelect(index)} aria-label={feature.title} className={`${index === activeIndex ? "h-3 w-9 bg-cyan-500 shadow-md shadow-cyan-500/30" : "h-3 w-3 bg-gray-300/70 hover:bg-cyan-300 dark:bg-white/20"} rounded-full transition-all`} />
+              <button key={`${feature.title}-dot-${index}`} type="button" onClick={() => onSelect(index)} aria-label={feature.title} className={`${index === activeIndex ? "h-3 w-9 bg-blue-600 shadow-md shadow-blue-600/30" : "h-3 w-3 bg-gray-300/70 hover:bg-blue-300 dark:bg-white/20"} rounded-full transition-all`} />
             ))}
           </div>
         </div>
@@ -458,9 +458,7 @@ export function VideoUpscaleWorkspace({ workflow }: { workflow: WorkflowLike }) 
   };
 
   return (
-    <div className="relative flex min-h-0 flex-1 flex-col overflow-hidden bg-[#eaf7fb] text-gray-900 dark:bg-[#05080f] dark:text-white">
-      <div className="pointer-events-none absolute inset-0 opacity-80 [background-image:linear-gradient(rgba(15,23,42,.08)_1px,transparent_1px),linear-gradient(90deg,rgba(15,23,42,.08)_1px,transparent_1px)] [background-size:40px_40px] dark:opacity-60 dark:[background-image:linear-gradient(rgba(34,211,238,.08)_1px,transparent_1px),linear-gradient(90deg,rgba(34,211,238,.08)_1px,transparent_1px)]" />
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_70%_10%,rgba(34,211,238,.22),transparent_28%),radial-gradient(circle_at_12%_84%,rgba(20,184,166,.16),transparent_22%)] dark:bg-[radial-gradient(circle_at_76%_10%,rgba(20,184,166,.2),transparent_28%),radial-gradient(circle_at_14%_82%,rgba(6,182,212,.12),transparent_22%)]" />
+    <div className="relative flex min-h-0 flex-1 flex-col overflow-hidden bg-white text-gray-900 dark:bg-[#05080f] dark:text-white">
       <div className="relative z-10 shrink-0 px-4 py-3 sm:px-6">
         <div className="flex items-center gap-2">
           <button type="button" onClick={() => { setProject(null); setSource(null); setPrompt(""); setError(""); window.localStorage.removeItem(activeProjectKey); }} className="flex h-9 items-center gap-1.5 rounded-xl bg-primary px-3 text-sm font-semibold text-dark"><Sparkles size={15} />{t("common.newTask")}</button>
@@ -563,8 +561,8 @@ export function VideoUpscaleWorkspace({ workflow }: { workflow: WorkflowLike }) 
                     <MediaOptionMenu icon={<Sparkles size={14} />} activeLabel={ts(`风格 ${Math.round(styleStrength * 100)}%`)} title={ts("风格强度")} subtitle={ts("调整转绘风格对原视频的影响程度")}>
                       {(close) => <div className="space-y-1.5">{[0.4, 0.65, 0.8, 1].map((value) => <MediaMenuOption key={value} selected={styleStrength === value} onClick={() => { setStyleStrength(value); close(); }}>{ts(`风格 ${Math.round(value * 100)}%`)}</MediaMenuOption>)}</div>}
                     </MediaOptionMenu>
-                    <button type="button" onClick={() => setPreserveMotion((value) => !value)} className={`h-9 shrink-0 rounded-xl border px-3 text-xs font-medium transition ${preserveMotion ? "border-cyan-300 bg-cyan-50 text-cyan-700 dark:border-cyan-400/30 dark:bg-cyan-400/10 dark:text-cyan-200" : "border-gray-100 bg-gray-50 text-gray-500 hover:border-cyan-300 dark:border-white/10 dark:bg-white/5 dark:text-gray-300"}`}>{ts("动作保持")}：{preserveMotion ? "ON" : "OFF"}</button>
-                    <button type="button" onClick={() => setPreserveIdentity((value) => !value)} className={`h-9 shrink-0 rounded-xl border px-3 text-xs font-medium transition ${preserveIdentity ? "border-cyan-300 bg-cyan-50 text-cyan-700 dark:border-cyan-400/30 dark:bg-cyan-400/10 dark:text-cyan-200" : "border-gray-100 bg-gray-50 text-gray-500 hover:border-cyan-300 dark:border-white/10 dark:bg-white/5 dark:text-gray-300"}`}>{ts("人物保持")}：{preserveIdentity ? "ON" : "OFF"}</button>
+                    <button type="button" onClick={() => setPreserveMotion((value) => !value)} className={`h-9 shrink-0 rounded-xl border px-3 text-xs font-medium transition ${preserveMotion ? "border-blue-300 bg-blue-50 text-blue-700 dark:border-blue-500/30 dark:bg-blue-500/10 dark:text-blue-200" : "border-gray-100 bg-gray-50 text-gray-500 hover:border-blue-300 dark:border-white/10 dark:bg-white/5 dark:text-gray-300"}`}>{ts("动作保持")}：{preserveMotion ? "ON" : "OFF"}</button>
+                    <button type="button" onClick={() => setPreserveIdentity((value) => !value)} className={`h-9 shrink-0 rounded-xl border px-3 text-xs font-medium transition ${preserveIdentity ? "border-blue-300 bg-blue-50 text-blue-700 dark:border-blue-500/30 dark:bg-blue-500/10 dark:text-blue-200" : "border-gray-100 bg-gray-50 text-gray-500 hover:border-blue-300 dark:border-white/10 dark:bg-white/5 dark:text-gray-300"}`}>{ts("人物保持")}：{preserveIdentity ? "ON" : "OFF"}</button>
                   </>
                 )}
                 {isSubtitle && (
@@ -584,10 +582,10 @@ export function VideoUpscaleWorkspace({ workflow }: { workflow: WorkflowLike }) 
                         { value: "full", label: ts("全画面") },
                       ].map((item) => <MediaMenuOption key={item.value} selected={subtitleRegion === item.value} onClick={() => { setSubtitleRegion(item.value); close(); }}>{item.label}</MediaMenuOption>)}</div>}
                     </MediaOptionMenu>
-                    <button type="button" onClick={() => setProtectWatermark((value) => !value)} className={`h-9 shrink-0 rounded-xl border px-3 text-xs font-medium transition ${protectWatermark ? "border-cyan-300 bg-cyan-50 text-cyan-700 dark:border-cyan-400/30 dark:bg-cyan-400/10 dark:text-cyan-200" : "border-gray-100 bg-gray-50 text-gray-500 hover:border-cyan-300 dark:border-white/10 dark:bg-white/5 dark:text-gray-300"}`}>{ts("保护水印")}：{protectWatermark ? "ON" : "OFF"}</button>
+                    <button type="button" onClick={() => setProtectWatermark((value) => !value)} className={`h-9 shrink-0 rounded-xl border px-3 text-xs font-medium transition ${protectWatermark ? "border-blue-300 bg-blue-50 text-blue-700 dark:border-blue-500/30 dark:bg-blue-500/10 dark:text-blue-200" : "border-gray-100 bg-gray-50 text-gray-500 hover:border-blue-300 dark:border-white/10 dark:bg-white/5 dark:text-gray-300"}`}>{ts("保护水印")}：{protectWatermark ? "ON" : "OFF"}</button>
                   </>
                 )}
-                <button type="button" onClick={() => setPreserveAudio((value) => !value)} className={`h-9 shrink-0 rounded-xl border px-3 text-xs font-medium transition ${preserveAudio ? "border-cyan-300 bg-cyan-50 text-cyan-700 dark:border-cyan-400/30 dark:bg-cyan-400/10 dark:text-cyan-200" : "border-gray-100 bg-gray-50 text-gray-500 hover:border-cyan-300 dark:border-white/10 dark:bg-white/5 dark:text-gray-300"}`}>{t("upscale.preserveAudio")}：{preserveAudio ? "ON" : "OFF"}</button>
+                <button type="button" onClick={() => setPreserveAudio((value) => !value)} className={`h-9 shrink-0 rounded-xl border px-3 text-xs font-medium transition ${preserveAudio ? "border-blue-300 bg-blue-50 text-blue-700 dark:border-blue-500/30 dark:bg-blue-500/10 dark:text-blue-200" : "border-gray-100 bg-gray-50 text-gray-500 hover:border-blue-300 dark:border-white/10 dark:bg-white/5 dark:text-gray-300"}`}>{t("upscale.preserveAudio")}：{preserveAudio ? "ON" : "OFF"}</button>
               </div>
               <button type="button" onClick={run} disabled={submitting || uploading || busy || !source} className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-secondary text-white shadow-md transition hover:bg-secondary/90 disabled:cursor-not-allowed disabled:opacity-40">
                 {submitting ? <Loader2 size={20} className="animate-spin" /> : <ArrowUp size={20} />}
@@ -599,9 +597,9 @@ export function VideoUpscaleWorkspace({ workflow }: { workflow: WorkflowLike }) 
         )}
 
         {project && <div className="grid flex-1 gap-4 lg:grid-cols-[minmax(0,1.1fr)_minmax(360px,.9fr)]">
-          <section className="rounded-3xl border border-cyan-100 bg-white/90 p-4 shadow-sm backdrop-blur dark:border-cyan-400/15 dark:bg-[#111827]/90 sm:p-5">
+          <section className="rounded-3xl border border-blue-100 bg-white/90 p-4 shadow-sm dark:border-blue-500/15 dark:bg-[#111827]/90 sm:p-5">
             <div className="mb-4 flex items-center justify-between">
-              <div className="flex items-center gap-2 font-semibold"><Film size={18} className="text-cyan-500" />{t("upscale.source")}</div>
+              <div className="flex items-center gap-2 font-semibold"><Film size={18} className="text-blue-600" />{t("upscale.source")}</div>
               {source && <button type="button" onClick={() => { setSource(null); setProject(null); window.localStorage.removeItem(activeProjectKey); }} className="flex h-8 w-8 items-center justify-center rounded-lg text-gray-400 hover:bg-gray-100 dark:hover:bg-white/10"><X size={15} /></button>}
             </div>
             {source ? (
@@ -613,8 +611,8 @@ export function VideoUpscaleWorkspace({ workflow }: { workflow: WorkflowLike }) 
                 </div>
               </div>
             ) : (
-              <label className="flex min-h-[200px] cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed border-cyan-200 bg-cyan-50/40 px-5 text-center transition hover:border-cyan-400 hover:bg-cyan-50 dark:border-cyan-400/20 dark:bg-cyan-400/5 dark:hover:bg-cyan-400/10 sm:min-h-[300px]">
-                {uploading ? <Loader2 size={36} className="animate-spin text-cyan-500" /> : <Upload size={36} className="text-cyan-500" />}
+              <label className="flex min-h-[200px] cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed border-blue-200 bg-blue-50/40 px-5 text-center transition hover:border-blue-500 hover:bg-blue-50 dark:border-blue-500/20 dark:bg-blue-500/5 dark:hover:bg-blue-500/10 sm:min-h-[300px]">
+                {uploading ? <Loader2 size={36} className="animate-spin text-blue-600" /> : <Upload size={36} className="text-blue-600" />}
                 <div className="mt-4 font-semibold">{uploading ? t("upscale.uploading") : t("upscale.upload")}</div>
                 <div className="mt-2 text-xs leading-5 text-gray-400">{t("upscale.limit", { size: config.max_input_size_mb || 500, duration: config.max_input_duration_sec || 300 })}</div>
                 <input type="file" accept="video/mp4,video/webm,video/quicktime,video/x-matroska" disabled={uploading} className="hidden" onChange={(event) => { void selectFile(event.target.files?.[0]); event.target.value = ""; }} />
@@ -623,18 +621,18 @@ export function VideoUpscaleWorkspace({ workflow }: { workflow: WorkflowLike }) 
             <button type="button" onClick={openAssets} className="mt-3 flex h-11 w-full items-center justify-center gap-2 rounded-xl border border-violet-200 bg-violet-50 text-sm font-medium text-violet-700 dark:border-violet-400/20 dark:bg-violet-400/10 dark:text-violet-200"><FolderOpen size={16} />{t("upscale.asset")}</button>
           </section>
 
-          <section className="flex flex-col rounded-3xl border border-gray-100 bg-white/90 p-4 shadow-sm backdrop-blur dark:border-white/10 dark:bg-[#111827]/90 sm:p-5">
+          <section className="flex flex-col rounded-3xl border border-gray-100 bg-white/90 p-4 shadow-sm dark:border-white/10 dark:bg-[#111827]/90 sm:p-5">
             <div className="font-semibold">{isRedraw ? ts("转绘设置") : isSubtitle ? ts("去字幕设置") : t("upscale.settings")}</div>
             {isUpscale && <div className="mt-5">
               <div className="mb-2 text-xs text-gray-400">{t("upscale.resolution")}</div>
               <div className="grid grid-cols-3 gap-2">
-                {resolutions.map((item) => <button key={item} type="button" onClick={() => setResolution(item)} className={`h-12 rounded-xl border text-sm font-semibold transition ${resolution === item ? "border-cyan-400 bg-cyan-50 text-cyan-700 shadow-sm dark:bg-cyan-400/15 dark:text-cyan-200" : "border-gray-100 bg-gray-50 text-gray-500 dark:border-white/10 dark:bg-white/5 dark:text-gray-300"}`}>{item}</button>)}
+                {resolutions.map((item) => <button key={item} type="button" onClick={() => setResolution(item)} className={`h-12 rounded-xl border text-sm font-semibold transition ${resolution === item ? "border-blue-500 bg-blue-50 text-blue-700 shadow-sm dark:bg-blue-500/15 dark:text-blue-200" : "border-gray-100 bg-gray-50 text-gray-500 dark:border-white/10 dark:bg-white/5 dark:text-gray-300"}`}>{item}</button>)}
               </div>
             </div>}
             {isUpscale && <div className="mt-4">
               <div className="mb-2 text-xs text-gray-400">{t("upscale.mode")}</div>
               <div className="grid grid-cols-3 gap-2">
-                {[["balanced", t("upscale.balanced")], ["detail", t("upscale.detail")], ["denoise", t("upscale.denoise")]].map(([value, label]) => <button key={value} type="button" onClick={() => setMode(value)} className={`h-10 rounded-xl border text-xs font-medium ${mode === value ? "border-cyan-400 bg-cyan-50 text-cyan-700 dark:bg-cyan-400/15 dark:text-cyan-200" : "border-gray-100 text-gray-500 dark:border-white/10 dark:text-gray-300"}`}>{label}</button>)}
+                {[["balanced", t("upscale.balanced")], ["detail", t("upscale.detail")], ["denoise", t("upscale.denoise")]].map(([value, label]) => <button key={value} type="button" onClick={() => setMode(value)} className={`h-10 rounded-xl border text-xs font-medium ${mode === value ? "border-blue-500 bg-blue-50 text-blue-700 dark:bg-blue-500/15 dark:text-blue-200" : "border-gray-100 text-gray-500 dark:border-white/10 dark:text-gray-300"}`}>{label}</button>)}
               </div>
             </div>}
             {isRedraw && (
@@ -675,17 +673,17 @@ export function VideoUpscaleWorkspace({ workflow }: { workflow: WorkflowLike }) 
             )}
             <label className="mt-4 flex cursor-pointer items-center justify-between rounded-xl border border-gray-100 px-3 py-3 text-sm dark:border-white/10">
               <span><span className="font-medium">{t("upscale.preserveAudio")}</span><span className="mt-0.5 block text-[11px] text-gray-400">{t("upscale.preserveAudioDesc")}</span></span>
-              <input type="checkbox" checked={preserveAudio} onChange={(event) => setPreserveAudio(event.target.checked)} className="h-4 w-4 accent-cyan-500" />
+              <input type="checkbox" checked={preserveAudio} onChange={(event) => setPreserveAudio(event.target.checked)} className="h-4 w-4 accent-blue-600" />
             </label>
-            <textarea value={prompt} onChange={(event) => setPrompt(event.target.value)} rows={2} placeholder={isRedraw ? "描述目标画风，例如：日系动漫、厚涂插画、赛博朋克电影感" : isSubtitle ? "可选：补充字幕位置或需要保护的画面元素" : t("upscale.prompt")} className="mt-4 min-h-[64px] resize-none rounded-xl border border-gray-100 bg-gray-50 px-3 py-2 text-sm outline-none focus:border-cyan-300 dark:border-white/10 dark:bg-white/5" />
+            <textarea value={prompt} onChange={(event) => setPrompt(event.target.value)} rows={2} placeholder={isRedraw ? "描述目标画风，例如：日系动漫、厚涂插画、赛博朋克电影感" : isSubtitle ? "可选：补充字幕位置或需要保护的画面元素" : t("upscale.prompt")} className="mt-4 min-h-[64px] resize-none rounded-xl border border-gray-100 bg-gray-50 px-3 py-2 text-sm outline-none focus:border-blue-300 dark:border-white/10 dark:bg-white/5" />
 
             {project && (
               <div className="mt-4 rounded-2xl border border-gray-100 bg-gray-50 p-3 dark:border-white/10 dark:bg-white/5">
                 <div className="flex items-center justify-between gap-3 text-xs">
                   <span className="font-medium">{project.status === "succeeded" ? t("upscale.completed") : project.status === "failed" ? t("upscale.failed") : t("upscale.processing")}</span>
-                  <span className="text-cyan-600">{Math.round(progress)}%</span>
+                  <span className="text-blue-600">{Math.round(progress)}%</span>
                 </div>
-                <div className="mt-2 h-2 overflow-hidden rounded-full bg-gray-200 dark:bg-white/10"><div className={`h-full rounded-full transition-all ${project.status === "failed" ? "bg-red-500" : "bg-cyan-500"}`} style={{ width: `${progress}%` }} /></div>
+                <div className="mt-2 h-2 overflow-hidden rounded-full bg-gray-200 dark:bg-white/10"><div className={`h-full rounded-full transition-all ${project.status === "failed" ? "bg-red-500" : "bg-blue-600"}`} style={{ width: `${progress}%` }} /></div>
                 {project.status === "failed" && <div className="mt-2 text-xs leading-5 text-red-500">{publicText(project.error_message || latestTask?.error_message, "处理失败")}</div>}
                 {project.status === "succeeded" && <div className="mt-2 flex flex-wrap items-center justify-between gap-2 text-[11px] text-gray-400"><span>{isUpscale ? `${t("upscale.target")}：${project.outputs?.target_resolution || resolution}` : isSubtitle ? `处理路径：${project.outputs?.subtitle_mode === "soft_track" ? "独立字幕轨无损移除" : "AI 硬字幕修复"}` : `风格强度：${Math.round(styleStrength * 100)}%`}</span><span>{t("upscale.actualCost", { value: Number(project.actual_cost || 0).toFixed(2) })}</span></div>}
               </div>
@@ -693,7 +691,7 @@ export function VideoUpscaleWorkspace({ workflow }: { workflow: WorkflowLike }) 
             {error && <div className="mt-3 text-xs leading-5 text-red-500">{error}</div>}
             <div className="mt-auto flex gap-2">
               {project?.status === "pending" && <button type="button" onClick={cancel} className="flex h-12 items-center justify-center gap-2 rounded-xl border border-red-200 px-4 text-sm font-medium text-red-500 hover:bg-red-50 dark:border-red-400/20 dark:hover:bg-red-500/10"><X size={16} />{t("upscale.cancel")}</button>}
-              <button type="button" onClick={project?.status === "failed" ? retry : run} disabled={submitting || uploading || busy || !source} className="flex h-12 flex-1 items-center justify-center gap-2 rounded-xl bg-cyan-500 text-sm font-semibold text-white shadow-lg shadow-cyan-500/20 transition hover:bg-cyan-600 disabled:cursor-not-allowed disabled:opacity-40">
+              <button type="button" onClick={project?.status === "failed" ? retry : run} disabled={submitting || uploading || busy || !source} className="flex h-12 flex-1 items-center justify-center gap-2 rounded-xl bg-blue-600 text-sm font-semibold text-white shadow-lg shadow-blue-600/20 transition hover:bg-blue-600 disabled:cursor-not-allowed disabled:opacity-40">
                 {submitting || busy ? <Loader2 size={17} className="animate-spin" /> : project?.status === "failed" ? <RefreshCw size={17} /> : <ArrowUp size={17} />}
                 {project?.status === "failed" ? t("upscale.retry") : busy ? t("upscale.processing") : t("upscale.start")}
               </button>
@@ -729,7 +727,7 @@ export function VideoUpscaleWorkspace({ workflow }: { workflow: WorkflowLike }) 
                 setProject(null);
                 window.localStorage.removeItem(activeProjectKey);
                 setAssetOpen(false);
-              }} className="overflow-hidden rounded-xl border border-gray-100 bg-gray-50 text-left transition hover:border-cyan-300 dark:border-white/10 dark:bg-white/5">
+              }} className="overflow-hidden rounded-xl border border-gray-100 bg-gray-50 text-left transition hover:border-blue-300 dark:border-white/10 dark:bg-white/5">
                 <video src={asset.url} preload="metadata" muted className="aspect-video w-full bg-black object-cover" />
                 <div className="truncate px-3 py-2 text-xs font-medium">{asset.name || "视频资产"}</div>
               </button>)}
@@ -759,7 +757,7 @@ export function VideoUpscaleWorkspace({ workflow }: { workflow: WorkflowLike }) 
           <div className="w-full max-w-lg rounded-2xl bg-white p-4 shadow-2xl dark:border dark:border-white/10 dark:bg-gray-900" onClick={(event) => event.stopPropagation()}>
             <div className="flex items-center justify-between"><div className="font-semibold">{t("upscale.historyTitle")}</div><button onClick={() => setHistoryOpen(false)} className="flex h-9 w-9 items-center justify-center rounded-xl bg-gray-100 dark:bg-white/10"><X size={16} /></button></div>
             <div className="mt-4 max-h-[60vh] space-y-2 overflow-y-auto">
-              {history.map((item) => <button key={item.public_id} type="button" onClick={async () => { const next = await api<Project>(`/api/agent-projects/${item.public_id}`); setProject(next); window.localStorage.setItem(activeProjectKey, next.public_id); if (["pending", "running"].includes(next.status)) startPolling(next.public_id); setHistoryOpen(false); }} className="flex w-full items-center justify-between gap-3 rounded-xl border border-gray-100 px-3 py-3 text-left hover:border-cyan-300 dark:border-white/10">
+              {history.map((item) => <button key={item.public_id} type="button" onClick={async () => { const next = await api<Project>(`/api/agent-projects/${item.public_id}`); setProject(next); window.localStorage.setItem(activeProjectKey, next.public_id); if (["pending", "running"].includes(next.status)) startPolling(next.public_id); setHistoryOpen(false); }} className="flex w-full items-center justify-between gap-3 rounded-xl border border-gray-100 px-3 py-3 text-left hover:border-blue-300 dark:border-white/10">
                 <span className="min-w-0"><span className="block truncate text-sm font-medium">{publicText(item.workflow_name || workflow.name, "历史任务")}</span><span className="mt-1 block text-[11px] text-gray-400">{new Date(item.created_at).toLocaleString()}</span></span>
                 <span className="shrink-0 rounded-full bg-gray-100 px-2 py-1 text-[10px] dark:bg-white/10">{item.status}</span>
               </button>)}

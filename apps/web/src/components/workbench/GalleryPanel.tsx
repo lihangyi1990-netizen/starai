@@ -139,9 +139,8 @@ function GalleryPreview({ item, detail = false, videoLabel }: { item: GalleryIte
     ) : (
       <div className="relative aspect-video bg-gray-950">
         <video src={previewURL} poster={poster && poster !== mediaURL ? poster : undefined} muted playsInline preload="metadata" className="h-full w-full object-cover" />
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_42%,rgba(18,214,163,.2),transparent_36%),linear-gradient(180deg,rgba(0,0,0,.06),rgba(0,0,0,.28))]" />
         <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
-          <div className="flex h-11 w-11 items-center justify-center rounded-full border border-white/25 bg-black/35 text-white shadow-lg backdrop-blur">
+          <div className="flex h-11 w-11 items-center justify-center rounded-full border border-white/25 bg-black/35 text-white shadow-lg">
             <span className="ml-0.5 text-lg">▶</span>
           </div>
         </div>

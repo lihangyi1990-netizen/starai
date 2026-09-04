@@ -4,15 +4,11 @@ import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
 import {
-  Image,
   KeyRound,
   LibraryBig,
-  MessageCircle,
-  Mic,
   Settings,
   Sparkles,
   WalletCards,
-  Video,
   Workflow,
 } from "lucide-react";
 import { clsx } from "clsx";
@@ -28,6 +24,7 @@ import { ModelWorkspace } from "./workbench/ModelWorkspace";
 import { AgentWorkspace } from "./workbench/AgentWorkspace";
 import { InfiniteCanvasWorkspace } from "./workbench/InfiniteCanvasWorkspace";
 import { ModelPlaza } from "./workbench/ModelPlaza";
+import { ModeTabs, type WorkbenchMode } from "./workbench/ModeTabs";
 import { isStandaloneAudioModel } from "./workbench/categoryMeta";
 
 type StudioSection = "models" | "agents" | "gallery";
@@ -73,76 +70,160 @@ function isChatModel(model: Model) {
   return model.category === "chat" || model.category === "multi_collab";
 }
 
+/**
+ * Which creation mode a catalog row belongs to. Mirrors the `matchesMode`
+ * filter used when auto-selecting a model, so the mode strip cannot highlight
+ * a mode that would not in fact select the current model.
+ */
+function modeOfModel(model: Model): CreationMode {
+  if (isChatModel(model)) return "chat";
+  if (model.category === "image" || model.category === "video") return model.category;
+  if (isStandaloneAudioModel(model)) return "audio";
+  return "chat";
+}
+
 function navClass(active: boolean) {
   return clsx("pico-premium-rail-item", active && "is-active");
 }
 
+/**
+ * Shown while the catalog is still resolving, or when the selected mode has no
+ * publishable model. Mode selection lives in the strip above this view, so this
+ * component reflects the chosen mode instead of offering a second, competing
+ * set of mode buttons.
+ */
 function StudioUnavailable({
+  mode,
   models,
   onOpenPlaza,
   onRecharge,
   balance,
   catalogError,
 }: {
+  mode: WorkbenchMode;
   models: Model[];
   onOpenPlaza: () => void;
   onRecharge: () => void;
   balance?: number;
   catalogError?: string;
 }) {
-  const [mode, setMode] = useState<"chat" | "image" | "video" | "audio">("chat");
+  const { td } = useI18n();
   const [draft, setDraft] = useState("");
-  const modes = [
-    { key: "chat" as const, label: "对话", icon: MessageCircle },
-    { key: "image" as const, label: "生图", icon: Image },
-    { key: "video" as const, label: "视频", icon: Video },
-    { key: "audio" as const, label: "音频", icon: Mic },
-  ];
-  const modeModels = models.filter((item) => mode === "chat" ? isChatModel(item) : mode === "audio" ? isStandaloneAudioModel(item) : item.category === mode);
+  const modeModels = models.filter((item) =>
+    mode === "chat" ? isChatModel(item) : mode === "audio" ? isStandaloneAudioModel(item) : item.category === mode,
+  );
   const balanceKnown = typeof balance === "number";
   const balanceLow = balanceKnown && balance <= 0;
+  const placeholder =
+    mode === "image"
+      ? td("landing.placeholder.image", "描述你想要的画面，越具体越好")
+      : mode === "video"
+        ? td("landing.placeholder.video", "描述镜头、动作和时长")
+        : mode === "audio"
+          ? td("landing.placeholder.audio", "写下要念的文字，或描述一段音乐")
+          : td("landing.placeholder.chat", "今天想聊点什么？");
+
+  // Colors come from the shell's own tokens rather than Tailwind's palette so
+  // this view follows `.pico-premium-shell` when it is converted to the light
+  // Style A palette. See the note on that rule in globals.css.
+  const line = "1px solid var(--pico-premium-line)";
 
   return (
-    <section className="pico-premium-unavailable" aria-label="tuna 创作台">
-      <div className="pico-premium-unavailable-intro">
-        <p>TUNA AI STUDIO</p>
-        <h1>从一个对话框开始创作</h1>
-        <span>对话、生图、视频和音频都在这里完成。</span>
+    <section className="mx-auto w-full max-w-[880px] px-5 py-10 sm:py-14" aria-label={td("workbench.title", "创作台")}>
+      <h1 className="text-[22px] font-semibold tracking-tight sm:text-[26px]" style={{ color: "var(--pico-premium-text)" }}>
+        {td("workbench.empty.title", "从写下你想要的东西开始")}
+      </h1>
+      <p className="mt-3 text-sm leading-[1.8]" style={{ color: "var(--pico-premium-muted)" }}>
+        {td("workbench.empty.desc", "上面选好模式，这里写需求。需要选的参数会在选定模型后出现。")}
+      </p>
+
+      <div className="mt-7 rounded-lg" style={{ border: line }}>
+        <button
+          type="button"
+          onClick={onOpenPlaza}
+          className="flex w-full items-center justify-between gap-3 px-4 py-3 text-left"
+          style={{ borderBottom: line }}
+        >
+          <span className="min-w-0">
+            <span className="block text-[11px]" style={{ color: "var(--pico-premium-muted)" }}>
+              {td("workbench.currentModel", "当前模型")}
+            </span>
+            <span className="block truncate text-sm font-medium" style={{ color: "var(--pico-premium-text)" }}>
+              {publicText(
+                modeModels[0]?.display_name,
+                models.length
+                  ? td("workbench.pickPublished", "选择已发布模型")
+                  : td("workbench.loadingModel", "正在读取模型"),
+              )}
+            </span>
+          </span>
+          <span className="shrink-0 rounded-lg px-3 py-1.5 text-xs" style={{ border: line, color: "var(--pico-premium-muted)" }}>
+            {td("workbench.change", "更换")}
+          </span>
+        </button>
+
+        <div className="px-4 pt-4">
+          <label className="sr-only" htmlFor="studio-draft">
+            {td("workbench.draftLabel", "写下你的需求")}
+          </label>
+          <textarea
+            id="studio-draft"
+            value={draft}
+            onChange={(event) => setDraft(event.target.value)}
+            placeholder={placeholder}
+            disabled={!modeModels.length}
+            rows={5}
+            className="w-full resize-none rounded-lg px-3.5 py-3 text-sm leading-[1.8] focus:outline-none disabled:cursor-not-allowed"
+            style={{
+              border: line,
+              background: "var(--pico-premium-panel)",
+              color: "var(--pico-premium-text)",
+            }}
+          />
+        </div>
+
+        <div className="flex flex-wrap items-center justify-between gap-3 px-4 py-4">
+          <span className="text-xs" style={{ color: "var(--pico-premium-muted)" }}>
+            {models.length
+              ? td("workbench.catalogReady", "已准备 {count} 个模型，选择后即可开始创作。", { count: models.length })
+              : publicText(catalogError, td("workbench.catalogLoading", "正在读取模型目录。"))}
+          </span>
+          <button
+            type="button"
+            onClick={onOpenPlaza}
+            className="rounded-lg px-4 py-2 text-sm"
+            style={{ border: line, color: "var(--pico-premium-muted)" }}
+          >
+            {td("workbench.browseModels", "浏览全部模型")}
+          </button>
+        </div>
       </div>
-      <div className="pico-premium-unavailable-composer">
-        <div className="pico-premium-unavailable-modes">
-          {modes.map(({ key, label, icon: Icon }) => (
-            <button key={label} type="button" className={mode === key ? "is-active" : ""} onClick={() => setMode(key)}>
-              <Icon size={17} /> {label}
-            </button>
-          ))}
+
+      <div className="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-lg px-4 py-3" style={{ border: line }}>
+        <div className="min-w-0">
+          <strong className="block text-sm font-medium" style={{ color: "var(--pico-premium-text)" }}>
+            {!balanceKnown
+              ? td("workbench.balance.unknown", "余额状态正在读取")
+              : balanceLow
+                ? td("workbench.balance.low", "算力余额不足")
+                : td("workbench.balance.ready", "算力余额已就绪")}
+          </strong>
+          <span className="mt-1 block text-xs leading-6" style={{ color: "var(--pico-premium-muted)" }}>
+            {!balanceKnown
+              ? td("workbench.balance.unknownHint", "登录后会自动显示余额；生成前会再次校验。")
+              : balanceLow
+                ? td("workbench.balance.lowHint", "请先充值再开始创作。")
+                : td("workbench.balance.readyHint", "生成前会自动校验余额，按已发布模型的售价扣费。")}
+          </span>
         </div>
         <button
           type="button"
-          className="pico-premium-unavailable-model"
-          onClick={onOpenPlaza}
-          aria-label="打开模型广场选择模型"
+          onClick={onRecharge}
+          className="shrink-0 rounded-lg px-4 py-2 text-sm font-medium text-white transition-opacity hover:opacity-90"
+          style={{ background: "var(--pico-premium-blue)" }}
         >
-          <span>当前模型</span>
-          <strong>{publicText(modeModels[0]?.display_name, models.length ? "选择已发布模型" : "正在读取模型")}</strong>
+          {td("workbench.recharge", "去充值")}
         </button>
-        <textarea
-          className="pico-premium-unavailable-input"
-          value={draft}
-          onChange={(event) => setDraft(event.target.value)}
-          placeholder="请输入你想创作的内容..."
-          aria-label="创作内容"
-          disabled={!modeModels.length}
-          rows={5}
-        />
-        <div className="pico-premium-unavailable-footer">
-          <span>{models.length ? `已准备 ${models.length} 个模型，选择后即可开始创作。` : publicText(catalogError, "正在读取模型目录。")}</span>
-          <button type="button" onClick={onOpenPlaza}>查看模型广场</button>
-        </div>
-      </div>
-      <div className={clsx("pico-premium-balance-alert", balanceKnown && !balanceLow && "is-ready")}>
-        <div><strong>{!balanceKnown ? "余额状态正在读取" : balanceLow ? "您的余额不足" : "算力余额已就绪"}</strong><span>{!balanceKnown ? "登录后会自动显示余额；生成前会再次校验。" : balanceLow ? "请及时充值或购买会员后再开始创作。" : "生成前会自动校验余额，消费按已发布模型的用户售价计算。"}</span></div>
-        <button type="button" onClick={onRecharge}>去充值</button>
       </div>
     </section>
   );
@@ -330,7 +411,10 @@ export function AppShell({ children, selectedModelCode, selectedAgentCode }: App
     setSection(target);
     if (target === "models") {
       setActiveAgentCode(undefined);
-      router.push("/app");
+      // Keep `?mode=` on the URL. Pushing a bare `/app` let the auto-select
+      // effect re-pick the first model in the whole catalog, so returning to
+      // the workbench from the plaza could silently change what you were making.
+      router.push(requestedMode ? `/app?mode=${requestedMode}` : "/app");
       return;
     }
     if (target === "agents") {
@@ -339,7 +423,7 @@ export function AppShell({ children, selectedModelCode, selectedAgentCode }: App
       return;
     }
     router.push("/app?section=plaza");
-  }, [agents, router]);
+  }, [agents, requestedMode, router]);
 
   const selectInlineModel = useCallback((code: string) => {
     const selected = models.find((model) => model.code === code);
@@ -357,6 +441,42 @@ export function AppShell({ children, selectedModelCode, selectedAgentCode }: App
     setSection("agents");
     router.replace("/app?section=workflows");
   }, [router]);
+
+  /**
+   * Mode switching keeps the mode in the URL. `openStudio("models")` pushes a
+   * bare `/app`, which silently drops `?mode=` and sends the auto-select effect
+   * back to whichever model the catalog listed first — one of the ways users
+   * lost track of what they were making.
+   */
+  const openMode = useCallback((mode: WorkbenchMode) => {
+    if (mode === "flow") {
+      setSection("agents");
+      setActiveAgentCode((current) => current || agents[0]?.code || INFINITE_CANVAS_CODE);
+      router.push("/app?section=workflows");
+      return;
+    }
+    setSection("models");
+    setActiveAgentCode(undefined);
+    router.push(`/app?mode=${mode}`);
+  }, [agents, router]);
+
+  const activeMode: WorkbenchMode =
+    section === "agents" ? "flow" : requestedMode || (activeModel ? modeOfModel(activeModel) : "chat");
+
+  const showModeTabs = isWorkbench && section !== "gallery";
+
+  const modeCounts = useMemo(() => {
+    // While the catalog is still loading every count would be zero, which would
+    // render every mode as unavailable. Report "unknown" instead.
+    if (modelsLoading) return undefined;
+    return {
+      chat: models.filter(isChatModel).length,
+      image: models.filter((model) => model.category === "image").length,
+      video: models.filter((model) => model.category === "video").length,
+      audio: models.filter(isStandaloneAudioModel).length,
+      flow: agents.length,
+    };
+  }, [agents.length, models, modelsLoading]);
 
   const desktopRail = (
     <aside className="pico-premium-rail" aria-label={t("nav.pageNav")}>
@@ -451,6 +571,7 @@ export function AppShell({ children, selectedModelCode, selectedAgentCode }: App
           // Keep the complete composer visible while the catalog request is
           // pending. A slow catalog must not replace the app with a blank view.
           <StudioUnavailable
+            mode={activeMode}
             models={models}
             catalogError={catalogMessage}
             balance={wallet?.compute_balance}
@@ -484,7 +605,15 @@ export function AppShell({ children, selectedModelCode, selectedAgentCode }: App
             <WorkbenchTopActions onRecharge={!isWorkbench ? () => setShowRecharge(true) : undefined} />
           </div>
         </header>
-        <div className={clsx("pico-premium-content", isWorkbench && "is-studio")}>{isWorkbench ? studioContent() : children}</div>
+        {/* Mode is the first decision, so it sits between the topbar and the
+            workspace rather than inside it — visible at every breakpoint and on
+            every model. The plaza is a catalog view and has its own filters. */}
+        {showModeTabs && (
+          <ModeTabs active={activeMode} counts={modeCounts} onSelect={openMode} className="shrink-0 px-2 sm:px-4" />
+        )}
+        <div className={clsx("pico-premium-content", isWorkbench && "is-studio", showModeTabs && "has-mode-tabs")}>
+          {isWorkbench ? studioContent() : children}
+        </div>
       </main>
       {desktopRail}
       {mobileDock}

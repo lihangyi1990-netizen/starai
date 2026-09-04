@@ -43,7 +43,7 @@ export function NovelRoleCards({ roles, currentNode, className = "" }: NovelRole
               {/* 角色头像 */}
               <div
                 className={`
-                  flex h-11 w-11 items-center justify-center rounded-full border border-indigo-300/30 bg-indigo-500/10 text-2xl shadow-[0_0_18px_rgba(99,102,241,.14)] transition-transform duration-300
+                  flex h-11 w-11 items-center justify-center rounded-full border border-blue-300/30 bg-blue-600/10 text-2xl shadow-[0_0_18px_rgba(99,102,241,.14)] transition-transform duration-300
                   ${isActive ? "scale-105" : ""}
                 `}
               >
@@ -54,7 +54,7 @@ export function NovelRoleCards({ roles, currentNode, className = "" }: NovelRole
               <div
                 className={`
                   truncate text-[11px] font-medium text-center transition-colors
-                  ${isActive ? "text-indigo-200" : "text-gray-400"}
+                  ${isActive ? "text-blue-200" : "text-gray-400"}
                 `}
               >
                 {role.name}

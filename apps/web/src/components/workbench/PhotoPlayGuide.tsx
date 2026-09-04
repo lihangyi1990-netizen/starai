@@ -27,13 +27,13 @@ export function PhotoPlayGuide({ open, onClose }: PhotoPlayGuideProps) {
 
   return createPortal(
     <div className="fixed inset-0 z-50 flex items-center justify-center">
-      <div className="absolute inset-0 bg-black/50 backdrop-blur-sm dark:bg-black/80" onClick={onClose} />
+      <div className="absolute inset-0 bg-black/50 dark:bg-black/80" onClick={onClose} />
 
       <div className="relative mx-4 max-h-[90vh] w-full max-w-4xl overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-2xl dark:border-gray-700/50 dark:bg-gray-900">
-        <div className="sticky top-0 z-10 flex items-center justify-between border-b border-gray-100 bg-white/95 px-6 py-4 backdrop-blur dark:border-gray-800 dark:bg-gray-900/95">
+        <div className="sticky top-0 z-10 flex items-center justify-between border-b border-gray-100 bg-white/95 px-6 py-4 dark:border-gray-800 dark:bg-gray-900/95">
           <div>
             <div className="mb-1 flex items-center gap-2">
-              <span className="rounded bg-fuchsia-50 px-2 py-0.5 text-sm font-medium text-fuchsia-600 dark:bg-fuchsia-500/10 dark:text-fuchsia-400">
+              <span className="rounded bg-blue-50 px-2 py-0.5 text-sm font-medium text-blue-600 dark:bg-blue-600/10 dark:text-blue-500">
                 你的专属 AI 编辑部 · 摄影团队
               </span>
             </div>
@@ -47,19 +47,19 @@ export function PhotoPlayGuide({ open, onClose }: PhotoPlayGuideProps) {
         </div>
 
         <div className="max-h-[calc(90vh-88px)] overflow-y-auto px-6 py-6">
-          <div className="mb-8 rounded-xl border border-fuchsia-100 bg-gradient-to-br from-fuchsia-50 to-purple-50 p-6 dark:border-fuchsia-500/20 dark:from-fuchsia-500/10 dark:to-purple-500/10">
+          <div className="mb-8 rounded-xl border border-blue-100 bg-gradient-to-br from-blue-50 to-purple-50 p-6 dark:border-blue-600/20 dark:from-blue-600/10 dark:to-purple-500/10">
             <p className="text-lg leading-relaxed text-gray-700 dark:text-gray-200">
               摄影总监领队，造型师、摄影师、修图师多位 AI 专家协同作战——上传一张清晰的本人正面照片，选好写真类型与风格倾向，几分钟即可拿到一整套人像保真的写真。
             </p>
             <div className="mt-6 grid grid-cols-3 gap-4">
               <div className="text-center">
-                <div className="text-lg font-bold text-fuchsia-600 dark:text-fuchsia-400">人像特征保真</div>
+                <div className="text-lg font-bold text-blue-600 dark:text-blue-500">人像特征保真</div>
               </div>
               <div className="text-center">
-                <div className="text-lg font-bold text-fuchsia-600 dark:text-fuchsia-400">38 种主流风格</div>
+                <div className="text-lg font-bold text-blue-600 dark:text-blue-500">38 种主流风格</div>
               </div>
               <div className="text-center">
-                <div className="text-lg font-bold text-fuchsia-600 dark:text-fuchsia-400">影棚级光影质感</div>
+                <div className="text-lg font-bold text-blue-600 dark:text-blue-500">影棚级光影质感</div>
               </div>
             </div>
           </div>
@@ -75,7 +75,7 @@ export function PhotoPlayGuide({ open, onClose }: PhotoPlayGuideProps) {
                   <div className="flex items-start gap-3">
                     <div className="flex-shrink-0">
                       {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img src={role.avatar} alt={role.name} className="h-12 w-12 rounded-lg bg-fuchsia-50 object-cover dark:bg-fuchsia-500/10" />
+                      <img src={role.avatar} alt={role.name} className="h-12 w-12 rounded-lg bg-blue-50 object-cover dark:bg-blue-600/10" />
                     </div>
                     <div className="flex-1">
                       <div className="mb-1 flex items-center gap-2">
@@ -110,7 +110,7 @@ export function PhotoPlayGuide({ open, onClose }: PhotoPlayGuideProps) {
               {WORKFLOW_STEPS.map((step) => (
                 <div key={step.number} className="flex gap-4">
                   <div className="flex-shrink-0">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-fuchsia-100 font-bold text-fuchsia-600 dark:bg-fuchsia-500/20 dark:text-fuchsia-400">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-100 font-bold text-blue-600 dark:bg-blue-600/20 dark:text-blue-500">
                       {step.number}
                     </div>
                   </div>
@@ -138,7 +138,7 @@ export function PhotoPlayGuide({ open, onClose }: PhotoPlayGuideProps) {
             </div>
           </section>
 
-          <div className="mt-8 rounded-xl border border-fuchsia-200 bg-gradient-to-r from-fuchsia-50 to-purple-50 p-6 text-center dark:border-fuchsia-500/30 dark:from-fuchsia-500/20 dark:to-purple-500/20">
+          <div className="mt-8 rounded-xl border border-blue-200 bg-gradient-to-r from-blue-50 to-purple-50 p-6 text-center dark:border-blue-600/30 dark:from-blue-600/20 dark:to-purple-500/20">
             <p className="text-lg font-medium text-gray-900 dark:text-white">
               上传一张照片，剩下的交给你的 AI 编辑部。
             </p>
