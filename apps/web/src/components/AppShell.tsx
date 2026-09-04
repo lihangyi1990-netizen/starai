@@ -20,7 +20,7 @@ import { useI18n } from "@/i18n/I18nProvider";
 import { useSiteBranding } from "./SiteBrand";
 import { RechargeModal } from "./RechargeModal";
 import { WorkbenchTopActions } from "./WorkbenchTopActions";
-import { ModelWorkspace } from "./workbench/ModelWorkspace";
+import { ModelWorkspace, isModelCallable } from "./workbench/ModelWorkspace";
 import { AgentWorkspace } from "./workbench/AgentWorkspace";
 import { InfiniteCanvasWorkspace } from "./workbench/InfiniteCanvasWorkspace";
 import { ModelPlaza } from "./workbench/ModelPlaza";
@@ -384,7 +384,14 @@ export function AppShell({ children, selectedModelCode, selectedAgentCode }: App
     };
     const selected = models.find((model) => model.code === activeModelCode);
     if (selected && matchesMode(selected)) return;
-    setActiveModelCode(models.find(matchesMode)?.code || models[0]?.code);
+    // Prefer a callable (enabled + published) model for auto-selection so a
+    // disabled/pending catalog entry that merely sorts first — e.g. an
+    // internal test model — never becomes the default landing view. A model
+    // opened by explicit code (selectedModelCode/gallery link) is unaffected;
+    // this only governs the fallback when nothing is selected yet.
+    const candidates = models.filter(matchesMode);
+    const preferred = candidates.find(isModelCallable) || candidates[0];
+    setActiveModelCode(preferred?.code || models[0]?.code);
   }, [activeModelCode, isWorkbench, models, requestedMode, section]);
 
   useEffect(() => {
