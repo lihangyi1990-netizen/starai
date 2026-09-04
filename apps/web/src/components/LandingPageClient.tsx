@@ -522,13 +522,15 @@ export default function LandingPageClient() {
                 {t("landing.apiDocs")}
               </Link>
             )}
-            <button
-              type="button"
-              onClick={() => enterAppOrLogin()}
-              className="rounded-lg px-3 py-2 text-sm text-ink-mid transition-colors hover:text-ink"
-            >
-              {t("landing.login")}
-            </button>
+            {!token && (
+              <button
+                type="button"
+                onClick={() => enterAppOrLogin()}
+                className="rounded-lg px-3 py-2 text-sm text-ink-mid transition-colors hover:text-ink"
+              >
+                {t("landing.login")}
+              </button>
+            )}
             <button
               type="button"
               onClick={() => enterAppOrLogin()}
