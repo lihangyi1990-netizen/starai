@@ -20,11 +20,15 @@ type Tab = "email" | "account";
 type AccountMode = "login" | "register";
 type LegalDoc = "terms" | "privacy";
 
+// `pico-login-modal` is deliberately NOT in this list: globals.css defines that
+// class twice (a cream one, then a dark-purple arcade one that wins), and both
+// predate Style A. `pico-premium-login-modal` is the only skin hook now, and it
+// is light — see the block above its rules in globals.css.
 const LOGIN_MODAL_CLASS =
-  "pico-login-modal pico-premium-login-modal modal-shell fixed left-1/2 top-1/2 z-50 mx-0 max-h-[90vh] w-[calc(100vw-2rem)] max-w-md -translate-x-1/2 -translate-y-1/2 overflow-y-auto rounded-2xl bg-white shadow-2xl";
+  "pico-premium-login-modal modal-shell fixed left-1/2 top-1/2 z-50 mx-0 max-h-[90vh] w-[calc(100vw-2rem)] max-w-md -translate-x-1/2 -translate-y-1/2 overflow-y-auto rounded-2xl bg-white shadow-2xl";
 
 const LEGAL_MODAL_CLASS =
-  "fixed left-1/2 top-1/2 z-50 flex max-h-[90vh] w-[calc(100vw-2rem)] max-w-2xl -translate-x-1/2 -translate-y-1/2 flex-col overflow-hidden rounded-2xl border border-white/10 bg-[#11151b] text-white shadow-2xl shadow-black/40";
+  "fixed left-1/2 top-1/2 z-50 flex max-h-[90vh] w-[calc(100vw-2rem)] max-w-2xl -translate-x-1/2 -translate-y-1/2 flex-col overflow-hidden rounded-2xl border border-line bg-white text-ink shadow-2xl";
 
 
 function CaptchaRow({
@@ -75,19 +79,19 @@ function LegalModal({
   if (!doc) return null;
   return (
     <>
-      <div className="flex shrink-0 items-center justify-between border-b border-white/10 px-5 py-4">
-        <Dialog.Title className="text-base font-semibold text-white">{title}</Dialog.Title>
-        <button type="button" onClick={onClose} aria-label={t("common.close")} className="rounded-lg px-2 py-1 text-xl leading-none text-white/45 hover:bg-white/10 hover:text-white">
+      <div className="flex shrink-0 items-center justify-between border-b border-line px-5 py-4">
+        <Dialog.Title className="text-base font-semibold text-ink">{title}</Dialog.Title>
+        <button type="button" onClick={onClose} aria-label={t("common.close")} className="rounded-lg px-2 py-1 text-xl leading-none text-ink-soft hover:text-ink">
           ×
         </button>
       </div>
       <div className="min-h-0 flex-1 overflow-y-scroll overscroll-contain px-5 py-5" style={{ WebkitOverflowScrolling: "touch" }}>
-        <div className="whitespace-pre-wrap break-words text-sm leading-7 text-white/72">
+        <div className="whitespace-pre-wrap break-words text-sm leading-7 text-ink-mid">
           {content.trim() || t("login.legalEmpty")}
         </div>
       </div>
-      <div className="shrink-0 border-t border-white/10 bg-white/[0.02] px-5 py-4 text-right">
-        <button type="button" onClick={onClose} className="rounded-xl bg-primary px-5 py-2 text-sm font-semibold text-dark hover:bg-primary/90">
+      <div className="shrink-0 border-t border-line bg-sunk px-5 py-4 text-right">
+        <button type="button" onClick={onClose} className="rounded-lg bg-ink px-5 py-2 text-sm font-medium text-white transition-opacity hover:opacity-90">
           {t("common.gotIt")}
         </button>
       </div>

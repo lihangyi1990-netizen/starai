@@ -17,18 +17,18 @@ export function TryOnPlayGuide({ open, onClose }: { open: boolean; onClose: () =
 
   return createPortal(
     <div className="fixed inset-0 z-50 flex items-center justify-center">
-      <div className="absolute inset-0 bg-black/50 backdrop-blur-sm dark:bg-black/80" onClick={onClose} />
+      <div className="absolute inset-0 bg-black/50 dark:bg-black/80" onClick={onClose} />
       <div role="dialog" aria-modal="true" aria-labelledby="tryon-guide-title" className="relative mx-4 max-h-[90vh] w-full max-w-3xl overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-2xl dark:border-gray-700/50 dark:bg-gray-900">
         <div className="flex items-center justify-between border-b border-gray-100 px-5 py-4 dark:border-gray-800">
           <div>
-            <div className="text-sm font-medium text-rose-600 dark:text-rose-300">AI 试衣间使用说明</div>
+            <div className="text-sm font-medium text-blue-600 dark:text-blue-300">AI 试衣间使用说明</div>
             <h2 id="tryon-guide-title" className="mt-1 text-xl font-bold text-gray-900 dark:text-white">上传人物照和服装图，生成自然试穿效果</h2>
           </div>
           <button type="button" onClick={onClose} aria-label="关闭使用说明" className="rounded-lg p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-gray-800 dark:hover:text-white"><X size={22} /></button>
         </div>
 
         <div className="max-h-[calc(90vh-82px)] space-y-7 overflow-y-auto px-5 py-5">
-          <div className="rounded-xl border border-rose-100 bg-rose-50 p-5 text-sm leading-6 text-gray-700 dark:border-rose-500/20 dark:bg-rose-500/10 dark:text-gray-200">
+          <div className="rounded-xl border border-blue-100 bg-blue-50 p-5 text-sm leading-6 text-gray-700 dark:border-blue-600/20 dark:bg-blue-600/10 dark:text-gray-200">
             AI 会把服装图片中的款式、颜色和纹理应用到人物照片上，同时尽量保留人物身份、姿态和背景。结果用于视觉预览，不代表真实尺码和实际穿着效果。
           </div>
 
@@ -48,7 +48,7 @@ export function TryOnPlayGuide({ open, onClose }: { open: boolean; onClose: () =
                 ["设置参数", "选择服装类型、商品图类型、试衣模型、清晰度和生成张数。"],
                 ["确认授权", "确认人物照片为本人或已获得合法使用授权。"],
                 ["开始试衣", "点击发送按钮，完成后可在结果页查看和下载图片。"],
-              ].map(([title, text], index) => <div key={title} className="flex gap-3"><span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-rose-100 text-sm font-bold text-rose-600 dark:bg-rose-500/20 dark:text-rose-300">{index + 1}</span><div><div className="font-semibold text-gray-900 dark:text-white">{title}</div><p className="mt-0.5 text-sm leading-6 text-gray-500 dark:text-gray-400">{text}</p></div></div>)}
+              ].map(([title, text], index) => <div key={title} className="flex gap-3"><span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-blue-100 text-sm font-bold text-blue-600 dark:bg-blue-600/20 dark:text-blue-300">{index + 1}</span><div><div className="font-semibold text-gray-900 dark:text-white">{title}</div><p className="mt-0.5 text-sm leading-6 text-gray-500 dark:text-gray-400">{text}</p></div></div>)}
             </div>
           </section>
 
@@ -66,5 +66,5 @@ export function TryOnPlayGuide({ open, onClose }: { open: boolean; onClose: () =
 }
 
 function GuideCard({ icon, title, text }: { icon: React.ReactNode; title: string; text: string }) {
-  return <div className="rounded-xl border border-gray-200 p-4 dark:border-gray-700/50"><div className="mb-2 flex items-center gap-2 font-bold text-gray-900 dark:text-white"><span className="text-rose-500">{icon}</span>{title}</div><p className="text-sm leading-6 text-gray-500 dark:text-gray-400">{text}</p></div>;
+  return <div className="rounded-xl border border-gray-200 p-4 dark:border-gray-700/50"><div className="mb-2 flex items-center gap-2 font-bold text-gray-900 dark:text-white"><span className="text-blue-600">{icon}</span>{title}</div><p className="text-sm leading-6 text-gray-500 dark:text-gray-400">{text}</p></div>;
 }

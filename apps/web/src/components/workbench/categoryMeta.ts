@@ -93,18 +93,10 @@ export const CATEGORIES = [
 
 export const CATEGORY_TAG: Record<string, { label: string; labelKey: string; className: string }> = {
   chat: { label: "\u804a\u5929", labelKey: "nav.chat", className: "bg-blue-50 text-blue-600" },
-  multi_collab: { label: "\u591a\u6a21\u578b", labelKey: "category.multiCollab", className: "bg-indigo-50 text-indigo-600" },
+  multi_collab: { label: "\u591a\u6a21\u578b", labelKey: "category.multiCollab", className: "bg-slate-100 text-slate-600" },
   image: { label: "\u56fe\u7247", labelKey: "nav.image", className: "bg-emerald-50 text-emerald-600" },
   video: { label: "\u89c6\u9891", labelKey: "nav.video", className: "bg-purple-50 text-purple-600" },
   audio: { label: "\u97f3\u9891", labelKey: "nav.audio", className: "bg-orange-50 text-orange-600" },
-};
-
-export const MODEL_ICONS: Record<string, string> = {
-  chat: "\u{1F4AC}",
-  multi_collab: "\u{1F916}",
-  image: "\u{1F5BC}\uFE0F",
-  video: "\u{1F3AC}",
-  audio: "\u{1F3B5}",
 };
 
 export const AGENT_CATEGORIES = [
@@ -118,81 +110,37 @@ export const AGENT_CATEGORIES = [
 export const AGENT_CATEGORY_TAG: Record<string, { label: string; labelKey: string; className: string }> = {
   image: { label: "\u56fe\u7247", labelKey: "nav.image", className: "bg-emerald-50 text-emerald-600" },
   video: { label: "\u89c6\u9891", labelKey: "nav.video", className: "bg-purple-50 text-purple-600" },
-  multi_collab: { label: "\u591a\u6a21\u578b", labelKey: "category.multiCollab", className: "bg-indigo-50 text-indigo-600" },
-  api: { label: "API", labelKey: "category.api", className: "bg-sky-50 text-sky-600" },
-  tool: { label: "\u5de5\u5177", labelKey: "category.tool", className: "bg-amber-50 text-amber-600" },
-  workflow: { label: "\u901a\u7528", labelKey: "category.workflow", className: "bg-gray-100 text-gray-500" },
+  multi_collab: { label: "\u591a\u6a21\u578b", labelKey: "category.multiCollab", className: "bg-slate-100 text-slate-600" },
+  api: { label: "API", labelKey: "category.api", className: "bg-slate-100 text-slate-600" },
+  tool: { label: "\u5de5\u5177", labelKey: "category.tool", className: "bg-slate-100 text-slate-600" },
+  workflow: { label: "\u901a\u7528", labelKey: "category.workflow", className: "bg-slate-100 text-slate-600" },
 };
 
-// Hero gradient themes for the agent workspace banner.
-export const AGENT_THEMES: Record<string, { gradient: string; iconBg: string; pill: string; accent: string }> = {
-  amber: {
-    gradient: "from-amber-50 via-orange-50 to-white",
-    iconBg: "bg-amber-100 text-amber-600",
-    pill: "bg-amber-100/70 text-amber-700",
-    accent: "text-amber-600",
-  },
-  rose: {
-    gradient: "from-rose-50 via-pink-50 to-white",
-    iconBg: "bg-rose-100 text-rose-600",
-    pill: "bg-rose-100/70 text-rose-700",
-    accent: "text-rose-600",
-  },
-  violet: {
-    gradient: "from-violet-50 via-purple-50 to-white",
-    iconBg: "bg-violet-100 text-violet-600",
-    pill: "bg-violet-100/70 text-violet-700",
-    accent: "text-violet-600",
-  },
-  sky: {
-    gradient: "from-sky-50 via-blue-50 to-white",
-    iconBg: "bg-sky-100 text-sky-600",
-    pill: "bg-sky-100/70 text-sky-700",
-    accent: "text-sky-600",
-  },
-  emerald: {
-    gradient: "from-emerald-50 via-teal-50 to-white",
-    iconBg: "bg-emerald-100 text-emerald-600",
-    pill: "bg-emerald-100/70 text-emerald-700",
-    accent: "text-emerald-600",
-  },
-  fuchsia: {
-    gradient: "from-fuchsia-50 via-pink-50 to-white",
-    iconBg: "bg-fuchsia-100 text-fuchsia-600",
-    pill: "bg-fuchsia-100/70 text-fuchsia-700",
-    accent: "text-fuchsia-600",
-  },
-  comic: {
-    gradient: "from-cyan-50 via-violet-50 to-white",
-    iconBg: "bg-cyan-100 text-cyan-700",
-    pill: "bg-cyan-100/70 text-cyan-700",
-    accent: "text-cyan-600",
-  },
+/**
+ * Agent banner treatment.
+ *
+ * This used to be seven hue themes (amber/rose/violet/sky/emerald/fuchsia/comic),
+ * each with a `from-... via-... to-white` gradient wash. Two problems: the
+ * `gradient` field had no reader anywhere in the app, so those classes were dead;
+ * and the remaining hue was chosen per agent, which meant a colour in this UI
+ * could mean either "which channel" or "which agent". It now only means the first.
+ *
+ * The keys are kept because `display_config.theme` rows in the database still
+ * carry them - they all resolve to the same neutral treatment, so an existing row
+ * keeps working and simply stops tinting the banner.
+ */
+const NEUTRAL_AGENT_THEME = {
+  iconBg: "bg-ink text-white",
+  pill: "bg-sunk text-ink-mid",
+  accent: "text-ink",
 };
 
-export const FEATURE_CARDS = [
-  {
-    titleKey: "workspace.feature.multiView.title",
-    descKey: "workspace.feature.multiView.desc",
-    icon: "\u{1F310}",
-    color: "bg-amber-50 text-amber-600",
-  },
-  {
-    titleKey: "workspace.feature.fusion.title",
-    descKey: "workspace.feature.fusion.desc",
-    icon: "\u2728",
-    color: "bg-purple-50 text-purple-600",
-  },
-  {
-    titleKey: "workspace.feature.parallel.title",
-    descKey: "workspace.feature.parallel.desc",
-    icon: "\u26A1",
-    color: "bg-blue-50 text-blue-600",
-  },
-  {
-    titleKey: "workspace.feature.quality.title",
-    descKey: "workspace.feature.quality.desc",
-    icon: "\u{1F6E1}\uFE0F",
-    color: "bg-pink-50 text-pink-600",
-  },
-];
+export const AGENT_THEMES: Record<string, { iconBg: string; pill: string; accent: string }> = {
+  amber: NEUTRAL_AGENT_THEME,
+  rose: NEUTRAL_AGENT_THEME,
+  violet: NEUTRAL_AGENT_THEME,
+  sky: NEUTRAL_AGENT_THEME,
+  emerald: NEUTRAL_AGENT_THEME,
+  fuchsia: NEUTRAL_AGENT_THEME,
+  comic: NEUTRAL_AGENT_THEME,
+};

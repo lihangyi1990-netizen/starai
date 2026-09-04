@@ -296,13 +296,18 @@ const DEFAULT_TEMPLATE_ZH: Record<string, { name: string; description: string }>
   "video-remake": { name: "视频复刻", description: "智能拆镜、替换商品或主体、分段生成并合成原片节奏的新视频" },
 };
 
+// Template badges used to carry six hues picked per template. A colour in this UI
+// means "which channel"; a per-template hue competed with that and told the user
+// nothing, since the template name is right next to the badge. Keys are kept so
+// existing template records keep resolving.
+const NEUTRAL_TONE = "bg-sunk text-ink-mid";
 const TEMPLATE_TONES: Record<string, string> = {
-  orange: "bg-orange-100 text-orange-600 dark:bg-orange-500/15 dark:text-orange-300",
-  emerald: "bg-emerald-100 text-emerald-600 dark:bg-emerald-500/15 dark:text-emerald-300",
-  blue: "bg-blue-100 text-blue-600 dark:bg-blue-500/15 dark:text-blue-300",
-  amber: "bg-amber-100 text-amber-600 dark:bg-amber-500/15 dark:text-amber-300",
-  pink: "bg-pink-100 text-pink-600 dark:bg-pink-500/15 dark:text-pink-300",
-  violet: "bg-violet-100 text-violet-600 dark:bg-violet-500/15 dark:text-violet-300",
+  orange: NEUTRAL_TONE,
+  emerald: NEUTRAL_TONE,
+  blue: NEUTRAL_TONE,
+  amber: NEUTRAL_TONE,
+  pink: NEUTRAL_TONE,
+  violet: NEUTRAL_TONE,
 };
 
 const wait = (ms: number) => new Promise((resolve) => window.setTimeout(resolve, ms));
@@ -1004,24 +1009,28 @@ function NodeFrame({
           position={Position.Left}
           aria-label={t("canvas.node.connectInput")}
           title={t("canvas.node.connectInput")}
-          className={`!z-10 !flex !h-6 !w-6 !items-center !justify-center !border-2 !border-white !bg-cyan-500 !text-white !shadow-[0_0_9px_rgba(6,182,212,0.34)] !transition-opacity dark:!border-gray-900 ${selected ? "!opacity-100" : "!opacity-0"}`}
+          className={`!z-10 !flex !h-6 !w-6 !items-center !justify-center !border-2 !border-white !bg-blue-600 !text-white !transition-opacity dark:!border-gray-900 ${selected ? "!opacity-100" : "!opacity-0"}`}
         >
           <Plus size={12} />
         </Handle>
       )}
-      <div className={`overflow-hidden rounded-xl border bg-white/95 backdrop-blur transition-[border-color,box-shadow] dark:bg-gray-900/95 ${
+      {/* Canvas nodes are draggable objects above the board, so a modest elevation
+          shadow is doing real work here rather than decorating a flat surface.
+          Selection reads as a channel-coloured border plus ring; the old glow was
+          a leftover cyan tint from before the palette existed. */}
+      <div className={`overflow-hidden rounded-lg border bg-white transition-[border-color,box-shadow] ${
         selected
-          ? "border-cyan-400 shadow-[0_0_0_1px_rgba(34,211,238,0.22),0_12px_34px_rgba(15,23,42,0.15)] dark:border-cyan-400/80 dark:shadow-[0_0_0_1px_rgba(34,211,238,0.18),0_16px_40px_rgba(0,0,0,0.36)]"
-          : "border-gray-200 shadow-[0_10px_30px_rgba(15,23,42,0.11)] dark:border-white/10 dark:shadow-[0_16px_40px_rgba(0,0,0,0.32)]"
+          ? "border-ch-chat ring-2 ring-ch-chat/25 shadow-[0_8px_24px_rgb(24_24_27_/_0.10)]"
+          : "border-line shadow-[0_2px_8px_rgb(24_24_27_/_0.06)]"
       }`}>
         <div className="flex items-center gap-2 border-b border-gray-100 px-2.5 py-2 dark:border-white/10">
-          <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-cyan-50 text-cyan-600 dark:bg-cyan-500/10 dark:text-cyan-300">
+          <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-blue-50 text-blue-600 dark:bg-blue-600/10 dark:text-blue-300">
             {icon}
           </span>
           <span className="min-w-0 flex-1 truncate text-xs font-semibold text-gray-900 dark:text-gray-100">{publicTitle}</span>
           {headerActions}
           {status && status !== "idle" && (
-            <span className={`text-[10px] ${status === "failed" || status === "blocked" ? "text-red-500" : status === "succeeded" ? "text-emerald-500" : status === "stale" ? "text-amber-500" : "text-cyan-500"}`}>
+            <span className={`text-[10px] ${status === "failed" || status === "blocked" ? "text-red-500" : status === "succeeded" ? "text-emerald-500" : status === "stale" ? "text-amber-500" : "text-blue-600"}`}>
               {status === "failed"
                 ? t("canvas.status.failed")
                 : status === "blocked"
@@ -1044,7 +1053,7 @@ function NodeFrame({
                   event.stopPropagation();
                   setActionMenuOpen((value) => !value);
                 }}
-                className="flex h-7 w-7 items-center justify-center rounded-lg border border-gray-200 text-gray-400 hover:border-cyan-300 hover:text-cyan-500 dark:border-white/10"
+                className="flex h-7 w-7 items-center justify-center rounded-lg border border-gray-200 text-gray-400 hover:border-blue-300 hover:text-blue-600 dark:border-white/10"
               >
                 <MoreHorizontal size={14} />
               </button>
@@ -1079,23 +1088,23 @@ function NodeFrame({
           </button>
         </div>
         {running && (
-          <div className="border-b border-gray-100 bg-cyan-50/60 px-2.5 py-2 dark:border-white/10 dark:bg-cyan-500/[0.045]">
+          <div className="border-b border-gray-100 bg-blue-50/60 px-2.5 py-2 dark:border-white/10 dark:bg-blue-600/[0.045]">
             <div className="mb-1.5 flex items-center justify-between gap-2 text-[9px]">
-              <span className="flex min-w-0 items-center gap-1.5 font-medium text-cyan-700 dark:text-cyan-300">
+              <span className="flex min-w-0 items-center gap-1.5 font-medium text-blue-700 dark:text-blue-300">
                 <LoaderCircle size={11} className="shrink-0 animate-spin" />
                 <span className="truncate">{progressLabel || t("canvas.progress.generating")}</span>
               </span>
-              <span className="shrink-0 tabular-nums text-cyan-600 dark:text-cyan-300">{safeProgress}%</span>
+              <span className="shrink-0 tabular-nums text-blue-600 dark:text-blue-300">{safeProgress}%</span>
             </div>
             <div
               role="progressbar"
               aria-valuemin={0}
               aria-valuemax={100}
               aria-valuenow={safeProgress}
-              className="h-1.5 overflow-hidden rounded-full bg-cyan-100 dark:bg-white/10"
+              className="h-1.5 overflow-hidden rounded-full bg-blue-100 dark:bg-white/10"
             >
               <div
-                className="h-full rounded-full bg-gradient-to-r from-cyan-500 via-sky-500 to-violet-500 shadow-[0_0_8px_rgba(6,182,212,0.35)] transition-[width] duration-500 ease-out"
+                className="h-full rounded-full bg-ch-chat transition-[width] duration-500 ease-out"
                 style={{ width: `${safeProgress}%` }}
               />
             </div>
@@ -1113,7 +1122,7 @@ function NodeFrame({
             event.stopPropagation();
             actions?.openOutputMenu(id, { x: event.clientX, y: event.clientY });
           }}
-          className={`nodrag !z-10 !flex !h-6 !w-6 !items-center !justify-center !border-2 !border-white !bg-cyan-500 !text-white !shadow-[0_0_10px_rgba(6,182,212,0.42)] !transition-opacity hover:!bg-cyan-600 dark:!border-gray-900 ${selected ? "!opacity-100" : "!opacity-0"}`}
+          className={`nodrag !z-10 !flex !h-6 !w-6 !items-center !justify-center !border-2 !border-white !bg-blue-600 !text-white !transition-opacity hover:!bg-blue-600 dark:!border-gray-900 ${selected ? "!opacity-100" : "!opacity-0"}`}
         >
           <Plus size={12} />
         </Handle>
@@ -1137,9 +1146,9 @@ function TextInputNode({ id, data, selected }: NodeProps<CanvasNode>) {
       className="w-[320px]"
       headerActions={(
         <div className="nodrag flex items-center gap-1">
-          <span className="flex h-7 w-7 items-center justify-center rounded-lg border border-cyan-300 bg-cyan-50 text-cyan-600 dark:bg-cyan-500/10 dark:text-cyan-300"><Type size={14} /></span>
+          <span className="flex h-7 w-7 items-center justify-center rounded-lg border border-blue-300 bg-blue-50 text-blue-600 dark:bg-blue-600/10 dark:text-blue-300"><Type size={14} /></span>
           <button type="button" title={t("canvas.node.referenceImages")} onClick={() => actions?.openAssetLibrary(id, "image")} className="flex h-7 w-7 items-center justify-center rounded-lg border border-gray-200 text-gray-400 hover:border-violet-300 hover:text-violet-500 dark:border-white/10"><ImageIcon size={14} /></button>
-          <button type="button" title={t("canvas.node.referenceVideos")} onClick={() => actions?.openAssetLibrary(id, "video")} className="flex h-7 w-7 items-center justify-center rounded-lg border border-gray-200 text-gray-400 hover:border-pink-300 hover:text-pink-500 dark:border-white/10"><Film size={14} /></button>
+          <button type="button" title={t("canvas.node.referenceVideos")} onClick={() => actions?.openAssetLibrary(id, "video")} className="flex h-7 w-7 items-center justify-center rounded-lg border border-gray-200 text-gray-400 hover:border-blue-300 hover:text-blue-600 dark:border-white/10"><Film size={14} /></button>
           <button type="button" title={t("canvas.node.referenceAudio")} onClick={() => actions?.openAssetLibrary(id, "audio")} className="flex h-7 w-7 items-center justify-center rounded-lg border border-gray-200 text-gray-400 hover:border-amber-300 hover:text-amber-500 dark:border-white/10"><Mic size={14} /></button>
           <span className="flex h-7 w-7 items-center justify-center rounded-lg border border-gray-200 text-gray-400 dark:border-white/10"><MoreHorizontal size={14} /></span>
         </div>
@@ -1147,7 +1156,7 @@ function TextInputNode({ id, data, selected }: NodeProps<CanvasNode>) {
     >
       <div className="flex min-h-[210px] flex-col gap-2 p-2.5">
         <textarea
-          className="nodrag nowheel h-24 w-full resize-none rounded-lg border border-gray-100 bg-gray-50 p-2.5 text-[11px] leading-relaxed outline-none transition focus:border-cyan-300 dark:border-white/10 dark:bg-white/5 dark:text-gray-100"
+          className="nodrag nowheel h-24 w-full resize-none rounded-lg border border-gray-100 bg-gray-50 p-2.5 text-[11px] leading-relaxed outline-none transition focus:border-blue-300 dark:border-white/10 dark:bg-white/5 dark:text-gray-100"
           placeholder={t("canvas.node.textPlaceholder")}
           value={data.prompt || ""}
           onChange={(event) => actions?.update(id, { prompt: event.target.value })}
@@ -1353,7 +1362,7 @@ function ImageInputNode({ id, data, selected }: NodeProps<CanvasNode>) {
             <option value="video">{t("canvas.kind.video")}</option>
             <option value="audio">{t("canvas.kind.audio")}</option>
           </select>
-          <button type="button" onClick={() => inputRef.current?.click()} className="nodrag h-8 rounded-lg border border-cyan-200 bg-cyan-50 px-2 text-[10px] font-medium text-cyan-600 dark:bg-cyan-500/10 dark:text-cyan-300">
+          <button type="button" onClick={() => inputRef.current?.click()} className="nodrag h-8 rounded-lg border border-blue-200 bg-blue-50 px-2 text-[10px] font-medium text-blue-600 dark:bg-blue-600/10 dark:text-blue-300">
             <Upload size={12} className="mr-1 inline" />{t("canvas.node.addMedia")}
           </button>
           <button type="button" onClick={() => actions?.openAssetLibrary(id, mediaKind)} className="nodrag h-8 rounded-lg border border-violet-200 bg-violet-50 px-2 text-[10px] font-medium text-violet-600 dark:bg-violet-500/10 dark:text-violet-300">
@@ -1383,7 +1392,7 @@ function ImageInputNode({ id, data, selected }: NodeProps<CanvasNode>) {
           <button
             type="button"
             onClick={() => inputRef.current?.click()}
-            className="nodrag flex h-20 w-full flex-col items-center justify-center gap-1.5 rounded-lg border border-dashed border-gray-200 bg-gray-50 text-[10px] text-gray-400 hover:border-cyan-300 hover:text-cyan-600 dark:border-white/10 dark:bg-white/5"
+            className="nodrag flex h-20 w-full flex-col items-center justify-center gap-1.5 rounded-lg border border-dashed border-gray-200 bg-gray-50 text-[10px] text-gray-400 hover:border-blue-300 hover:text-blue-600 dark:border-white/10 dark:bg-white/5"
           >
             {data.status === "running" ? <LoaderCircle size={22} className="animate-spin" /> : <Upload size={22} />}
             {data.status === "running"
@@ -1451,17 +1460,17 @@ function GeneratorNode({ id, data, selected }: NodeProps<CanvasNode>) {
   const tone =
     kind === "text"
       ? {
-          border: "border-cyan-400/60",
-          select: "border-cyan-400/40 bg-cyan-500/10 focus:border-cyan-400",
-          result: "border-cyan-400/25 bg-cyan-500/5 text-cyan-600 dark:text-cyan-300",
-          button: "bg-cyan-500 hover:bg-cyan-600",
+          border: "border-blue-500/60",
+          select: "border-blue-500/40 bg-blue-600/10 focus:border-blue-500",
+          result: "border-blue-500/25 bg-blue-600/5 text-blue-600 dark:text-blue-300",
+          button: "bg-blue-600 hover:bg-blue-600",
         }
       : kind === "video"
       ? {
-          border: "border-pink-400/60",
-          select: "border-pink-400/40 bg-pink-500/10 focus:border-pink-400",
-          result: "border-pink-400/25 bg-pink-500/5 text-pink-500 dark:text-pink-300",
-          button: "bg-pink-500 hover:bg-pink-600",
+          border: "border-blue-500/60",
+          select: "border-blue-500/40 bg-blue-600/10 focus:border-blue-500",
+          result: "border-blue-500/25 bg-blue-600/5 text-blue-600 dark:text-blue-300",
+          button: "bg-blue-600 hover:bg-blue-600",
         }
       : kind === "audio"
         ? {
@@ -1588,13 +1597,13 @@ function GeneratorNode({ id, data, selected }: NodeProps<CanvasNode>) {
           </div>
         )}
         {isSeedanceFullReference && (
-          <div className="nodrag space-y-2 border-t border-pink-400/20 pt-2.5">
-            <div className="flex items-center gap-2 rounded-lg border border-pink-400/20 bg-pink-500/5 px-2.5 py-2">
+          <div className="nodrag space-y-2 border-t border-blue-500/20 pt-2.5">
+            <div className="flex items-center gap-2 rounded-lg border border-blue-500/20 bg-blue-600/5 px-2.5 py-2">
               <span className="text-[9px] text-gray-400">{t("video.generationMode")}</span>
-              <span className="min-w-0 flex-1 truncate text-[10px] font-semibold text-pink-500 dark:text-pink-300">
+              <span className="min-w-0 flex-1 truncate text-[10px] font-semibold text-blue-600 dark:text-blue-300">
                 {t(`video.option.generation_mode.${seedanceMaterialMode}`)}
               </span>
-              <span className="shrink-0 rounded-full bg-cyan-500/10 px-2 py-0.5 text-[9px] font-semibold text-cyan-600 dark:text-cyan-300">
+              <span className="shrink-0 rounded-full bg-blue-600/10 px-2 py-0.5 text-[9px] font-semibold text-blue-600 dark:text-blue-300">
                 {t("canvas.node.autoMaterialMode")}
               </span>
             </div>
@@ -1605,10 +1614,10 @@ function GeneratorNode({ id, data, selected }: NodeProps<CanvasNode>) {
             )}
             <div className="flex items-center justify-between gap-2">
               <div>
-                <div className="text-[10px] font-semibold text-pink-500 dark:text-pink-300">{data.referenceImageLabel || t("canvas.node.avatarAndFirstFrame")}</div>
+                <div className="text-[10px] font-semibold text-blue-600 dark:text-blue-300">{data.referenceImageLabel || t("canvas.node.avatarAndFirstFrame")}</div>
                 <div className="mt-0.5 text-[9px] text-gray-400">{t("canvas.node.seedancePortraitHint")}</div>
               </div>
-              <span className="rounded-full bg-pink-500/10 px-2 py-0.5 text-[9px] font-semibold text-pink-500">{t("canvas.node.fullReference")}</span>
+              <span className="rounded-full bg-blue-600/10 px-2 py-0.5 text-[9px] font-semibold text-blue-600">{t("canvas.node.fullReference")}</span>
             </div>
             <input
               ref={imageInputRef}
@@ -1624,7 +1633,7 @@ function GeneratorNode({ id, data, selected }: NodeProps<CanvasNode>) {
             />
             <div className="flex flex-wrap items-center gap-1.5">
               {referenceImages.map((url, index) => (
-                <div key={`${url}-${index}`} className="group relative h-14 w-14 overflow-hidden rounded-xl border border-pink-300/30 bg-pink-500/5">
+                <div key={`${url}-${index}`} className="group relative h-14 w-14 overflow-hidden rounded-xl border border-blue-300/30 bg-blue-600/5">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img src={url} alt="" className="h-full w-full object-cover" />
                   <button type="button" onClick={() => actions?.update(id, {
@@ -1633,7 +1642,7 @@ function GeneratorNode({ id, data, selected }: NodeProps<CanvasNode>) {
                   })} className="absolute right-0.5 top-0.5 rounded bg-black/65 p-0.5 text-white opacity-0 group-hover:opacity-100"><X size={9} /></button>
                 </div>
               ))}
-              <button type="button" disabled={referenceImages.length >= seedanceImageLimit} onClick={() => imageInputRef.current?.click()} className="flex h-14 w-14 flex-col items-center justify-center gap-0.5 rounded-xl border border-dashed border-pink-300/50 bg-pink-500/5 text-pink-500 hover:bg-pink-500/10 disabled:cursor-not-allowed disabled:opacity-40">
+              <button type="button" disabled={referenceImages.length >= seedanceImageLimit} onClick={() => imageInputRef.current?.click()} className="flex h-14 w-14 flex-col items-center justify-center gap-0.5 rounded-xl border border-dashed border-blue-300/50 bg-blue-600/5 text-blue-600 hover:bg-blue-600/10 disabled:cursor-not-allowed disabled:opacity-40">
                 <Plus size={15} /><span className="text-[9px]">{t("common.upload")}</span>
               </button>
               <button type="button" disabled={referenceImages.length >= seedanceImageLimit} onClick={() => actions?.openAssetLibrary(id, "image")} className="flex h-14 min-w-14 flex-col items-center justify-center gap-0.5 rounded-xl border border-dashed border-violet-300/50 bg-violet-500/5 px-2 text-violet-500 hover:bg-violet-500/10 disabled:cursor-not-allowed disabled:opacity-40">
@@ -1653,7 +1662,7 @@ function GeneratorNode({ id, data, selected }: NodeProps<CanvasNode>) {
                 setCopied(true);
                 window.setTimeout(() => setCopied(false), 1600);
               }}
-              className="nodrag sticky right-0 top-0 float-right -mr-7 -mt-1 flex h-7 w-7 items-center justify-center rounded-lg border border-cyan-300/30 bg-white/85 text-cyan-600 shadow-sm backdrop-blur hover:bg-white dark:bg-gray-900/85 dark:text-cyan-300"
+              className="nodrag sticky right-0 top-0 float-right -mr-7 -mt-1 flex h-7 w-7 items-center justify-center rounded-lg border border-blue-300/30 bg-white/85 text-blue-600 shadow-sm hover:bg-white dark:bg-gray-900/85 dark:text-blue-300"
             >
               {copied ? <Check size={13} /> : <Copy size={13} />}
             </button>
@@ -1685,7 +1694,7 @@ function GeneratorNode({ id, data, selected }: NodeProps<CanvasNode>) {
                   title: data.label || generationTitle,
                 })}
                 title={t("common.preview")}
-                className="nodrag flex h-7 w-7 items-center justify-center rounded-lg border border-white/20 bg-gray-950/75 text-white shadow backdrop-blur hover:bg-gray-900"
+                className="nodrag flex h-7 w-7 items-center justify-center rounded-lg border border-white/20 bg-gray-950/75 text-white shadow hover:bg-gray-900"
               >
                 <Eye size={13} />
               </button>
@@ -1696,7 +1705,7 @@ function GeneratorNode({ id, data, selected }: NodeProps<CanvasNode>) {
                   `starai-${kind}-${Date.now()}.${kind === "image" ? "png" : kind === "video" ? "mp4" : "mp3"}`
                 )}
                 title={t("common.download")}
-                className="nodrag flex h-7 w-7 items-center justify-center rounded-lg border border-white/20 bg-gray-950/75 text-white shadow backdrop-blur hover:bg-gray-900"
+                className="nodrag flex h-7 w-7 items-center justify-center rounded-lg border border-white/20 bg-gray-950/75 text-white shadow hover:bg-gray-900"
               >
                 <Download size={13} />
               </button>
@@ -1721,7 +1730,7 @@ function GeneratorNode({ id, data, selected }: NodeProps<CanvasNode>) {
         )}
         <textarea
           rows={1}
-          className="nodrag nowheel h-9 min-h-9 max-h-32 w-full resize-y rounded-lg border border-gray-200 bg-gray-50 px-2.5 py-2 text-[11px] leading-[18px] outline-none focus:border-cyan-300 dark:border-white/10 dark:bg-black/15 dark:text-gray-100"
+          className="nodrag nowheel h-9 min-h-9 max-h-32 w-full resize-y rounded-lg border border-gray-200 bg-gray-50 px-2.5 py-2 text-[11px] leading-[18px] outline-none focus:border-blue-300 dark:border-white/10 dark:bg-black/15 dark:text-gray-100"
           placeholder={isSeedanceFullReference ? t("canvas.node.seedancePromptPlaceholder") : t("canvas.node.promptPlaceholder")}
           value={data.prompt || ""}
           onChange={(event) => actions?.update(id, { prompt: event.target.value })}
@@ -1729,8 +1738,8 @@ function GeneratorNode({ id, data, selected }: NodeProps<CanvasNode>) {
         {isSeedanceFullReference && (referenceImages.length > 0 || referenceVideos.length > 0 || referenceAudios.length > 0) && (
           <div className="nodrag flex flex-wrap items-center gap-1">
             <span className="mr-0.5 text-[9px] text-gray-400">{t("canvas.node.quickReference")}</span>
-            {referenceImages.map((_, index) => <button key={`mention-image-${index}`} type="button" onClick={() => appendReferenceMention(`@${t("canvas.kind.image")}${index + 1}`)} className="rounded-md bg-pink-500/10 px-1.5 py-1 text-[9px] text-pink-500">@{t("canvas.kind.image")}{index + 1}</button>)}
-            {referenceVideos.map((_, index) => <button key={`mention-video-${index}`} type="button" onClick={() => appendReferenceMention(`@${t("canvas.kind.video")}${index + 1}`)} className="rounded-md bg-pink-500/10 px-1.5 py-1 text-[9px] text-pink-500">@{t("canvas.kind.video")}{index + 1}</button>)}
+            {referenceImages.map((_, index) => <button key={`mention-image-${index}`} type="button" onClick={() => appendReferenceMention(`@${t("canvas.kind.image")}${index + 1}`)} className="rounded-md bg-blue-600/10 px-1.5 py-1 text-[9px] text-blue-600">@{t("canvas.kind.image")}{index + 1}</button>)}
+            {referenceVideos.map((_, index) => <button key={`mention-video-${index}`} type="button" onClick={() => appendReferenceMention(`@${t("canvas.kind.video")}${index + 1}`)} className="rounded-md bg-blue-600/10 px-1.5 py-1 text-[9px] text-blue-600">@{t("canvas.kind.video")}{index + 1}</button>)}
             {referenceAudios.map((_, index) => <button key={`mention-audio-${index}`} type="button" onClick={() => appendReferenceMention(`@${t("canvas.kind.audio")}${index + 1}`)} className="rounded-md bg-violet-500/10 px-1.5 py-1 text-[9px] text-violet-500">@{t("canvas.kind.audio")}{index + 1}</button>)}
           </div>
         )}
@@ -1750,9 +1759,9 @@ function GeneratorNode({ id, data, selected }: NodeProps<CanvasNode>) {
               />
               <span className="min-w-0 flex-1 truncate text-[10px] text-gray-500 dark:text-gray-300">
                 {publicText(row.label, "参考素材")}
-                {row.urls.length > 0 && <span className="ml-1 text-cyan-500">{row.urls.length}</span>}
+                {row.urls.length > 0 && <span className="ml-1 text-blue-600">{row.urls.length}</span>}
               </span>
-              <button type="button" onClick={() => row.inputRef.current?.click()} title={t("canvas.node.addMedia")} className="nodrag flex h-7 w-7 items-center justify-center rounded-lg border border-gray-200 text-gray-400 hover:border-cyan-300 hover:text-cyan-500 dark:border-white/10"><Plus size={13} /></button>
+              <button type="button" onClick={() => row.inputRef.current?.click()} title={t("canvas.node.addMedia")} className="nodrag flex h-7 w-7 items-center justify-center rounded-lg border border-gray-200 text-gray-400 hover:border-blue-300 hover:text-blue-600 dark:border-white/10"><Plus size={13} /></button>
               <button type="button" onClick={() => actions?.openAssetLibrary(id, row.kind)} title={t("canvas.assetLibrary")} className="nodrag flex h-7 w-7 items-center justify-center rounded-lg border border-gray-200 text-gray-400 hover:border-violet-300 hover:text-violet-500 dark:border-white/10"><FolderOpen size={13} /></button>
               {row.urls.length > 0 && (
                 <button
@@ -1784,7 +1793,7 @@ function GeneratorNode({ id, data, selected }: NodeProps<CanvasNode>) {
               {data.mode || (kind === "text" ? t("canvas.node.textMode") : kind === "video" ? t("canvas.node.videoMode") : kind === "audio" ? t("canvas.node.audioMode") : t("canvas.node.imageMode"))}
             </div>
             {(Number(data.actualCost || 0) > 0 || Number(data.estimatedCost || 0) > 0) && (
-              <div className="mt-0.5 text-[10px] font-medium text-cyan-600 dark:text-cyan-300">
+              <div className="mt-0.5 text-[10px] font-medium text-blue-600 dark:text-blue-300">
                 {Number(data.actualCost || 0) > 0 ? "实际" : "预估"} {Number(data.actualCost || data.estimatedCost || 0).toFixed(2)} 算力
               </div>
             )}
@@ -1852,7 +1861,7 @@ function CompositorNode({ id, data, selected }: NodeProps<CanvasNode>) {
                   title: data.label || t("canvas.node.compositor"),
                 })}
                 title={t("common.preview")}
-                className="nodrag flex h-7 w-7 items-center justify-center rounded-lg border border-white/20 bg-gray-950/75 text-white shadow backdrop-blur hover:bg-gray-900"
+                className="nodrag flex h-7 w-7 items-center justify-center rounded-lg border border-white/20 bg-gray-950/75 text-white shadow hover:bg-gray-900"
               >
                 <Eye size={13} />
               </button>
@@ -1863,7 +1872,7 @@ function CompositorNode({ id, data, selected }: NodeProps<CanvasNode>) {
                   void downloadCanvasResult(String(data.outputUrl), `starai-compose-${Date.now()}.${kind === "image" ? "png" : kind === "audio" ? "mp3" : "mp4"}`);
                 }}
                 title={t("common.download")}
-                className="nodrag flex h-7 w-7 items-center justify-center rounded-lg border border-white/20 bg-gray-950/75 text-white shadow backdrop-blur hover:bg-gray-900"
+                className="nodrag flex h-7 w-7 items-center justify-center rounded-lg border border-white/20 bg-gray-950/75 text-white shadow hover:bg-gray-900"
               >
                 <Download size={13} />
               </button>
@@ -1950,7 +1959,6 @@ function CanvasEditor({
   const [assetLoading, setAssetLoading] = useState(false);
   const [resultPreview, setResultPreview] = useState<CanvasResultPreview | null>(null);
   const [touchNavigation, setTouchNavigation] = useState(false);
-  const [flowColorMode, setFlowColorMode] = useState<"light" | "dark">("light");
   const [outputMenu, setOutputMenu] = useState<{
     sourceID: string;
     left: number;
@@ -1985,14 +1993,6 @@ function CanvasEditor({
     updatePointerMode();
     query.addEventListener("change", updatePointerMode);
     return () => query.removeEventListener("change", updatePointerMode);
-  }, []);
-
-  useEffect(() => {
-    const query = window.matchMedia("(prefers-color-scheme: dark)");
-    const updateColorMode = () => setFlowColorMode(query.matches ? "dark" : "light");
-    updateColorMode();
-    query.addEventListener("change", updateColorMode);
-    return () => query.removeEventListener("change", updateColorMode);
   }, []);
 
   const refreshHistory = useCallback(() => {
@@ -4277,7 +4277,7 @@ function CanvasEditor({
 
   return (
     <CanvasNodeActions.Provider value={actions}>
-      <div ref={editorRef} className="relative min-h-0 w-full flex-1 overflow-hidden overscroll-none bg-[#eef3f8] dark:bg-[#080d14]">
+      <div ref={editorRef} className="relative min-h-0 w-full flex-1 overflow-hidden overscroll-none bg-sunk dark:bg-[#080d14]">
         <input
           ref={importRef}
           type="file"
@@ -4316,7 +4316,7 @@ function CanvasEditor({
           zoomOnPinch
           zoomOnDoubleClick={!touchNavigation}
           preventScrolling
-          colorMode={flowColorMode}
+          colorMode="light"
           defaultEdgeOptions={{ type: "smoothstep", animated: true }}
           className="infinite-canvas-flow"
         >
@@ -4332,11 +4332,11 @@ function CanvasEditor({
           )}
 
           <Panel position="top-left" className="!m-3 flex flex-col gap-2 sm:!m-4">
-            <button type="button" onClick={newCanvas} className="inline-flex h-10 items-center justify-center gap-2 rounded-2xl border border-cyan-400/30 bg-cyan-500/10 px-5 text-sm font-semibold text-cyan-600 backdrop-blur hover:bg-cyan-500/15 dark:text-cyan-300">
+            <button type="button" onClick={newCanvas} className="inline-flex h-10 items-center justify-center gap-2 rounded-2xl border border-blue-500/30 bg-blue-600/10 px-5 text-sm font-semibold text-blue-600 hover:bg-blue-600/15 dark:text-blue-300">
               <Plus size={16} /> {t("canvas.new")}
             </button>
             <div className="relative">
-              <button type="button" onClick={() => setHistoryOpen((value) => !value)} className="inline-flex h-9 items-center gap-2 rounded-xl border border-gray-200 bg-white/85 px-3 text-xs text-gray-600 shadow-sm backdrop-blur dark:border-white/10 dark:bg-gray-900/85 dark:text-gray-300">
+              <button type="button" onClick={() => setHistoryOpen((value) => !value)} className="inline-flex h-9 items-center gap-2 rounded-xl border border-gray-200 bg-white/85 px-3 text-xs text-gray-600 shadow-sm dark:border-white/10 dark:bg-gray-900/85 dark:text-gray-300">
                 <RotateCcw size={14} /> {t("canvas.history")} <ChevronDown size={13} />
               </button>
               {historyOpen && (
@@ -4366,11 +4366,11 @@ function CanvasEditor({
               }}
               maxLength={64}
               title={title}
-              className="nodrag w-44 truncate rounded-xl border border-transparent bg-transparent px-3 py-2 text-center text-xs font-medium text-gray-500 outline-none hover:border-gray-200 focus:border-cyan-300 focus:bg-white/80 dark:text-gray-300 dark:focus:bg-gray-900/80"
+              className="nodrag w-44 truncate rounded-xl border border-transparent bg-transparent px-3 py-2 text-center text-xs font-medium text-gray-500 outline-none hover:border-gray-200 focus:border-blue-300 focus:bg-white/80 dark:text-gray-300 dark:focus:bg-gray-900/80"
               aria-label={t("canvas.title")}
             />
-            <div className="flex h-9 w-56 items-center gap-2 rounded-xl border border-gray-200 bg-white/80 px-3 backdrop-blur dark:border-white/10 dark:bg-gray-900/80">
-              <Search size={14} className="text-cyan-500" />
+            <div className="flex h-9 w-56 items-center gap-2 rounded-xl border border-gray-200 bg-white/80 px-3 dark:border-white/10 dark:bg-gray-900/80">
+              <Search size={14} className="text-blue-600" />
               <input value={nodeSearch} onChange={(event) => setNodeSearch(event.target.value)} placeholder={t("canvas.searchNodes")} className="nodrag min-w-0 flex-1 bg-transparent text-xs outline-none dark:text-gray-100" />
             </div>
           </Panel>
@@ -4378,17 +4378,17 @@ function CanvasEditor({
           {nodes.length === 0 && showEmptyWelcome && (
             <Panel position="top-left" className="pointer-events-none !inset-0 !m-0 flex !w-full items-center justify-center">
               <div className="pointer-events-auto flex w-[min(760px,calc(100vw-2rem))] flex-col items-center">
-                <button type="button" onClick={() => setImportOpen(true)} className="mb-4 flex flex-col items-center text-gray-400 hover:text-cyan-600">
+                <button type="button" onClick={() => setImportOpen(true)} className="mb-4 flex flex-col items-center text-gray-400 hover:text-blue-600">
                   <span className="mb-2 flex h-11 w-11 items-center justify-center rounded-full border border-gray-300 dark:border-white/15"><Plus size={20} /></span>
                   <span className="text-sm font-semibold">{t("canvas.empty")}</span>
                   <span className="mt-1 text-[11px]">{t("canvas.emptyDesc")}</span>
-                  <span className="mt-3 inline-flex items-center gap-1.5 rounded-xl border border-cyan-300 bg-cyan-500/10 px-4 py-2 text-xs font-semibold text-cyan-600 dark:text-cyan-300"><Upload size={14} /> {t("canvas.importCanvas")}</span>
+                  <span className="mt-3 inline-flex items-center gap-1.5 rounded-xl border border-blue-300 bg-blue-600/10 px-4 py-2 text-xs font-semibold text-blue-600 dark:text-blue-300"><Upload size={14} /> {t("canvas.importCanvas")}</span>
                 </button>
                 <div className="grid w-full grid-cols-2 gap-1.5 sm:grid-cols-4 sm:gap-2">
                   {filteredTemplates.map((item) => {
                     const Icon = item.icon;
                     return (
-                      <button key={item.id} type="button" onClick={() => appendTemplate(item.id, t(item.titleKey))} className="flex min-w-0 items-center gap-2 rounded-xl border border-gray-200/80 bg-white/85 p-2 text-left shadow-sm backdrop-blur transition hover:-translate-y-0.5 hover:border-cyan-300 hover:shadow-md sm:gap-3 sm:rounded-2xl sm:p-3 dark:border-white/10 dark:bg-gray-900/85">
+                      <button key={item.id} type="button" onClick={() => appendTemplate(item.id, t(item.titleKey))} className="flex min-w-0 items-center gap-2 rounded-xl border border-gray-200/80 bg-white/85 p-2 text-left shadow-sm transition hover:border-blue-300 hover:shadow-md sm:gap-3 sm:rounded-2xl sm:p-3 dark:border-white/10 dark:bg-gray-900/85">
                         <span className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg sm:h-9 sm:w-9 sm:rounded-xl ${TEMPLATE_TONES[item.tone]}`}><Icon size={16} /></span>
                         <span className="min-w-0">
                           <span className="block line-clamp-2 text-[10px] font-semibold leading-tight text-gray-800 sm:truncate sm:text-xs dark:text-gray-100">{t(item.titleKey)}</span>
@@ -4405,11 +4405,11 @@ function CanvasEditor({
           <Panel position="bottom-center" className="!bottom-3 !m-0 max-w-[calc(100vw-2rem)]">
             <div className="relative">
               {nodePaletteOpen && (
-                <div className="absolute bottom-12 left-1/2 z-40 grid w-[min(620px,calc(100vw-2rem))] -translate-x-1/2 grid-cols-2 gap-2 rounded-2xl border border-gray-200 bg-white/95 p-3 shadow-2xl backdrop-blur sm:grid-cols-6 dark:border-white/10 dark:bg-gray-900/95">
+                <div className="absolute bottom-12 left-1/2 z-40 grid w-[min(620px,calc(100vw-2rem))] -translate-x-1/2 grid-cols-2 gap-2 rounded-2xl border border-gray-200 bg-white/95 p-3 shadow-2xl sm:grid-cols-6 dark:border-white/10 dark:bg-gray-900/95">
                   {NEW_NODE_OPTIONS.map((item) => {
                     const Icon = item.icon;
                     return (
-                      <button key={item.kind} type="button" onClick={() => appendSingleNode(item.kind)} className="flex min-h-16 flex-col items-center justify-center gap-1.5 rounded-xl border border-gray-100 bg-gray-50 px-2 py-2 text-center text-[10px] font-medium text-gray-600 transition hover:border-cyan-300 hover:bg-cyan-50 hover:text-cyan-600 dark:border-white/10 dark:bg-white/5 dark:text-gray-300 dark:hover:bg-cyan-500/10 dark:hover:text-cyan-300">
+                      <button key={item.kind} type="button" onClick={() => appendSingleNode(item.kind)} className="flex min-h-16 flex-col items-center justify-center gap-1.5 rounded-xl border border-gray-100 bg-gray-50 px-2 py-2 text-center text-[10px] font-medium text-gray-600 transition hover:border-blue-300 hover:bg-blue-50 hover:text-blue-600 dark:border-white/10 dark:bg-white/5 dark:text-gray-300 dark:hover:bg-blue-600/10 dark:hover:text-blue-300">
                         <Icon size={17} />
                         <span>{t(item.key)}</span>
                       </button>
@@ -4417,13 +4417,13 @@ function CanvasEditor({
                   })}
                 </div>
               )}
-              <div className="flex items-center gap-0.5 rounded-2xl border border-gray-200 bg-white/90 p-1.5 shadow-lg backdrop-blur sm:gap-1 dark:border-white/10 dark:bg-gray-900/90">
+              <div className="flex items-center gap-0.5 rounded-2xl border border-gray-200 bg-white/90 p-1.5 shadow-lg sm:gap-1 dark:border-white/10 dark:bg-gray-900/90">
               <button type="button" title={t("canvas.toolbar.organize")} aria-label={t("canvas.toolbar.organize")} onClick={() => void fitView({ padding: 0.3, maxZoom: 0.72, duration: 400 })} className="flex h-8 items-center gap-1.5 whitespace-nowrap rounded-xl px-2 text-xs text-gray-500 hover:bg-gray-100 sm:px-2.5 dark:text-gray-300 dark:hover:bg-white/10"><AlignCenter size={14} /><span className="hidden sm:inline">{t("canvas.toolbar.organize")}</span></button>
               <button type="button" title={t("canvas.toolbar.save")} aria-label={t("canvas.toolbar.save")} onClick={() => void save()} disabled={saving} className="flex h-8 items-center gap-1.5 whitespace-nowrap rounded-xl px-2 text-xs text-gray-500 hover:bg-gray-100 disabled:opacity-50 sm:px-2.5 dark:text-gray-300 dark:hover:bg-white/10">{saving ? <LoaderCircle size={14} className="animate-spin" /> : <Save size={14} />}<span className="hidden sm:inline">{saving ? t("common.saving") : t("canvas.toolbar.save")}</span></button>
               <button type="button" title={t("canvas.toolbar.export")} aria-label={t("canvas.toolbar.export")} onClick={exportCanvas} className="flex h-8 items-center gap-1.5 whitespace-nowrap rounded-xl px-2 text-xs text-gray-500 hover:bg-gray-100 sm:px-2.5 dark:text-gray-300 dark:hover:bg-white/10"><Download size={14} /><span className="hidden sm:inline">{t("canvas.toolbar.export")}</span></button>
               <button type="button" title={t("canvas.toolbar.import")} aria-label={t("canvas.toolbar.import")} onClick={() => setImportOpen(true)} className="flex h-8 items-center gap-1.5 whitespace-nowrap rounded-xl px-2 text-xs text-gray-500 hover:bg-gray-100 sm:px-2.5 dark:text-gray-300 dark:hover:bg-white/10"><Upload size={14} /><span className="hidden sm:inline">{t("canvas.toolbar.import")}</span></button>
               <button type="button" title={t("canvas.toolbar.clear")} aria-label={t("canvas.toolbar.clear")} onClick={newCanvas} className="flex h-8 items-center gap-1.5 whitespace-nowrap rounded-xl px-2 text-xs text-gray-500 hover:bg-red-50 hover:text-red-500 sm:px-2.5 dark:text-gray-300 dark:hover:bg-red-500/10"><Trash2 size={14} /><span className="hidden sm:inline">{t("canvas.toolbar.clear")}</span></button>
-              <button type="button" title={t("canvas.toolbar.addNode")} aria-label={t("canvas.toolbar.addNode")} aria-expanded={nodePaletteOpen} onClick={() => setNodePaletteOpen((value) => !value)} className={`flex h-8 items-center gap-1.5 whitespace-nowrap rounded-xl px-2 text-xs sm:px-2.5 ${nodePaletteOpen ? "bg-cyan-50 text-cyan-600 dark:bg-cyan-500/10 dark:text-cyan-300" : "text-gray-500 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-white/10"}`}><Plus size={14} /><span className="hidden sm:inline">{t("canvas.toolbar.addNode")}</span></button>
+              <button type="button" title={t("canvas.toolbar.addNode")} aria-label={t("canvas.toolbar.addNode")} aria-expanded={nodePaletteOpen} onClick={() => setNodePaletteOpen((value) => !value)} className={`flex h-8 items-center gap-1.5 whitespace-nowrap rounded-xl px-2 text-xs sm:px-2.5 ${nodePaletteOpen ? "bg-blue-50 text-blue-600 dark:bg-blue-600/10 dark:text-blue-300" : "text-gray-500 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-white/10"}`}><Plus size={14} /><span className="hidden sm:inline">{t("canvas.toolbar.addNode")}</span></button>
               <button
                 type="button"
                 onClick={() => void runAll()}
@@ -4441,7 +4441,7 @@ function CanvasEditor({
           </Panel>
 
           <Panel position="bottom-left" className="!bottom-12 !m-3 sm:!bottom-3 sm:!m-4">
-            <button type="button" onClick={() => setHelpOpen((value) => !value)} className="flex h-9 items-center gap-2 rounded-xl border border-cyan-300 bg-white/85 px-3 text-xs font-medium text-cyan-600 shadow-sm backdrop-blur dark:bg-gray-900/85 dark:text-cyan-300">
+            <button type="button" onClick={() => setHelpOpen((value) => !value)} className="flex h-9 items-center gap-2 rounded-xl border border-blue-300 bg-white/85 px-3 text-xs font-medium text-blue-600 shadow-sm dark:bg-gray-900/85 dark:text-blue-300">
               <CircleHelp size={15} /> {t("canvas.help")}
             </button>
             {helpOpen && (
@@ -4465,7 +4465,7 @@ function CanvasEditor({
               aria-label={t("canvas.navigator")}
               aria-pressed={showMiniMap}
               onClick={() => setShowMiniMap((value) => !value)}
-              className={`flex h-9 w-9 items-center justify-center rounded-xl border shadow-sm backdrop-blur ${showMiniMap && nodes.length > 0 ? "border-cyan-300 bg-cyan-50 text-cyan-600 dark:bg-cyan-500/15 dark:text-cyan-300" : "border-gray-200 bg-white/85 text-gray-500 dark:border-white/10 dark:bg-gray-900/85 dark:text-gray-300"}`}
+              className={`flex h-9 w-9 items-center justify-center rounded-xl border shadow-sm ${showMiniMap && nodes.length > 0 ? "border-blue-300 bg-blue-50 text-blue-600 dark:bg-blue-600/15 dark:text-blue-300" : "border-gray-200 bg-white/85 text-gray-500 dark:border-white/10 dark:bg-gray-900/85 dark:text-gray-300"}`}
             >
               <MapIcon size={15} />
             </button>
@@ -4475,7 +4475,7 @@ function CanvasEditor({
               aria-label={t("canvas.deleteSelected")}
               onClick={deleteSelected}
               disabled={!nodes.some((node) => node.selected)}
-              className="flex h-9 w-9 items-center justify-center rounded-xl border border-gray-200 bg-white/85 text-gray-500 shadow-sm backdrop-blur hover:border-red-200 hover:bg-red-50 hover:text-red-500 disabled:cursor-not-allowed disabled:opacity-40 dark:border-white/10 dark:bg-gray-900/85 dark:text-gray-300 dark:hover:bg-red-500/10"
+              className="flex h-9 w-9 items-center justify-center rounded-xl border border-gray-200 bg-white/85 text-gray-500 shadow-sm hover:border-red-200 hover:bg-red-50 hover:text-red-500 disabled:cursor-not-allowed disabled:opacity-40 dark:border-white/10 dark:bg-gray-900/85 dark:text-gray-300 dark:hover:bg-red-500/10"
             >
               <Trash2 size={15} />
             </button>
@@ -4496,7 +4496,7 @@ function CanvasEditor({
               }`}
               onClick={(event) => event.stopPropagation()}
             >
-              <div className="absolute left-3 top-3 z-20 max-w-[calc(100%-7rem)] truncate rounded-lg bg-black/60 px-2.5 py-1.5 text-xs font-medium text-white backdrop-blur">
+              <div className="absolute left-3 top-3 z-20 max-w-[calc(100%-7rem)] truncate rounded-lg bg-black/60 px-2.5 py-1.5 text-xs font-medium text-white">
                 {publicText(resultPreview.title, t("canvas.untitled"))}
               </div>
               <div className="absolute right-3 top-3 z-20 flex gap-2">
@@ -4508,7 +4508,7 @@ function CanvasEditor({
                   )}
                   title={t("common.download")}
                   aria-label={t("common.download")}
-                  className="flex h-9 w-9 items-center justify-center rounded-xl border border-white/20 bg-gray-950/80 text-white shadow backdrop-blur hover:bg-gray-900"
+                  className="flex h-9 w-9 items-center justify-center rounded-xl border border-white/20 bg-gray-950/80 text-white shadow hover:bg-gray-900"
                 >
                   <Download size={16} />
                 </button>
@@ -4517,7 +4517,7 @@ function CanvasEditor({
                   onClick={() => setResultPreview(null)}
                   title={t("common.close")}
                   aria-label={t("common.close")}
-                  className="flex h-9 w-9 items-center justify-center rounded-xl border border-white/20 bg-gray-950/80 text-white shadow backdrop-blur hover:bg-gray-900"
+                  className="flex h-9 w-9 items-center justify-center rounded-xl border border-white/20 bg-gray-950/80 text-white shadow hover:bg-gray-900"
                 >
                   <X size={16} />
                 </button>
@@ -4537,12 +4537,12 @@ function CanvasEditor({
 
         {outputMenu && (
           <div
-            className="absolute z-50 w-[216px] rounded-2xl border border-cyan-300/50 bg-white/95 p-2.5 shadow-2xl backdrop-blur dark:border-cyan-400/25 dark:bg-[#171d27]/95"
+            className="absolute z-50 w-[216px] rounded-2xl border border-blue-300/50 bg-white/95 p-2.5 shadow-2xl dark:border-blue-500/25 dark:bg-[#171d27]/95"
             style={{ left: outputMenu.left, top: outputMenu.top }}
             onPointerDown={(event) => event.stopPropagation()}
           >
             <div className="mb-2 flex items-center gap-2 px-1 text-[11px] font-semibold text-gray-700 dark:text-gray-200">
-              <span className="h-2 w-2 rounded-full bg-cyan-500" />
+              <span className="h-2 w-2 rounded-full bg-blue-600" />
               {t("canvas.node.chooseNext")}
             </div>
             <div className="grid grid-cols-2 gap-1.5">
@@ -4553,7 +4553,7 @@ function CanvasEditor({
                     key={item.kind}
                     type="button"
                     onClick={() => appendSingleNode(item.kind, { sourceID: outputMenu.sourceID, position: outputMenu.nodePosition })}
-                    className="flex min-h-16 flex-col items-start justify-center gap-1.5 rounded-xl border border-gray-100 bg-gray-50 px-3 py-2 text-left text-[10px] font-medium text-gray-600 transition hover:border-cyan-300 hover:bg-cyan-50 hover:text-cyan-600 dark:border-white/10 dark:bg-white/5 dark:text-gray-300 dark:hover:bg-cyan-500/10 dark:hover:text-cyan-300"
+                    className="flex min-h-16 flex-col items-start justify-center gap-1.5 rounded-xl border border-gray-100 bg-gray-50 px-3 py-2 text-left text-[10px] font-medium text-gray-600 transition hover:border-blue-300 hover:bg-blue-50 hover:text-blue-600 dark:border-white/10 dark:bg-white/5 dark:text-gray-300 dark:hover:bg-blue-600/10 dark:hover:text-blue-300"
                   >
                     <Icon size={16} />
                     <span>{t(item.key)}</span>
@@ -4565,7 +4565,7 @@ function CanvasEditor({
         )}
 
         {importOpen && (
-          <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/55 p-4 backdrop-blur-sm" onClick={() => setImportOpen(false)}>
+          <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/55 p-4" onClick={() => setImportOpen(false)}>
             <div className="w-full max-w-md overflow-hidden rounded-2xl border border-white/10 bg-white shadow-2xl dark:bg-[#151b25]" onClick={(event) => event.stopPropagation()}>
               <div className="flex items-center justify-between px-5 py-4">
                 <div className="flex items-center gap-2 font-semibold text-gray-900 dark:text-gray-100"><FolderOpen size={17} />{t("canvas.importDialog.title")}</div>
@@ -4573,7 +4573,7 @@ function CanvasEditor({
               </div>
               <div className="flex gap-1 border-b border-gray-100 px-4 dark:border-white/10">
                 {(["templates", "history", "code"] as const).map((tab) => (
-                  <button key={tab} type="button" onClick={() => setImportTab(tab)} className={`border-b-2 px-3 py-2 text-xs ${importTab === tab ? "border-cyan-500 font-semibold text-cyan-600" : "border-transparent text-gray-400"}`}>
+                  <button key={tab} type="button" onClick={() => setImportTab(tab)} className={`border-b-2 px-3 py-2 text-xs ${importTab === tab ? "border-blue-600 font-semibold text-blue-600" : "border-transparent text-gray-400"}`}>
                     {t(`canvas.importDialog.${tab}`)}
                   </button>
                 ))}
@@ -4581,16 +4581,16 @@ function CanvasEditor({
               <div className="max-h-[52vh] min-h-72 overflow-y-auto overscroll-contain p-4">
                 {importTab === "templates" && (
                   <div className="space-y-2">
-                    <button type="button" onClick={() => { newBlankCanvas(); setImportOpen(false); }} className="flex w-full items-center gap-3 rounded-xl border border-cyan-200 bg-cyan-50/50 p-3 text-left transition hover:border-cyan-400 dark:border-cyan-500/20 dark:bg-cyan-500/10">
-                      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-white text-cyan-600 shadow-sm dark:bg-white/10 dark:text-cyan-300"><Plus size={16} /></span>
+                    <button type="button" onClick={() => { newBlankCanvas(); setImportOpen(false); }} className="flex w-full items-center gap-3 rounded-xl border border-blue-200 bg-blue-50/50 p-3 text-left transition hover:border-blue-500 dark:border-blue-600/20 dark:bg-blue-600/10">
+                      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-white text-blue-600 shadow-sm dark:bg-white/10 dark:text-blue-300"><Plus size={16} /></span>
                       <span className="min-w-0">
                         <span className="block text-xs font-semibold text-gray-800 dark:text-gray-100">{t("canvas.startBlank")}</span>
                         <span className="mt-1 block text-[10px] text-gray-400">{t("canvas.startBlankDesc")}</span>
                       </span>
                     </button>
                     {availableTemplates.map((template) => (
-                      <button key={template.id} type="button" onClick={() => importCanvasDocument(template)} className="flex w-full items-center gap-3 rounded-xl border border-gray-100 p-3 text-left transition hover:border-cyan-300 hover:bg-cyan-50/50 dark:border-white/10 dark:hover:bg-cyan-500/10">
-                        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-cyan-50 text-cyan-600 dark:bg-cyan-500/10 dark:text-cyan-300"><FileJson size={16} /></span>
+                      <button key={template.id} type="button" onClick={() => importCanvasDocument(template)} className="flex w-full items-center gap-3 rounded-xl border border-gray-100 p-3 text-left transition hover:border-blue-300 hover:bg-blue-50/50 dark:border-white/10 dark:hover:bg-blue-600/10">
+                        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-600 dark:bg-blue-600/10 dark:text-blue-300"><FileJson size={16} /></span>
                         <span className="min-w-0">
                           <span className="block truncate text-xs font-semibold text-gray-800 dark:text-gray-100">{publicText(template.name, t("canvas.untitled"))}</span>
                           <span className="mt-1 block line-clamp-2 text-[10px] leading-relaxed text-gray-400">{publicText(template.description, t("canvas.importDialog.templateDesc"))}</span>
@@ -4602,8 +4602,8 @@ function CanvasEditor({
                 {importTab === "history" && (
                   <div className="space-y-2">
                     {history.length ? history.map((item) => (
-                      <button key={item.public_id} type="button" onClick={() => { void loadCanvas(item.public_id); setImportOpen(false); }} className="flex w-full items-center gap-3 rounded-xl border border-gray-100 p-3 text-left hover:border-cyan-300 dark:border-white/10">
-                        <RotateCcw size={15} className="shrink-0 text-cyan-500" />
+                      <button key={item.public_id} type="button" onClick={() => { void loadCanvas(item.public_id); setImportOpen(false); }} className="flex w-full items-center gap-3 rounded-xl border border-gray-100 p-3 text-left hover:border-blue-300 dark:border-white/10">
+                        <RotateCcw size={15} className="shrink-0 text-blue-600" />
                         <span className="min-w-0 flex-1"><span title={publicText(item.title, t("canvas.untitled"))} className="block truncate text-xs font-medium dark:text-gray-100">{publicText(item.title, t("canvas.untitled"))}</span><span className="mt-0.5 block text-[10px] text-gray-400">{formatDate(item.updated_at)}</span></span>
                       </button>
                     )) : <div className="py-20 text-center text-xs text-gray-400">{t("canvas.noHistory")}</div>}
@@ -4611,10 +4611,10 @@ function CanvasEditor({
                 )}
                 {importTab === "code" && (
                   <div className="space-y-3">
-                    <textarea value={importCode} onChange={(event) => setImportCode(event.target.value)} placeholder={t("canvas.importDialog.codePlaceholder")} className="h-40 w-full resize-none rounded-xl border border-gray-200 bg-gray-50 p-3 font-mono text-[10px] leading-relaxed outline-none focus:border-cyan-300 dark:border-white/10 dark:bg-white/5 dark:text-gray-100" />
+                    <textarea value={importCode} onChange={(event) => setImportCode(event.target.value)} placeholder={t("canvas.importDialog.codePlaceholder")} className="h-40 w-full resize-none rounded-xl border border-gray-200 bg-gray-50 p-3 font-mono text-[10px] leading-relaxed outline-none focus:border-blue-300 dark:border-white/10 dark:bg-white/5 dark:text-gray-100" />
                     <div className="flex items-center justify-between gap-3">
                       <button type="button" onClick={() => importRef.current?.click()} className="inline-flex h-9 items-center gap-1.5 rounded-xl border border-gray-200 px-3 text-xs text-gray-500 hover:bg-gray-50 dark:border-white/10 dark:text-gray-300 dark:hover:bg-white/5"><Upload size={13} />{t("canvas.importDialog.selectFile")}</button>
-                      <button type="button" onClick={importFromCode} disabled={!importCode.trim()} className="h-9 rounded-xl bg-cyan-500 px-4 text-xs font-semibold text-white disabled:opacity-40">{t("canvas.importDialog.import")}</button>
+                      <button type="button" onClick={importFromCode} disabled={!importCode.trim()} className="h-9 rounded-xl bg-blue-600 px-4 text-xs font-semibold text-white disabled:opacity-40">{t("canvas.importDialog.import")}</button>
                     </div>
                   </div>
                 )}
@@ -4624,7 +4624,7 @@ function CanvasEditor({
         )}
 
         {assetLibraryOpen && (
-          <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/55 p-4 backdrop-blur-sm" onClick={() => setAssetLibraryOpen(false)}>
+          <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/55 p-4" onClick={() => setAssetLibraryOpen(false)}>
             <div className="flex max-h-[76vh] w-full max-w-3xl flex-col overflow-hidden rounded-2xl border border-white/10 bg-white shadow-2xl dark:bg-[#151b25]" onClick={(event) => event.stopPropagation()}>
               <div className="flex items-center justify-between border-b border-gray-100 px-5 py-4 dark:border-white/10">
                 <div>
@@ -4644,7 +4644,7 @@ function CanvasEditor({
                   <Search size={14} className="text-gray-400" />
                   <input value={assetQuery} onChange={(event) => setAssetQuery(event.target.value)} placeholder={t("canvas.assetLibrarySearch")} className="min-w-0 flex-1 bg-transparent text-xs outline-none dark:text-gray-100" />
                 </div>
-                <button type="submit" className="h-9 rounded-xl bg-cyan-500 px-4 text-xs font-semibold text-white hover:bg-cyan-600">{t("common.search")}</button>
+                <button type="submit" className="h-9 rounded-xl bg-blue-600 px-4 text-xs font-semibold text-white hover:bg-blue-600">{t("common.search")}</button>
               </form>
               <div className="min-h-72 flex-1 overflow-y-auto px-4 pb-4">
                 {assetLoading ? (
@@ -4652,7 +4652,7 @@ function CanvasEditor({
                 ) : assetItems.length ? (
                   <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
                     {assetItems.map((asset) => (
-                      <button key={asset.public_id} type="button" onClick={() => selectAsset(asset)} className="group overflow-hidden rounded-xl border border-gray-200 bg-gray-50 text-left transition hover:border-cyan-400 hover:shadow-md dark:border-white/10 dark:bg-white/5">
+                      <button key={asset.public_id} type="button" onClick={() => selectAsset(asset)} className="group overflow-hidden rounded-xl border border-gray-200 bg-gray-50 text-left transition hover:border-blue-500 hover:shadow-md dark:border-white/10 dark:bg-white/5">
                         <div className="aspect-square overflow-hidden bg-gray-100 dark:bg-gray-950/40">
                           {assetTargetKind === "video"
                             ? <video src={asset.url} muted preload="metadata" className="h-full w-full object-cover" />

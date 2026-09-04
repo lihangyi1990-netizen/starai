@@ -2,11 +2,12 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { X, Search } from "lucide-react";
+import { ModelCategoryIcon } from "./CategoryIcon";
 import { clsx } from "clsx";
 import type { Model } from "@starai/shared-types";
 import { api } from "@/lib/api";
 import { publicError, publicText } from "@/lib/publicText";
-import { CATEGORY_TAG, MODEL_ICONS } from "./categoryMeta";
+import { CATEGORY_TAG } from "./categoryMeta";
 import { useI18n } from "@/i18n/I18nProvider";
 
 function num(v: unknown): number | null {
@@ -234,7 +235,7 @@ export function PricingModal({
                             // eslint-disable-next-line @next/next/no-img-element
                             <img src={m.icon_url} alt="" className="h-full w-full object-cover" />
                           ) : (
-                            <span className="text-lg">{MODEL_ICONS[viewCat] || "AI"}</span>
+                            <ModelCategoryIcon category={viewCat} className="h-5 w-5" />
                           )}
                         </div>
                         <div className="min-w-0 flex-1">
@@ -264,7 +265,7 @@ export function PricingModal({
                         // eslint-disable-next-line @next/next/no-img-element
                         <img src={active.icon_url} alt="" className="h-full w-full object-cover" />
                       ) : (
-                        <span className="text-2xl">{MODEL_ICONS[active.category === "multi_collab" ? "chat" : active.category] || "AI"}</span>
+                        <ModelCategoryIcon category={active.category} className="h-6 w-6" />
                       )}
                     </div>
                     <div className="min-w-0">

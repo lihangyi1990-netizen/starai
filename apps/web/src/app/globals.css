@@ -570,127 +570,6 @@ body {
   filter: drop-shadow(0 4px 0 rgb(118 77 57 / 0.14));
 }
 
-.pico-pixel-shell {
-  color-scheme: light;
-  background:
-    radial-gradient(circle at 100% 0, rgb(181 236 224 / 0.7), transparent 26%),
-    radial-gradient(circle at 0 100%, rgb(255 209 141 / 0.42), transparent 30%),
-    #fff9ee !important;
-}
-
-.pico-pixel-shell .pico-pixel-sidebar {
-  background:
-    linear-gradient(180deg, rgb(255 254 247 / 0.98), rgb(255 247 231 / 0.98)) !important;
-  border-color: #efdcb9 !important;
-  box-shadow: 4px 0 0 rgb(207 165 119 / 0.14) !important;
-}
-
-.pico-pixel-shell .pico-pixel-sidebar .text-gray-900,
-.pico-pixel-shell .pico-pixel-sidebar .dark\:text-gray-100 {
-  color: #553f36 !important;
-}
-
-.pico-pixel-shell .pico-sidebar-pet {
-  border: 2px solid #f1d4a1;
-  background: linear-gradient(135deg, #fff9e9, #f8e4c5);
-  box-shadow: 3px 3px 0 rgb(184 125 93 / 0.12);
-}
-
-.pico-pixel-shell .workspace-surface,
-.pico-pixel-shell .model-workspace.workspace-surface {
-  background:
-    linear-gradient(rgb(214 166 108 / 0.13) 1px, transparent 1px),
-    linear-gradient(90deg, rgb(214 166 108 / 0.13) 1px, transparent 1px),
-    radial-gradient(circle at 75% 6%, rgb(150 221 201 / 0.48), transparent 25%),
-    radial-gradient(circle at 9% 93%, rgb(255 208 138 / 0.32), transparent 25%),
-    #fff7e8 !important;
-  background-size: 16px 16px, 16px 16px, auto, auto, auto !important;
-}
-
-.pico-pixel-shell .pico-pixel-topbar {
-  border-bottom-color: #ecd4ac !important;
-  background: rgb(255 253 246 / 0.78) !important;
-}
-
-.pico-pixel-shell .pico-pixel-mobilebar {
-  border-bottom-color: #ecd4ac !important;
-  background: linear-gradient(90deg, #fffdf7, #fff3dc) !important;
-  color: #5b443d !important;
-}
-
-.pico-pixel-shell .pico-pixel-mobilebar .text-gray-900,
-.pico-pixel-shell .pico-pixel-mobilebar .dark\:text-gray-100 {
-  color: #5b443d !important;
-}
-
-.pico-pixel-shell .pico-pixel-catalog {
-  background:
-    linear-gradient(rgb(214 166 108 / 0.12) 1px, transparent 1px),
-    linear-gradient(90deg, rgb(214 166 108 / 0.12) 1px, transparent 1px),
-    #fff8eb !important;
-  background-size: 16px 16px !important;
-}
-
-.pico-pixel-shell .pico-mobile-pet-banner {
-  border: 2px solid #f1c990;
-  background: linear-gradient(110deg, #fff0d4, #edfff7 54%, #fff5df);
-  box-shadow: 3px 3px 0 rgb(157 105 77 / 0.12);
-}
-
-.pico-pixel-shell .pico-pixel-catalog .tech-list-card {
-  border-color: #efd9b6 !important;
-  background: rgb(255 254 249 / 0.94) !important;
-  box-shadow: 2px 2px 0 rgb(157 105 77 / 0.08) !important;
-}
-
-.pico-pixel-shell .pico-pixel-catalog .tech-list-card[data-active="true"] {
-  border-color: #69bca9 !important;
-  background: #edfff8 !important;
-}
-
-.pico-pixel-shell .pico-pixel-catalog .tech-list-card .text-gray-900,
-.pico-pixel-shell .pico-pixel-catalog .tech-list-card .dark\:text-gray-100 {
-  color: #5d4338 !important;
-}
-
-.pico-pixel-shell .pico-pixel-catalog .tech-list-card .text-gray-400 {
-  color: #9e7768 !important;
-}
-
-.pico-pixel-shell .pico-pixel-catalog .bg-gray-50,
-.pico-pixel-shell .pico-pixel-catalog .bg-gray-50\/80 {
-  background-color: #fff3df !important;
-}
-
-/* The workbench is a single creation surface. The rail only contains utility
-   navigation; model categories open temporarily when the user switches mode. */
-.pico-pixel-shell .pico-studio-main {
-  order: 1;
-}
-
-.pico-pixel-shell .pico-utility-rail {
-  order: 2;
-  border-left: 1px solid #efdcb9 !important;
-  border-right: 0 !important;
-  box-shadow: -4px 0 0 rgb(207 165 119 / 0.1) !important;
-}
-
-.pico-pixel-shell .pico-subpage-main {
-  order: 1;
-  background:
-    linear-gradient(rgb(214 166 108 / 0.09) 1px, transparent 1px),
-    linear-gradient(90deg, rgb(214 166 108 / 0.09) 1px, transparent 1px),
-    #fff8eb !important;
-  background-size: 16px 16px !important;
-}
-
-.pico-pixel-shell .pico-subpage-rail {
-  order: 2;
-  border-left: 1px solid #efdcb9 !important;
-  border-right: 0 !important;
-  background: linear-gradient(180deg, #fffdf7, #fff2d9) !important;
-}
-
 .pico-subpage-pets {
   position: absolute;
   z-index: 1;
@@ -703,110 +582,6 @@ body {
   pointer-events: none;
 }
 
-.pico-pixel-shell .pico-utility-tools {
-  background: linear-gradient(180deg, rgb(255 251 239 / 0.92), rgb(244 255 249 / 0.84));
-}
-
-.pico-pixel-shell .pico-utility-tool {
-  display: flex;
-  width: 100%;
-  min-height: 52px;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 0.25rem;
-  border: 1px solid transparent;
-  border-radius: 1rem;
-  color: #9a6c5c;
-  font-size: 10px;
-  font-weight: 700;
-  transition: transform 160ms ease, background-color 160ms ease, border-color 160ms ease;
-}
-
-.pico-pixel-shell .pico-utility-tool:hover {
-  transform: translateY(-1px);
-  border-color: #f0ca92;
-  background: #fff7e8;
-  color: #5d4338;
-}
-
-.pico-pixel-shell .pico-studio-simple .pico-universal-welcome {
-  min-height: 108px;
-  max-width: 760px;
-  border-color: #f1d2a7 !important;
-}
-
-.pico-pixel-shell .pico-studio-simple .pico-universal-welcome h1 {
-  margin-bottom: 0.2rem !important;
-  font-size: 1rem !important;
-}
-
-.pico-pixel-shell .pico-studio-simple .pico-universal-welcome p {
-  max-width: 380px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.pico-pixel-shell .pico-studio-simple .pico-universal-welcome > .inline-block,
-.pico-pixel-shell .pico-studio-simple .pico-universal-welcome .flex.flex-wrap {
-  display: none !important;
-}
-
-.pico-pixel-shell .pico-studio-simple .pico-studio-feature-grid {
-  display: none !important;
-}
-
-.pico-pixel-shell .pico-studio-mode-switcher {
-  padding: 0.2rem;
-  border: 1px solid #efd6af;
-  border-radius: 1rem;
-  background: rgb(255 249 236 / 0.9);
-  scrollbar-width: none;
-}
-
-.pico-pixel-shell .pico-studio-mode-switcher::-webkit-scrollbar {
-  display: none;
-}
-
-.pico-pixel-shell .pico-model-switcher,
-.pico-pixel-shell .pico-mode-chip {
-  display: inline-flex;
-  height: 30px;
-  flex: 0 0 auto;
-  align-items: center;
-  gap: 0.35rem;
-  border-radius: 0.75rem;
-  padding: 0 0.55rem;
-  color: #896052;
-  font-size: 11px;
-  font-weight: 700;
-  transition: background-color 160ms ease, color 160ms ease;
-}
-
-.pico-pixel-shell .pico-model-switcher {
-  max-width: 168px;
-  background: #fff;
-  color: #60453b;
-  box-shadow: 1px 1px 0 rgb(157 105 77 / 0.1);
-}
-
-.pico-pixel-shell .pico-mode-chip:hover,
-.pico-pixel-shell .pico-mode-chip.is-active {
-  background: #dff8ef;
-  color: #287966;
-}
-
-.pico-pixel-shell .pico-universal-composer {
-  background: linear-gradient(180deg, transparent, rgb(255 248 235 / 0.78) 32%);
-}
-
-.pico-pixel-shell .pico-universal-composer .soft-input {
-  border-width: 2px !important;
-  border-color: #e7c493 !important;
-  box-shadow: 5px 5px 0 rgb(157 105 77 / 0.12) !important;
-}
-
 /* Secondary pages reuse the same pixel material: wallets, works, settings,
    pricing and API docs become part of one product instead of old dashboards. */
 .pico-pixel-shell .page-container {
@@ -814,39 +589,7 @@ body {
   border-radius: 1.5rem;
 }
 
-.pico-pixel-shell .page-container .bg-dark {
-  background: linear-gradient(135deg, #5c947e, #3d6e68) !important;
-  border: 2px solid #c7efdf !important;
-  box-shadow: 4px 4px 0 rgb(51 104 92 / 0.15) !important;
-}
-
-.pico-pixel-shell .page-container .bg-gray-900 {
-  background: #62483e !important;
-}
-
-.pico-pixel-shell .page-container .rounded-xl,
-.pico-pixel-shell .page-container .rounded-2xl {
-  border-color: #efd9b6;
-}
-
-.pico-pixel-shell .page-container table thead {
-  background: #fff0d6 !important;
-}
-
-.pico-pixel-shell .page-container .h-2,
-.pico-pixel-shell .page-container [role="progressbar"] {
-  border: 1px solid #efd0a1;
-  background: #fff5e5;
-}
-
 @media (max-width: 1023px) {
-  .pico-pixel-shell .pico-universal-welcome {
-    min-height: 112px;
-  }
-
-  .pico-pixel-shell .pico-studio-mode-switcher {
-    max-width: calc(100vw - 132px);
-  }
 
   .pico-subpage-pets {
     right: 0.75rem;
@@ -921,128 +664,12 @@ body {
   pointer-events: none;
 }
 
-.pico-login-modal {
-  border: 2px solid #f0cf9c;
-  background:
-    linear-gradient(rgb(214 166 108 / 0.09) 1px, transparent 1px),
-    linear-gradient(90deg, rgb(214 166 108 / 0.09) 1px, transparent 1px),
-    #fffdf7 !important;
-  background-size: 14px 14px !important;
-  box-shadow: 8px 8px 0 rgb(116 77 57 / 0.16) !important;
-}
-
-.pico-login-pet-strip {
-  display: flex;
-  align-items: center;
-  gap: 0.55rem;
-  margin-bottom: 0.75rem;
-  color: #79564b;
-  font-size: 0.78rem;
-  font-weight: 800;
-}
-
 @media (max-width: 640px) {
   .pico-landing-pets {
     right: 0.5rem;
     top: 7rem;
     transform: scale(0.68);
     transform-origin: bottom right;
-  }
-}
-
-/* PICO simple studio: only the creation mode and its conversation box. */
-.pico-pixel-shell .pico-hidden-studio-toolbar,
-.pico-pixel-shell .pico-mobile-studio-bar {
-  display: none !important;
-}
-
-.pico-pixel-shell .pico-studio-simple .pico-universal-welcome,
-.pico-pixel-shell .pico-studio-simple .input-status-line,
-.pico-pixel-shell .pico-studio-simple .pico-studio-feature-grid {
-  display: none !important;
-}
-
-.pico-pixel-shell .pico-studio-simple .pico-universal-composer {
-  background: transparent !important;
-}
-
-.pico-pixel-shell .pico-studio-empty > .flex-1 {
-  display: none;
-}
-
-.pico-pixel-shell .pico-studio-empty .pico-universal-composer {
-  flex: 1 1 auto !important;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding-bottom: clamp(80px, 16vh, 170px) !important;
-}
-
-.pico-pixel-shell .pico-studio-empty .pico-universal-composer > div {
-  max-width: 760px;
-}
-
-.pico-pixel-shell .pico-simple-mode-tabs {
-  display: flex;
-  width: max-content;
-  max-width: 100%;
-  margin: 0 auto 12px;
-  padding: 4px;
-  gap: 3px;
-  border: 1px solid #5f57a9;
-  border-radius: 12px;
-  background: #171b3c;
-  box-shadow: 3px 3px 0 #080a22;
-}
-
-.pico-pixel-shell .pico-simple-mode-tabs .pico-mode-chip {
-  min-width: 92px;
-  justify-content: center;
-  height: 36px;
-  border: 0 !important;
-  border-radius: 8px;
-  background: transparent !important;
-  box-shadow: none !important;
-  color: #c8c2ee;
-}
-
-.pico-pixel-shell .pico-simple-mode-tabs .pico-mode-chip:hover,
-.pico-pixel-shell .pico-simple-mode-tabs .pico-mode-chip.is-active {
-  background: linear-gradient(135deg, #51e7c2, #77a9ff) !important;
-  color: #131733;
-}
-
-.pico-pixel-shell .pico-composer-meta {
-  display: none;
-}
-
-.pico-pixel-shell .pico-studio-simple .soft-input {
-  border: 2px solid #e95c9f !important;
-  background: linear-gradient(145deg, #28275a, #171b3b) !important;
-  box-shadow: 6px 6px 0 #080a22, 0 0 0 1px rgb(82 231 194 / 0.2) !important;
-}
-
-.pico-pixel-shell .pico-studio-simple .soft-input .border-b {
-  border-color: rgb(143 132 211 / 0.35) !important;
-}
-
-.pico-pixel-shell .pico-studio-simple .soft-input textarea,
-.pico-pixel-shell .pico-studio-simple .soft-input input {
-  color: #fff8dd !important;
-}
-
-.pico-pixel-shell .pico-studio-simple .soft-input textarea::placeholder,
-.pico-pixel-shell .pico-studio-simple .soft-input input::placeholder {
-  color: #aaa5cc !important;
-}
-
-@media (max-width: 640px) {
-  .pico-pixel-shell .pico-studio-empty .pico-universal-composer {
-    padding-bottom: 22vh !important;
-  }
-
-  .pico-pixel-shell .pico-simple-mode-tabs .pico-mode-chip {
-    min-width: 76px;
   }
 }
 
@@ -1058,168 +685,6 @@ body {
     #fff1da !important;
 }
 
-.pico-pixel-shell:has(.pico-studio-simple) .pico-studio-main,
-.pico-pixel-shell:has(.pico-studio-simple) .model-workspace.workspace-surface {
-  background:
-    linear-gradient(rgb(225 176 124 / 0.24) 1px, transparent 1px),
-    linear-gradient(90deg, rgb(225 176 124 / 0.24) 1px, transparent 1px),
-    radial-gradient(circle at 80% 12%, rgb(198 239 218 / 0.78), transparent 27%),
-    radial-gradient(circle at 14% 85%, rgb(255 205 178 / 0.72), transparent 26%),
-    #fff3df !important;
-  background-size: 16px 16px, 16px 16px, auto, auto, auto !important;
-}
-
-.pico-pixel-shell:has(.pico-studio-simple) .pico-utility-rail {
-  border-left-color: #e9bd94 !important;
-  background:
-    linear-gradient(rgb(232 191 144 / 0.15) 1px, transparent 1px),
-    linear-gradient(180deg, #fff9ed, #ffe9cd) !important;
-  background-size: 12px 12px, auto !important;
-  box-shadow: -4px 0 0 rgb(202 137 106 / 0.15) !important;
-}
-
-.pico-pixel-shell:has(.pico-studio-simple) .pico-utility-tools {
-  background: linear-gradient(180deg, rgb(255 249 237 / 0.86), rgb(255 236 210 / 0.9)) !important;
-}
-
-.pico-pixel-shell:has(.pico-studio-simple) .pico-utility-tool {
-  color: #8b6257 !important;
-}
-
-.pico-pixel-shell:has(.pico-studio-simple) .pico-utility-tool:hover {
-  color: #68423c !important;
-  border-color: #efb482 !important;
-  background: #fff3dc !important;
-}
-
-.pico-pixel-shell:has(.pico-studio-simple) .pico-cream-composer-wrap {
-  position: relative;
-  max-width: 720px !important;
-}
-
-.pico-pixel-shell:has(.pico-studio-simple) .pico-simple-mode-tabs {
-  position: relative;
-  z-index: 2;
-  margin-bottom: 14px;
-  padding: 5px;
-  border: 2px solid #d9a77d;
-  border-radius: 10px;
-  background: #fffaf0;
-  box-shadow: 4px 4px 0 #c78668;
-}
-
-.pico-pixel-shell:has(.pico-studio-simple) .pico-simple-mode-tabs .pico-mode-chip {
-  min-width: 100px;
-  height: 38px;
-  border-radius: 6px;
-  color: #8a6257;
-  font-weight: 800;
-}
-
-.pico-pixel-shell:has(.pico-studio-simple) .pico-simple-mode-tabs .pico-mode-chip:hover,
-.pico-pixel-shell:has(.pico-studio-simple) .pico-simple-mode-tabs .pico-mode-chip.is-active {
-  background: linear-gradient(135deg, #ffc58d, #ff9fb5) !important;
-  color: #613d3b !important;
-}
-
-.pico-pixel-shell:has(.pico-studio-simple) .pico-studio-simple .soft-input {
-  position: relative;
-  z-index: 2;
-  min-height: 196px;
-  border: 2px solid #d9917d !important;
-  border-radius: 14px !important;
-  background: linear-gradient(145deg, #fffdf6, #ffefd9) !important;
-  box-shadow: 7px 7px 0 #c98c70, inset 0 0 0 3px #fff9ed !important;
-}
-
-.pico-pixel-shell:has(.pico-studio-simple) .pico-studio-simple .soft-input .border-b {
-  border-color: #efd4b4 !important;
-}
-
-.pico-pixel-shell:has(.pico-studio-simple) .pico-studio-simple .soft-input textarea,
-.pico-pixel-shell:has(.pico-studio-simple) .pico-studio-simple .soft-input input {
-  color: #60453c !important;
-}
-
-.pico-pixel-shell:has(.pico-studio-simple) .pico-studio-simple .soft-input textarea::placeholder,
-.pico-pixel-shell:has(.pico-studio-simple) .pico-studio-simple .soft-input input::placeholder {
-  color: #b78d7b !important;
-}
-
-.pico-pixel-shell:has(.pico-studio-simple) .pico-studio-simple .soft-input .bg-gray-900,
-.pico-pixel-shell:has(.pico-studio-simple) .pico-studio-simple .soft-input .bg-black {
-  background: #8b5c4d !important;
-}
-
-.pico-pixel-shell:has(.pico-studio-simple) .pico-studio-simple .soft-input .text-gray-400,
-.pico-pixel-shell:has(.pico-studio-simple) .pico-studio-simple .soft-input .text-gray-500,
-.pico-pixel-shell:has(.pico-studio-simple) .pico-studio-simple .soft-input .dark\:text-gray-300 {
-  color: #a97869 !important;
-}
-
-.pico-pixel-shell:has(.pico-studio-simple) .pico-composer-pet {
-  position: absolute;
-  z-index: 3;
-  pointer-events: none;
-  filter: drop-shadow(3px 3px 0 rgb(128 81 64 / 0.16));
-}
-
-.pico-pixel-shell:has(.pico-studio-simple) .pico-composer-pet-cat {
-  left: -56px;
-  top: 24px;
-  transform: rotate(-7deg);
-}
-
-.pico-pixel-shell:has(.pico-studio-simple) .pico-composer-pet-bunny {
-  right: -50px;
-  top: 8px;
-  transform: rotate(7deg);
-}
-
-.pico-pixel-shell:has(.pico-studio-simple) .pico-composer-pet-bear {
-  right: -30px;
-  bottom: -30px;
-  transform: rotate(-6deg);
-}
-
-@media (max-width: 860px) {
-  .pico-pixel-shell:has(.pico-studio-simple) .pico-composer-pet-cat {
-    left: -18px;
-  }
-
-  .pico-pixel-shell:has(.pico-studio-simple) .pico-composer-pet-bunny {
-    right: -16px;
-  }
-
-  .pico-pixel-shell:has(.pico-studio-simple) .pico-composer-pet-bear {
-    right: -4px;
-  }
-}
-
-@media (max-width: 640px) {
-  .pico-pixel-shell:has(.pico-studio-simple) .pico-simple-mode-tabs .pico-mode-chip {
-    min-width: 78px;
-  }
-
-  .pico-pixel-shell:has(.pico-studio-simple) .pico-composer-pet {
-    transform: scale(0.7);
-  }
-
-  .pico-pixel-shell:has(.pico-studio-simple) .pico-composer-pet-cat {
-    left: -18px;
-    top: 12px;
-  }
-
-  .pico-pixel-shell:has(.pico-studio-simple) .pico-composer-pet-bunny {
-    right: -18px;
-    top: 4px;
-  }
-
-  .pico-pixel-shell:has(.pico-studio-simple) .pico-composer-pet-bear {
-    display: none;
-  }
-}
-
 /* PICO Pixel Arcade: a bolder, game-like layer over the pixel system. */
 .pico-pixel-shell {
   color: #f8f5ff !important;
@@ -1227,127 +692,6 @@ body {
     radial-gradient(circle at 92% 8%, rgb(120 80 255 / 0.42), transparent 24%),
     radial-gradient(circle at 8% 92%, rgb(255 104 156 / 0.28), transparent 26%),
     #12182f !important;
-}
-
-.pico-pixel-shell .pico-pixel-sidebar,
-.pico-pixel-shell .pico-utility-rail,
-.pico-pixel-shell .pico-subpage-rail {
-  border-color: #493a82 !important;
-  background: linear-gradient(180deg, #201c41, #151c37) !important;
-  box-shadow: -4px 0 0 rgb(89 67 167 / 0.32) !important;
-}
-
-.pico-pixel-shell .workspace-surface,
-.pico-pixel-shell .model-workspace.workspace-surface,
-.pico-pixel-shell .pico-subpage-main {
-  background:
-    linear-gradient(rgb(112 89 188 / 0.19) 1px, transparent 1px),
-    linear-gradient(90deg, rgb(112 89 188 / 0.19) 1px, transparent 1px),
-    radial-gradient(circle at 76% 10%, rgb(35 223 181 / 0.18), transparent 26%),
-    radial-gradient(circle at 13% 88%, rgb(255 84 151 / 0.16), transparent 26%),
-    #11182f !important;
-  background-size: 18px 18px, 18px 18px, auto, auto, auto !important;
-}
-
-.pico-pixel-shell .pico-pixel-topbar,
-.pico-pixel-shell .pico-pixel-mobilebar {
-  border-bottom-color: #564486 !important;
-  background: rgb(25 27 57 / 0.94) !important;
-}
-
-.pico-pixel-shell .pico-pixel-topbar .text-gray-600,
-.pico-pixel-shell .pico-pixel-topbar .text-gray-500,
-.pico-pixel-shell .pico-pixel-mobilebar .text-gray-900,
-.pico-pixel-shell .pico-pixel-mobilebar .dark\:text-gray-100 {
-  color: #eeeaff !important;
-}
-
-.pico-pixel-shell .soft-card,
-.pico-pixel-shell .soft-input,
-.pico-pixel-shell .pico-pixel-catalog .tech-list-card {
-  border-color: #55458e !important;
-  background: linear-gradient(145deg, rgb(42 39 82 / 0.97), rgb(26 30 62 / 0.97)) !important;
-  box-shadow: 5px 5px 0 rgb(9 11 31 / 0.46), inset 0 1px 0 rgb(255 255 255 / 0.08) !important;
-}
-
-.pico-pixel-shell .pico-studio-simple .pico-universal-welcome {
-  border-color: #b94f93 !important;
-  background:
-    linear-gradient(rgb(255 115 177 / 0.12) 1px, transparent 1px),
-    linear-gradient(90deg, rgb(89 238 203 / 0.1) 1px, transparent 1px),
-    linear-gradient(135deg, #38245e, #1b3158 55%, #18374a) !important;
-  background-size: 14px 14px, 14px 14px, auto !important;
-}
-
-.pico-pixel-shell .pico-pixel-hero h1,
-.pico-pixel-shell .pico-studio-simple .pico-universal-welcome h1,
-.pico-pixel-shell .pico-pixel-sidebar .text-gray-900,
-.pico-pixel-shell .pico-pixel-sidebar .dark\:text-gray-100,
-.pico-pixel-shell .pico-pixel-catalog .tech-list-card .text-gray-900,
-.pico-pixel-shell .pico-pixel-catalog .tech-list-card .dark\:text-gray-100 {
-  color: #fff9d9 !important;
-}
-
-.pico-pixel-shell .pico-studio-simple .pico-universal-welcome p,
-.pico-pixel-shell .pico-pixel-catalog .tech-list-card .text-gray-400 {
-  color: #bdb6e2 !important;
-}
-
-.pico-pixel-shell .pico-utility-tools {
-  background: linear-gradient(180deg, #292351, #161c3a) !important;
-}
-
-.pico-pixel-shell .pico-utility-tool {
-  color: #a9a0e4;
-}
-
-.pico-pixel-shell .pico-utility-tool:hover {
-  border-color: #5fead0;
-  background: linear-gradient(135deg, #244e5a, #353069);
-  color: #69ffe0;
-}
-
-.pico-pixel-shell .pico-studio-mode-switcher {
-  border-color: #6553a4;
-  background: #171b39;
-}
-
-.pico-pixel-shell .pico-model-switcher {
-  background: linear-gradient(135deg, #ff8e54, #f3569a) !important;
-  color: #24162d !important;
-  box-shadow: 2px 2px 0 #10142a !important;
-}
-
-.pico-pixel-shell .pico-mode-chip {
-  color: #c3bee9;
-}
-
-.pico-pixel-shell .pico-mode-chip:hover,
-.pico-pixel-shell .pico-mode-chip.is-active {
-  background: linear-gradient(135deg, #4df0c6, #62b8ff) !important;
-  color: #17213d !important;
-}
-
-.pico-pixel-shell .pico-universal-composer {
-  background: linear-gradient(180deg, transparent, rgb(13 16 41 / 0.88) 32%) !important;
-}
-
-.pico-pixel-shell .pico-universal-composer .soft-input {
-  border-color: #f15b9a !important;
-  box-shadow: 6px 6px 0 rgb(5 7 24 / 0.58), 0 0 0 1px rgb(86 241 207 / 0.16) !important;
-}
-
-.pico-pixel-shell .tech-icon,
-.pico-pixel-shell .pico-pixel-catalog .bg-gray-50,
-.pico-pixel-shell .pico-pixel-catalog .bg-gray-50\/80 {
-  border-color: #6654a4 !important;
-  background: #262650 !important;
-  color: #fff7d1 !important;
-}
-
-.pico-pixel-shell .page-container .bg-dark {
-  background: linear-gradient(135deg, #ff6a9d, #7a56dd) !important;
-  border-color: #ffc06a !important;
 }
 
 .pico-landing {
@@ -1381,521 +725,10 @@ body {
   box-shadow: 5px 5px 0 rgb(5 7 24 / 0.48) !important;
 }
 
-.pico-login-modal {
-  border-color: #f05c9d !important;
-  background:
-    linear-gradient(rgb(112 89 188 / 0.16) 1px, transparent 1px),
-    linear-gradient(90deg, rgb(112 89 188 / 0.16) 1px, transparent 1px),
-    #20204b !important;
-  background-size: 14px 14px !important;
-  color: #fff7df;
-}
-
-.pico-login-modal .text-gray-500,
-.pico-login-modal .text-gray-600 {
-  color: #beb7e1 !important;
-}
-
-.pico-login-pet-strip {
-  color: #ffcf72 !important;
-}
-
-.pico-pixel-shell .soft-card,
-.pico-pixel-shell .soft-input {
-  border: 2px solid #f0d7b0 !important;
-  background: rgb(255 254 249 / 0.96) !important;
-  box-shadow: 4px 4px 0 rgb(157 105 77 / 0.1) !important;
-}
-
-.pico-pixel-shell .tech-icon {
-  border-color: #efd8b3 !important;
-  background: #fff9eb !important;
-  box-shadow: 2px 2px 0 rgb(157 105 77 / 0.1) !important;
-}
-
-.pico-pixel-shell .tech-list-card[data-active="true"] {
-  border-color: #69bca9 !important;
-  background: #edfff8 !important;
-  box-shadow: 3px 3px 0 rgb(72 151 133 / 0.14) !important;
-}
-
-.pico-pixel-shell .pico-pixel-hero {
-  min-height: 180px;
-  border-color: #f1ca9b !important;
-  background:
-    linear-gradient(rgb(242 190 124 / 0.12) 1px, transparent 1px),
-    linear-gradient(90deg, rgb(242 190 124 / 0.12) 1px, transparent 1px),
-    linear-gradient(135deg, #fffdf7, #fff1d8) !important;
-  background-size: 12px 12px, 12px 12px, auto !important;
-}
-
-.pico-pixel-shell .pico-pixel-hero h1 {
-  color: #503d39 !important;
-  letter-spacing: 0.03em;
-}
-
-.pico-pixel-shell .pico-hero-pet {
-  position: absolute;
-  z-index: 1;
-  pointer-events: none;
-}
-
-.pico-pixel-shell .pico-hero-pet-cat {
-  left: clamp(10px, 6vw, 74px);
-  bottom: 10px;
-  transform: rotate(-4deg);
-}
-
-.pico-pixel-shell .pico-hero-pet-bunny {
-  right: clamp(10px, 5vw, 66px);
-  top: 8px;
-  transform: rotate(4deg);
-}
-
-.pico-pixel-shell .pico-pixel-hero > :not(.pico-hero-pet) {
-  position: relative;
-  z-index: 2;
-}
-
-@media (max-width: 640px) {
-  .pico-pixel-shell .pico-hero-pet-cat {
-    left: 2px;
-    bottom: 0;
-    transform: scale(0.7) rotate(-4deg);
-    transform-origin: bottom left;
-  }
-
-  .pico-pixel-shell .pico-hero-pet-bunny {
-    right: 2px;
-    top: 0;
-    transform: scale(0.68) rotate(4deg);
-    transform-origin: top right;
-  }
-}
-
-/* Inline model/workflow switcher: it stays inside the composer so users never
-   need to leave the creation page just to choose another capability. */
-.pico-pixel-shell:has(.pico-studio-simple) .pico-inline-model-bar {
-  position: relative;
-  z-index: 12;
-  display: flex;
-  align-items: center;
-  min-height: 44px;
-  padding: 7px 10px;
-  border-bottom: 1px dashed #ebc49d;
-}
-
-.pico-pixel-shell:has(.pico-studio-simple) .pico-current-model-button {
-  display: inline-flex;
-  max-width: min(100%, 310px);
-  align-items: center;
-  gap: 7px;
-  border: 1px solid #e4b37f;
-  border-radius: 8px;
-  background: #fff6e8;
-  padding: 7px 9px;
-  color: #6e4b42;
-  font-size: 12px;
-  font-weight: 800;
-  box-shadow: 2px 2px 0 #efc29b;
-  transition: transform 160ms ease, background-color 160ms ease;
-}
-
-.pico-pixel-shell:has(.pico-studio-simple) .pico-current-model-button:hover {
-  transform: translate(-1px, -1px);
-  background: #fff0d5;
-}
-
-.pico-pixel-shell:has(.pico-studio-simple) .pico-current-model-label {
-  border-right: 1px solid #edcfaf;
-  padding-right: 7px;
-  color: #b37968;
-  font-size: 10px;
-}
-
-.pico-pixel-shell:has(.pico-studio-simple) .pico-inline-model-menu {
-  position: absolute;
-  left: 10px;
-  top: calc(100% - 2px);
-  z-index: 50;
-  width: min(460px, calc(100vw - 56px));
-  overflow: hidden;
-  border: 2px solid #d99a7d;
-  border-radius: 14px;
-  background: #fff8ea;
-  box-shadow: 8px 8px 0 rgb(178 110 86 / 0.24);
-}
-
-.pico-pixel-shell:has(.pico-studio-simple) .pico-inline-model-menu-head {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 10px;
-  padding: 13px 14px 10px;
-  background:
-    linear-gradient(rgb(231 183 139 / 0.17) 1px, transparent 1px),
-    linear-gradient(90deg, rgb(231 183 139 / 0.17) 1px, transparent 1px),
-    #fff0d9;
-  background-size: 10px 10px;
-}
-
-.pico-pixel-shell:has(.pico-studio-simple) .pico-inline-menu-close {
-  display: grid;
-  height: 28px;
-  width: 28px;
-  place-items: center;
-  border: 1px solid #efc79f;
-  border-radius: 7px;
-  background: #fffaf1;
-  color: #9d6c5d;
-}
-
-.pico-pixel-shell:has(.pico-studio-simple) .pico-inline-menu-tabs {
-  display: flex;
-  gap: 4px;
-  overflow-x: auto;
-  border-bottom: 1px solid #f0d4b5;
-  padding: 8px 10px;
-}
-
-.pico-pixel-shell:has(.pico-studio-simple) .pico-inline-menu-tabs button {
-  display: inline-flex;
-  flex: 0 0 auto;
-  align-items: center;
-  gap: 5px;
-  border-radius: 7px;
-  padding: 7px 9px;
-  color: #9b6f62;
-  font-size: 12px;
-  font-weight: 800;
-}
-
-.pico-pixel-shell:has(.pico-studio-simple) .pico-inline-menu-tabs button.is-active {
-  background: #ffd0ae;
-  color: #6d443c;
-  box-shadow: inset 0 0 0 1px #efaa86;
-}
-
-.pico-pixel-shell:has(.pico-studio-simple) .pico-inline-model-list {
-  max-height: min(50vh, 320px);
-  overflow-y: auto;
-  padding: 8px;
-}
-
-.pico-pixel-shell:has(.pico-studio-simple) .pico-inline-model-option {
-  display: flex;
-  width: 100%;
-  align-items: center;
-  gap: 10px;
-  border: 1px solid transparent;
-  border-radius: 10px;
-  padding: 9px;
-  color: #69493f;
-  transition: background-color 140ms ease, border-color 140ms ease;
-}
-
-.pico-pixel-shell:has(.pico-studio-simple) .pico-inline-model-option:hover,
-.pico-pixel-shell:has(.pico-studio-simple) .pico-inline-model-option.is-active {
-  border-color: #efbd95;
-  background: #fff0dc;
-}
-
-.pico-pixel-shell:has(.pico-studio-simple) .pico-inline-model-icon {
-  display: grid;
-  height: 34px;
-  width: 34px;
-  flex: 0 0 auto;
-  place-items: center;
-  overflow: hidden;
-  border: 1px solid #f0cfad;
-  border-radius: 9px;
-  background: #fffaf1;
-  color: #d77f70;
-  font-weight: 900;
-}
-
-.pico-pixel-shell:has(.pico-studio-simple) .pico-inline-model-icon img {
-  height: 100%;
-  width: 100%;
-  object-fit: cover;
-}
-
-.pico-pixel-shell:has(.pico-studio-simple) .pico-inline-empty {
-  padding: 18px 10px;
-  text-align: center;
-  color: #a77b69;
-  font-size: 12px;
-}
-
 /* PICO Clubhouse landing: the public home is one expressive entry point,
    rather than a long sequence of generic sales sections. */
 .pico-landing .pico-legacy-landing-sections {
   display: none;
-}
-
-.pico-landing .pico-clubhouse-hero {
-  isolation: isolate;
-  background:
-    linear-gradient(rgb(224 176 125 / 0.2) 1px, transparent 1px),
-    linear-gradient(90deg, rgb(224 176 125 / 0.2) 1px, transparent 1px),
-    radial-gradient(circle at 16% 10%, rgb(255 205 168 / 0.7), transparent 26%),
-    radial-gradient(circle at 84% 78%, rgb(187 235 212 / 0.76), transparent 31%),
-    #fff0d8 !important;
-  background-size: 18px 18px, 18px 18px, auto, auto, auto !important;
-}
-
-.pico-landing .pico-clubhouse-hero canvas {
-  display: none;
-}
-
-.pico-clubhouse-sky {
-  pointer-events: none;
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  background:
-    radial-gradient(circle at 77% 21%, rgb(255 255 255 / 0.72) 0 2px, transparent 3px),
-    radial-gradient(circle at 64% 18%, rgb(255 255 255 / 0.66) 0 3px, transparent 4px),
-    radial-gradient(circle at 91% 45%, rgb(255 255 255 / 0.64) 0 2px, transparent 3px);
-}
-
-.pico-landing .pico-clubhouse-nav .pixel-pet {
-  filter: drop-shadow(3px 3px 0 rgb(177 111 83 / 0.16));
-}
-
-.pico-clubhouse-copy h1 {
-  margin: 20px 0 0;
-  color: #69473d !important;
-  font-size: clamp(3.35rem, 7.2vw, 7.5rem);
-  font-weight: 950;
-  line-height: 0.92;
-  letter-spacing: -0.075em;
-}
-
-.pico-clubhouse-copy h1 span {
-  color: #ef7f87 !important;
-  text-shadow: 4px 4px 0 #ffd3a8;
-}
-
-.pico-clubhouse-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  border: 2px solid #e7b27e;
-  border-radius: 9px;
-  background: #fff9ed;
-  padding: 8px 11px;
-  color: #8f6154;
-  font-size: 13px;
-  font-weight: 900;
-  box-shadow: 4px 4px 0 #e9bc91;
-}
-
-.pico-landing .pico-clubhouse-desc {
-  max-width: 635px;
-  margin: 24px 0 0;
-  color: #8b6458 !important;
-  font-size: clamp(1rem, 1.5vw, 1.18rem);
-  font-weight: 650;
-  line-height: 1.85;
-}
-
-.pico-clubhouse-actions {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  max-width: 610px;
-  margin-top: 28px;
-  gap: 9px;
-}
-
-.pico-clubhouse-actions button {
-  display: flex;
-  min-height: 70px;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 7px;
-  border: 2px solid #ecc092;
-  border-radius: 11px;
-  background: #fff9ed;
-  color: #8b5d51;
-  font-size: 13px;
-  font-weight: 900;
-  box-shadow: 4px 4px 0 #e7b98f;
-  transition: transform 160ms ease, background-color 160ms ease;
-}
-
-.pico-clubhouse-actions button:nth-child(2) { background: #fff0e2; }
-.pico-clubhouse-actions button:nth-child(3) { background: #e9faf1; }
-.pico-clubhouse-actions button:nth-child(4) { background: #f3edff; }
-
-.pico-clubhouse-actions button:hover,
-.pico-clubhouse-start:hover {
-  transform: translate(-2px, -2px);
-}
-
-.pico-clubhouse-start {
-  display: inline-flex;
-  align-items: center;
-  gap: 9px;
-  margin-top: 22px;
-  border-radius: 10px;
-  background: #ffad70;
-  padding: 14px 18px;
-  color: #5e3e38;
-  font-size: 15px;
-  font-weight: 950;
-  box-shadow: 5px 5px 0 #d87c6c;
-  transition: transform 160ms ease;
-}
-
-.pico-clubhouse-stage {
-  position: relative;
-  min-height: 490px;
-  overflow: visible;
-  border: 3px solid #d89574;
-  border-radius: 26px;
-  background:
-    linear-gradient(rgb(232 188 138 / 0.22) 1px, transparent 1px),
-    linear-gradient(90deg, rgb(232 188 138 / 0.22) 1px, transparent 1px),
-    linear-gradient(145deg, #fff9e9, #ffe1bf 57%, #dff6e9);
-  background-size: 14px 14px, 14px 14px, auto;
-  box-shadow: 12px 12px 0 #d99b7d, inset 0 0 0 5px rgb(255 255 255 / 0.54);
-}
-
-.pico-clubhouse-window {
-  display: flex;
-  gap: 7px;
-  padding: 14px 18px;
-  border-bottom: 2px solid #edc59c;
-  background: rgb(255 250 239 / 0.86);
-}
-
-.pico-clubhouse-window span {
-  height: 11px;
-  width: 11px;
-  border-radius: 3px;
-  background: #ff9d93;
-  box-shadow: 1px 1px 0 #cc746c;
-}
-
-.pico-clubhouse-window span:nth-child(2) { background: #ffca84; box-shadow: 1px 1px 0 #d89b64; }
-.pico-clubhouse-window span:nth-child(3) { background: #95d9b4; box-shadow: 1px 1px 0 #6aa883; }
-
-.pico-clubhouse-stage .pixel-pet {
-  position: absolute;
-  z-index: 3;
-  filter: drop-shadow(5px 5px 0 rgb(142 84 65 / 0.18));
-}
-
-.pico-clubhouse-cat { left: 8%; bottom: 26px; transform: rotate(-7deg); }
-.pico-clubhouse-bunny { right: 9%; top: 70px; transform: rotate(6deg); }
-.pico-clubhouse-bear { right: 10%; bottom: 18px; transform: rotate(-5deg); }
-
-.pico-clubhouse-screen {
-  position: absolute;
-  left: 50%;
-  top: 52%;
-  width: min(76%, 410px);
-  transform: translate(-50%, -50%);
-  overflow: hidden;
-  border: 3px solid #8e6355;
-  border-radius: 16px;
-  background: #fffdf5;
-  box-shadow: 8px 8px 0 #bd836e;
-}
-
-.pico-clubhouse-screen-tabs {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 4px;
-  border-bottom: 2px solid #ecd4b4;
-  padding: 9px;
-}
-
-.pico-clubhouse-screen-tabs span {
-  border-radius: 5px;
-  padding: 7px 2px;
-  background: #fff0df;
-  color: #95685a;
-  text-align: center;
-  font-size: 11px;
-  font-weight: 900;
-}
-
-.pico-clubhouse-screen-tabs span:first-child { background: #ffc5bc; color: #6a433d; }
-
-.pico-clubhouse-screen-body {
-  display: flex;
-  min-height: 128px;
-  align-items: center;
-  justify-content: space-between;
-  padding: 20px;
-  color: #a47969;
-  font-size: 13px;
-  font-weight: 750;
-}
-
-.pico-clubhouse-screen-body i {
-  display: grid;
-  height: 38px;
-  width: 38px;
-  place-items: center;
-  border-radius: 10px;
-  background: #a5e2bf;
-  color: #426d58;
-  font-size: 19px;
-  font-style: normal;
-}
-
-.pico-clubhouse-note {
-  position: absolute;
-  left: 50%;
-  bottom: 40px;
-  z-index: 4;
-  transform: translateX(-50%) rotate(-2deg);
-  border: 2px solid #ebb87d;
-  border-radius: 7px;
-  background: #fff4b7;
-  padding: 9px 12px;
-  color: #835546;
-  font-size: 12px;
-  font-weight: 900;
-  box-shadow: 3px 3px 0 #d89b70;
-  white-space: nowrap;
-}
-
-.pico-clubhouse-stats {
-  max-width: 840px;
-}
-
-.pico-clubhouse-stat {
-  border: 2px solid #ecc092;
-  border-radius: 12px;
-  background: rgb(255 250 239 / 0.86);
-  padding: 13px 15px;
-  box-shadow: 4px 4px 0 #e7b98f;
-}
-
-.pico-clubhouse-stat div { color: #e8807e; font-size: 24px; font-weight: 950; line-height: 1; }
-.pico-clubhouse-stat span { display: block; margin-top: 6px; color: #a17666; font-size: 12px; font-weight: 800; }
-
-@media (max-width: 1023px) {
-  .pico-clubhouse-main { padding-top: 42px; }
-  .pico-clubhouse-stage { min-height: 420px; max-width: 650px; margin: 0 auto; width: 100%; }
-}
-
-@media (max-width: 640px) {
-  .pico-clubhouse-copy h1 { font-size: clamp(3rem, 15vw, 4.8rem); }
-  .pico-clubhouse-actions { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .pico-clubhouse-actions button { min-height: 62px; }
-  .pico-clubhouse-stage { min-height: 350px; border-radius: 18px; }
-  .pico-clubhouse-cat { left: -14px; bottom: 8px; transform: scale(.68) rotate(-7deg); transform-origin: bottom left; }
-  .pico-clubhouse-bunny { right: -12px; top: 36px; transform: scale(.64) rotate(6deg); transform-origin: top right; }
-  .pico-clubhouse-bear { display: none; }
-  .pico-clubhouse-screen { width: 78%; }
-  .pico-clubhouse-screen-body { min-height: 100px; padding: 15px; font-size: 11px; }
-  .pico-clubhouse-note { bottom: 17px; font-size: 10px; }
 }
 
 /* PICO Jumpbook -----------------------------------------------------------
@@ -1913,294 +746,9 @@ body {
   font-family: "Comic Sans MS", "Chalkboard SE", "Marker Felt", ui-rounded, sans-serif !important;
 }
 
-.pico-landing .pico-clubhouse-hero {
-  background:
-    linear-gradient(90deg, transparent 0 62px, rgb(255 143 161 / 0.38) 62px 64px, transparent 64px),
-    repeating-linear-gradient(0deg, var(--doodle-paper) 0 27px, var(--doodle-line) 28px 30px) !important;
-  background-size: auto, auto !important;
-}
-
-.pico-landing .pico-clubhouse-hero::before,
-.pico-pixel-shell:has(.pico-studio-simple) .pico-studio-main::before {
-  content: "";
-  pointer-events: none;
-  position: absolute;
-  z-index: 0;
-  width: 120px;
-  height: 48px;
-  border: 4px solid var(--doodle-ink);
-  border-radius: 50% 45% 48% 42%;
-  border-bottom-color: transparent;
-  opacity: 0.8;
-}
-
-.pico-landing .pico-clubhouse-hero::before {
-  right: 7%;
-  top: 12%;
-  transform: rotate(-8deg);
-}
-
-.pico-landing .pico-clubhouse-hero::after,
-.pico-pixel-shell:has(.pico-studio-simple) .pico-studio-main::after {
-  content: "✦  ·  ✦";
-  pointer-events: none;
-  position: absolute;
-  z-index: 0;
-  color: var(--doodle-ink);
-  font-size: 25px;
-  font-weight: 900;
-  letter-spacing: 10px;
-}
-
-.pico-landing .pico-clubhouse-hero::after {
-  left: 9%;
-  bottom: 12%;
-  transform: rotate(-7deg);
-}
-
-.pico-landing .pico-clubhouse-nav,
-.pico-landing .pico-clubhouse-main {
-  position: relative;
-  z-index: 1;
-}
-
-.pico-clubhouse-copy h1 {
-  color: var(--doodle-ink) !important;
-  letter-spacing: -0.095em;
-  text-shadow: 3px 3px 0 #fff !important;
-}
-
-.pico-clubhouse-copy h1 span {
-  color: var(--doodle-green-dark) !important;
-  text-shadow: 3px 3px 0 #fff, 5px 5px 0 rgb(45 44 41 / 0.2) !important;
-}
-
-.pico-landing .pico-clubhouse-desc,
-.pico-landing .pico-clubhouse-badge,
-.pico-landing .pico-clubhouse-stat span {
-  color: var(--doodle-ink) !important;
-}
-
-.pico-clubhouse-badge,
-.pico-clubhouse-actions button,
-.pico-clubhouse-start,
-.pico-clubhouse-stat,
-.pico-clubhouse-stage,
-.pico-clubhouse-screen,
-.pico-clubhouse-note {
-  border-color: var(--doodle-ink) !important;
-  border-style: solid !important;
-  box-shadow: 5px 5px 0 var(--doodle-ink) !important;
-}
-
-.pico-clubhouse-badge {
-  border-width: 3px;
-  border-radius: 13px 10px 14px 9px;
-  background: #fff !important;
-  transform: rotate(-1deg);
-}
-
-.pico-clubhouse-actions button {
-  border-width: 3px;
-  border-radius: 14px 10px 12px 9px;
-  color: var(--doodle-ink);
-  box-shadow: 4px 4px 0 var(--doodle-ink) !important;
-}
-
-.pico-clubhouse-actions button:nth-child(1),
-.pico-clubhouse-actions button:nth-child(4) { background: #fff !important; }
-.pico-clubhouse-actions button:nth-child(2) { background: var(--doodle-pink) !important; }
-.pico-clubhouse-actions button:nth-child(3) { background: var(--doodle-blue) !important; }
-
-.pico-clubhouse-actions button:hover,
-.pico-clubhouse-start:hover {
-  transform: translate(2px, 2px) rotate(-1deg);
-  box-shadow: 2px 2px 0 var(--doodle-ink) !important;
-}
-
-.pico-clubhouse-start {
-  border: 3px solid var(--doodle-ink);
-  border-radius: 14px 10px 13px 9px;
-  background: var(--doodle-green) !important;
-  color: var(--doodle-ink) !important;
-}
-
-.pico-clubhouse-stage {
-  border-width: 4px;
-  border-radius: 28px 20px 32px 18px;
-  background:
-    repeating-linear-gradient(0deg, rgb(255 253 235 / 0.96) 0 19px, rgb(188 229 239 / 0.55) 20px 22px),
-    var(--doodle-paper) !important;
-  box-shadow: 9px 9px 0 var(--doodle-ink) !important;
-  transform: rotate(1deg);
-}
-
-.pico-clubhouse-window {
-  border-bottom: 3px solid var(--doodle-ink);
-  background: #fff !important;
-}
-
-.pico-clubhouse-window span {
-  border: 2px solid var(--doodle-ink);
-  box-shadow: none !important;
-}
-
-.pico-clubhouse-stage .pixel-pet,
-.pico-pixel-shell:has(.pico-studio-simple) .pixel-pet {
-  filter: drop-shadow(2px 0 0 var(--doodle-ink)) drop-shadow(-2px 0 0 var(--doodle-ink)) drop-shadow(0 2px 0 var(--doodle-ink));
-}
-
-.pico-clubhouse-screen {
-  border-width: 4px;
-  border-radius: 17px 12px 18px 11px;
-  background: #fff !important;
-  box-shadow: 6px 6px 0 var(--doodle-ink) !important;
-}
-
-.pico-clubhouse-screen-tabs { border-bottom: 3px solid var(--doodle-ink); }
-.pico-clubhouse-screen-tabs span { border: 2px solid var(--doodle-ink); color: var(--doodle-ink); background: #fff !important; }
-.pico-clubhouse-screen-tabs span:first-child { background: var(--doodle-green) !important; color: var(--doodle-ink); }
-.pico-clubhouse-screen-body { color: var(--doodle-ink); }
-.pico-clubhouse-screen-body i { border: 2px solid var(--doodle-ink); border-radius: 12px 8px 11px 9px; background: var(--doodle-green); color: var(--doodle-ink); }
-.pico-clubhouse-note { border-width: 3px; border-radius: 8px 12px 7px 10px; background: #fff38a; color: var(--doodle-ink); }
-.pico-clubhouse-stat { border-width: 3px; border-radius: 11px 15px 9px 13px; background: #fff !important; }
-.pico-clubhouse-stat div { color: var(--doodle-green-dark); text-shadow: 1px 1px 0 var(--doodle-ink); }
-
-/* Creator page: the same notebook becomes the workspace surface. */
-.pico-pixel-shell:has(.pico-studio-simple) {
-  color: var(--doodle-ink) !important;
-  background: var(--doodle-paper) !important;
-}
-
-.pico-pixel-shell:has(.pico-studio-simple) .pico-studio-main,
-.pico-pixel-shell:has(.pico-studio-simple) .model-workspace.workspace-surface {
-  background:
-    linear-gradient(90deg, transparent 0 42px, rgb(255 143 161 / 0.32) 42px 44px, transparent 44px),
-    repeating-linear-gradient(0deg, var(--doodle-paper) 0 25px, var(--doodle-line) 26px 28px) !important;
-  background-size: auto, auto !important;
-}
-
-.pico-pixel-shell:has(.pico-studio-simple) .pico-studio-main::before { left: 6%; top: 9%; transform: rotate(9deg); }
-.pico-pixel-shell:has(.pico-studio-simple) .pico-studio-main::after { right: 9%; bottom: 10%; transform: rotate(8deg); }
-
-.pico-pixel-shell:has(.pico-studio-simple) .pico-utility-rail,
-.pico-pixel-shell:has(.pico-studio-simple) .pico-utility-tools {
-  border-color: var(--doodle-ink) !important;
-  background: #fff9d9 !important;
-  box-shadow: -3px 0 0 var(--doodle-ink) !important;
-}
-
-.pico-pixel-shell:has(.pico-studio-simple) .pico-utility-tool {
-  border: 2px solid transparent;
-  border-radius: 10px 7px 9px 6px;
-  color: var(--doodle-ink) !important;
-  font-weight: 900;
-}
-
-.pico-pixel-shell:has(.pico-studio-simple) .pico-utility-tool:hover {
-  border-color: var(--doodle-ink) !important;
-  background: var(--doodle-green) !important;
-  color: var(--doodle-ink) !important;
-  transform: rotate(-2deg);
-}
-
-.pico-pixel-shell:has(.pico-studio-simple) .pico-simple-mode-tabs {
-  border: 3px solid var(--doodle-ink);
-  border-radius: 15px 10px 13px 8px;
-  background: #fff;
-  box-shadow: 5px 5px 0 var(--doodle-ink);
-}
-
-.pico-pixel-shell:has(.pico-studio-simple) .pico-simple-mode-tabs .pico-mode-chip {
-  border: 2px solid transparent !important;
-  border-radius: 9px 7px 8px 6px;
-  color: var(--doodle-ink);
-}
-
-.pico-pixel-shell:has(.pico-studio-simple) .pico-simple-mode-tabs .pico-mode-chip:hover,
-.pico-pixel-shell:has(.pico-studio-simple) .pico-simple-mode-tabs .pico-mode-chip.is-active {
-  border-color: var(--doodle-ink) !important;
-  background: var(--doodle-green) !important;
-  color: var(--doodle-ink) !important;
-}
-
-.pico-pixel-shell:has(.pico-studio-simple) .pico-studio-simple .soft-input {
-  border: 4px solid var(--doodle-ink) !important;
-  border-radius: 18px 12px 16px 10px !important;
-  background: #fff !important;
-  box-shadow: 8px 8px 0 var(--doodle-ink), inset 0 0 0 3px #fff7cf !important;
-}
-
-.pico-pixel-shell:has(.pico-studio-simple) .pico-studio-simple .soft-input .border-b,
-.pico-pixel-shell:has(.pico-studio-simple) .pico-inline-model-bar {
-  border-color: var(--doodle-ink) !important;
-}
-
-.pico-pixel-shell:has(.pico-studio-simple) .pico-studio-simple .soft-input textarea,
-.pico-pixel-shell:has(.pico-studio-simple) .pico-studio-simple .soft-input input,
-.pico-pixel-shell:has(.pico-studio-simple) .pico-studio-simple .soft-input .text-gray-400,
-.pico-pixel-shell:has(.pico-studio-simple) .pico-studio-simple .soft-input .text-gray-500 {
-  color: var(--doodle-ink) !important;
-}
-
-.pico-pixel-shell:has(.pico-studio-simple) .pico-current-model-button,
-.pico-pixel-shell:has(.pico-studio-simple) .pico-inline-model-menu {
-  border: 3px solid var(--doodle-ink);
-  background: #fff !important;
-  color: var(--doodle-ink);
-  box-shadow: 4px 4px 0 var(--doodle-ink);
-}
-
-.pico-pixel-shell:has(.pico-studio-simple) .pico-current-model-button { border-radius: 9px 7px 10px 6px; }
-.pico-pixel-shell:has(.pico-studio-simple) .pico-inline-model-menu { border-radius: 15px 10px 14px 8px; box-shadow: 8px 8px 0 var(--doodle-ink); }
-.pico-pixel-shell:has(.pico-studio-simple) .pico-inline-model-menu-head { background: #fff8bd; }
-.pico-pixel-shell:has(.pico-studio-simple) .pico-inline-menu-tabs button.is-active { border: 2px solid var(--doodle-ink); background: var(--doodle-green); color: var(--doodle-ink); }
-.pico-pixel-shell:has(.pico-studio-simple) .pico-inline-model-option:hover,
-.pico-pixel-shell:has(.pico-studio-simple) .pico-inline-model-option.is-active { border: 2px solid var(--doodle-ink); background: #fff4b9; }
-.pico-pixel-shell:has(.pico-studio-simple) .pico-inline-model-icon { border: 2px solid var(--doodle-ink); border-radius: 9px 5px 8px 6px; background: var(--doodle-blue); color: var(--doodle-ink); }
-
-@media (max-width: 640px) {
-  .pico-landing .pico-clubhouse-hero { background-position: -24px 0, 0 0 !important; }
-  .pico-clubhouse-stage { transform: none; }
-  .pico-pixel-shell:has(.pico-studio-simple) .pico-studio-main::before,
-  .pico-pixel-shell:has(.pico-studio-simple) .pico-studio-main::after { display: none; }
-}
-
 /* The home is a large creation desk, not a separate model catalogue. */
 .pico-pixel-shell:has(.pico-studio-empty) .pico-studio-empty .pico-universal-composer {
   padding: clamp(26px, 5vh, 72px) clamp(18px, 5vw, 80px) clamp(42px, 8vh, 104px) !important;
-}
-
-.pico-pixel-shell:has(.pico-studio-empty) .pico-studio-empty .pico-cream-composer-wrap {
-  max-width: min(1080px, calc(100vw - 150px)) !important;
-}
-
-.pico-pixel-shell:has(.pico-studio-empty) .pico-studio-empty .soft-input {
-  min-height: clamp(330px, 47vh, 560px) !important;
-}
-
-/* Keep the inline picker inside the viewport and let its own list scroll. */
-.pico-pixel-shell:has(.pico-studio-simple) .pico-composer-input {
-  overflow: visible !important;
-}
-
-.pico-pixel-shell:has(.pico-studio-simple) .pico-inline-model-menu {
-  position: fixed;
-  left: 50%;
-  bottom: max(14px, env(safe-area-inset-bottom));
-  top: auto;
-  transform: translateX(-50%);
-  display: flex;
-  width: min(560px, calc(100vw - 24px));
-  max-height: min(70dvh, 560px);
-  flex-direction: column;
-  z-index: 100;
-}
-
-.pico-pixel-shell:has(.pico-studio-simple) .pico-inline-model-list {
-  min-height: 0;
-  max-height: none;
-  flex: 1 1 auto;
 }
 
 /* Model Plaza replaces the old inspiration gallery: browse information here,
@@ -2215,41 +763,6 @@ body {
   color: var(--doodle-ink) !important;
   background: var(--doodle-paper) !important;
   font-family: "Comic Sans MS", "Chalkboard SE", "Marker Felt", ui-rounded, sans-serif !important;
-}
-
-.pico-pixel-shell:has(.pico-model-plaza) .pico-studio-main {
-  background:
-    linear-gradient(90deg, transparent 0 42px, rgb(255 143 161 / 0.32) 42px 44px, transparent 44px),
-    repeating-linear-gradient(0deg, var(--doodle-paper) 0 25px, var(--doodle-line) 26px 28px) !important;
-  background-size: auto, auto !important;
-}
-
-.pico-pixel-shell:has(.pico-model-plaza) .pico-utility-rail,
-.pico-pixel-shell:has(.pico-model-plaza) .pico-utility-tools {
-  border-color: var(--doodle-ink) !important;
-  background: #fff9d9 !important;
-  box-shadow: -3px 0 0 var(--doodle-ink) !important;
-}
-
-.pico-pixel-shell:has(.pico-model-plaza) .pico-utility-tool {
-  border: 2px solid transparent;
-  border-radius: 10px 7px 9px 6px;
-  color: var(--doodle-ink) !important;
-  font-weight: 900;
-}
-
-.pico-pixel-shell:has(.pico-model-plaza) .pico-utility-tool:hover {
-  border-color: var(--doodle-ink) !important;
-  background: var(--doodle-green) !important;
-  color: var(--doodle-ink) !important;
-  transform: rotate(-2deg);
-}
-
-.pico-pixel-shell:has(.pico-model-plaza) .pico-model-plaza-sidebar-note {
-  border: 2px dashed var(--doodle-ink);
-  border-radius: 10px 7px 9px 6px;
-  background: #fff7b4;
-  color: var(--doodle-ink) !important;
 }
 
 .pico-model-plaza {
@@ -2378,8 +891,6 @@ body {
 .pico-model-plaza-empty { margin: 16px; border: 3px dashed var(--doodle-ink); border-radius: 13px 8px 11px 7px; background: #fff; padding: 40px 20px; text-align: center; font-weight: 800; }
 
 @media (max-width: 820px) {
-  .pico-pixel-shell:has(.pico-studio-empty) .pico-studio-empty .pico-cream-composer-wrap { max-width: calc(100vw - 36px) !important; }
-  .pico-pixel-shell:has(.pico-studio-empty) .pico-studio-empty .soft-input { min-height: clamp(310px, 50dvh, 500px) !important; }
   .pico-model-plaza-inner { padding: 20px 16px 36px; }
   .pico-model-plaza-controls { align-items: stretch; flex-direction: column; }
   .pico-model-plaza-search { width: 100%; }
@@ -2391,90 +902,6 @@ body {
   .pico-model-plaza-count { display: none; }
   .pico-model-plaza-table-wrap { border-width: 2px; box-shadow: 4px 4px 0 var(--doodle-ink); }
 }
-
-/* Every tool page uses the same jumpbook board as the creator. */
-.pico-pixel-shell:has(.pico-doodle-page) {
-  --doodle-ink: #2d2c29;
-  --doodle-paper: #fffdeb;
-  --doodle-line: #bce5ef;
-  --doodle-pink: #ff8fa1;
-  --doodle-yellow: #fff38a;
-  --doodle-green: #7de3a4;
-  --doodle-blue: #a5e5ff;
-  color: var(--doodle-ink) !important;
-  background: var(--doodle-paper) !important;
-}
-
-.pico-pixel-shell:has(.pico-doodle-page) .pico-subpage-main {
-  background:
-    linear-gradient(90deg, transparent 0 42px, rgb(255 143 161 / 0.3) 42px 44px, transparent 44px),
-    repeating-linear-gradient(0deg, var(--doodle-paper) 0 25px, var(--doodle-line) 26px 28px) !important;
-  background-size: auto, auto !important;
-  color: var(--doodle-ink) !important;
-}
-
-.pico-pixel-shell:has(.pico-doodle-page) .pico-subpage-main::before,
-.pico-pixel-shell:has(.pico-doodle-page) .pico-subpage-main::after {
-  pointer-events: none;
-  position: absolute;
-  z-index: 0;
-  color: var(--doodle-ink);
-  font-weight: 950;
-}
-.pico-pixel-shell:has(.pico-doodle-page) .pico-subpage-main::before { content: "✦"; left: 7%; top: 8%; font-size: 31px; transform: rotate(-12deg); }
-.pico-pixel-shell:has(.pico-doodle-page) .pico-subpage-main::after { content: "●  ◜"; right: 8%; bottom: 9%; font-size: 25px; transform: rotate(9deg); }
-
-.pico-pixel-shell:has(.pico-doodle-page) .pico-subpage-main > *:not(.pico-subpage-pets) { position: relative; z-index: 1; }
-.pico-pixel-shell:has(.pico-doodle-page) .pico-subpage-pets .pixel-pet { filter: drop-shadow(2px 0 0 var(--doodle-ink)) drop-shadow(-2px 0 0 var(--doodle-ink)) drop-shadow(0 2px 0 var(--doodle-ink)); }
-
-.pico-pixel-shell:has(.pico-doodle-page) .pico-subpage-rail,
-.pico-pixel-shell:has(.pico-doodle-page) .pico-pixel-mobilebar {
-  border-color: var(--doodle-ink) !important;
-  background: #fff9d9 !important;
-  box-shadow: 3px 0 0 var(--doodle-ink) !important;
-}
-.pico-pixel-shell:has(.pico-doodle-page) .pico-pixel-mobilebar { box-shadow: 0 3px 0 var(--doodle-ink) !important; }
-.pico-pixel-shell:has(.pico-doodle-page) .pico-subpage-rail a,
-.pico-pixel-shell:has(.pico-doodle-page) .pico-pixel-mobilebar button {
-  color: var(--doodle-ink) !important;
-}
-.pico-pixel-shell:has(.pico-doodle-page) .pico-subpage-rail a:hover,
-.pico-pixel-shell:has(.pico-doodle-page) .pico-subpage-rail a.border-primary\/40 {
-  border: 2px solid var(--doodle-ink) !important;
-  background: var(--doodle-green) !important;
-  box-shadow: 2px 2px 0 var(--doodle-ink);
-}
-
-.pico-pixel-shell:has(.pico-doodle-page) .page-container { color: var(--doodle-ink) !important; }
-.pico-pixel-shell:has(.pico-doodle-page) .page-container .soft-card,
-.pico-pixel-shell:has(.pico-doodle-page) .page-container .rounded-2xl.border {
-  border: 3px solid var(--doodle-ink) !important;
-  border-radius: 16px 10px 14px 9px !important;
-  background: #fff !important;
-  box-shadow: 5px 5px 0 var(--doodle-ink) !important;
-}
-.pico-pixel-shell:has(.pico-doodle-page) .page-container input,
-.pico-pixel-shell:has(.pico-doodle-page) .page-container select,
-.pico-pixel-shell:has(.pico-doodle-page) .page-container textarea {
-  border: 2px solid var(--doodle-ink) !important;
-  border-radius: 9px 6px 10px 7px !important;
-  background: #fff !important;
-  color: var(--doodle-ink) !important;
-  box-shadow: 2px 2px 0 rgb(45 44 41 / 0.28);
-}
-.pico-pixel-shell:has(.pico-doodle-page) .page-container [class*="bg-primary"],
-.pico-pixel-shell:has(.pico-doodle-page) .page-container [class*="bg-gray-900"] {
-  border: 2px solid var(--doodle-ink) !important;
-  background: var(--doodle-green) !important;
-  color: var(--doodle-ink) !important;
-  box-shadow: 3px 3px 0 var(--doodle-ink);
-}
-.pico-pixel-shell:has(.pico-doodle-page) .page-container h1,
-.pico-pixel-shell:has(.pico-doodle-page) .page-container h2,
-.pico-pixel-shell:has(.pico-doodle-page) .page-container h3,
-.pico-pixel-shell:has(.pico-doodle-page) .page-container .text-gray-900 { color: var(--doodle-ink) !important; }
-.pico-pixel-shell:has(.pico-doodle-page) .page-container .text-gray-500,
-.pico-pixel-shell:has(.pico-doodle-page) .page-container .text-gray-400 { color: #765f65 !important; }
 
 /* Small, direct API-Key screen: address first, key creation second. */
 .pico-api-page { min-height: 100%; }
@@ -2609,8 +1036,6 @@ body {
 .pico-api-key-scope { display: block; margin-top: 5px; color: #604d52; font-size: 10px; font-weight: 800; line-height: 1.4; }
 
 @media (max-width: 640px) {
-  .pico-pixel-shell:has(.pico-doodle-page) .pico-subpage-main::before,
-  .pico-pixel-shell:has(.pico-doodle-page) .pico-subpage-main::after { display: none; }
   .pico-api-hero { align-items: flex-start; padding: 16px; }
   .pico-api-hero-icon { width: 46px; height: 46px; }
   .pico-api-card { padding: 15px; }
@@ -2637,67 +1062,6 @@ body {
   --doodle-green: #7de3a4;
   --doodle-blue: #a5e5ff;
 }
-.pico-pixel-shell:has(.pico-workflow-main) .pico-studio-main,
-.pico-pixel-shell:has(.pico-workflow-main) .pico-workflow-board {
-  background:
-    linear-gradient(90deg, transparent 0 42px, rgb(255 143 161 / 0.3) 42px 44px, transparent 44px),
-    repeating-linear-gradient(0deg, var(--doodle-paper) 0 25px, var(--doodle-line) 26px 28px) !important;
-  color: var(--doodle-ink) !important;
-}
-.pico-pixel-shell:has(.pico-workflow-main) .pico-utility-rail,
-.pico-pixel-shell:has(.pico-workflow-main) .pico-utility-tools {
-  border-color: var(--doodle-ink) !important;
-  background: #fff9d9 !important;
-  box-shadow: -3px 0 0 var(--doodle-ink) !important;
-}
-.pico-pixel-shell:has(.pico-workflow-main) .pico-utility-tool {
-  border: 2px solid transparent;
-  border-radius: 10px 7px 9px 6px;
-  color: var(--doodle-ink) !important;
-  font-weight: 900;
-}
-.pico-pixel-shell:has(.pico-workflow-main) .pico-utility-tool:hover { border-color: var(--doodle-ink); background: var(--doodle-green) !important; }
-.pico-pixel-shell:has(.pico-workflow-main) .pico-workflow-board .soft-card,
-.pico-pixel-shell:has(.pico-workflow-main) .pico-workflow-board .soft-input,
-.pico-pixel-shell:has(.pico-workflow-main) .pico-workflow-board .rounded-2xl.border {
-  border: 3px solid var(--doodle-ink) !important;
-  border-radius: 16px 10px 14px 9px !important;
-  background: #fff !important;
-  box-shadow: 5px 5px 0 var(--doodle-ink) !important;
-}
-.pico-pixel-shell:has(.pico-workflow-main) .pico-workflow-board input,
-.pico-pixel-shell:has(.pico-workflow-main) .pico-workflow-board textarea,
-.pico-pixel-shell:has(.pico-workflow-main) .pico-workflow-board select {
-  border-color: var(--doodle-ink) !important;
-  background: #fff !important;
-  color: var(--doodle-ink) !important;
-}
-.pico-pixel-shell:has(.pico-workflow-main) .pico-workflow-board [class*="bg-primary"],
-.pico-pixel-shell:has(.pico-workflow-main) .pico-workflow-board [class*="bg-cyan"] {
-  border: 2px solid var(--doodle-ink) !important;
-  background: var(--doodle-green) !important;
-  color: var(--doodle-ink) !important;
-  box-shadow: 3px 3px 0 var(--doodle-ink);
-}
-.pico-pixel-shell:has(.pico-workflow-main) .infinite-canvas-flow,
-.pico-pixel-shell:has(.pico-workflow-main) .infinite-canvas-flow .react-flow__pane {
-  background:
-    linear-gradient(90deg, transparent 0 42px, rgb(255 143 161 / 0.3) 42px 44px, transparent 44px),
-    repeating-linear-gradient(0deg, var(--doodle-paper) 0 25px, var(--doodle-line) 26px 28px) !important;
-}
-.pico-pixel-shell:has(.pico-workflow-main) .infinite-canvas-flow .react-flow__controls,
-.pico-pixel-shell:has(.pico-workflow-main) .infinite-canvas-flow .react-flow__minimap {
-  overflow: hidden;
-  border: 3px solid var(--doodle-ink) !important;
-  border-radius: 10px 7px 9px 6px;
-  background: #fff !important;
-  box-shadow: 3px 3px 0 var(--doodle-ink);
-}
-.pico-pixel-shell:has(.pico-workflow-main) .infinite-canvas-flow .react-flow__controls button {
-  border-color: var(--doodle-ink) !important;
-  background: #fff !important;
-  color: var(--doodle-ink) !important;
-}
 
 /* PICO Signature — restrained, glassy and product-led.
    This final layer intentionally replaces the earlier pixel/doodle skin while
@@ -2719,40 +1083,6 @@ body {
   color: var(--pico-ink);
 }
 
-.pico-apple-shell,
-.pico-apple-landing {
-  --doodle-ink: var(--pico-ink);
-  --doodle-paper: var(--pico-canvas);
-  --doodle-line: transparent;
-  --doodle-pink: var(--pico-blue);
-  --doodle-yellow: #f5f5f7;
-  --doodle-green: var(--pico-blue);
-  --doodle-blue: #e8f3ff;
-  color: var(--pico-ink) !important;
-  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", Arial, sans-serif !important;
-}
-
-.pico-apple-shell .pixel-pet,
-.pico-apple-landing .pixel-pet,
-.pico-apple-shell .pico-subpage-pets,
-.pico-apple-shell .pico-composer-pet,
-.pico-apple-shell .pico-hero-pet {
-  display: none !important;
-}
-
-.pico-apple-shell .pico-brand-mark,
-.pico-apple-landing .pico-brand-mark {
-  border: 0 !important;
-  border-radius: 12px !important;
-  background: linear-gradient(145deg, #0a84ff, #0066cc) !important;
-  color: #fff !important;
-  box-shadow: 0 8px 18px rgb(0 102 204 / 0.2) !important;
-  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Helvetica Neue", Arial, sans-serif !important;
-  font-size: 16px !important;
-  font-weight: 720 !important;
-  letter-spacing: -0.05em;
-}
-
 /* Shared shell, navigation and page canvas */
 .pico-apple-shell,
 .pico-apple-shell:has(.pico-studio-simple),
@@ -2762,928 +1092,41 @@ body {
   background: var(--pico-canvas) !important;
 }
 
-.pico-apple-shell .pico-studio-main,
-.pico-apple-shell .model-workspace.workspace-surface,
-.pico-apple-shell .pico-subpage-main,
-.pico-apple-shell .pico-model-plaza,
-.pico-apple-shell .pico-workflow-board,
-.pico-apple-shell:has(.pico-workflow-main) .pico-studio-main,
-.pico-apple-shell:has(.pico-workflow-main) .pico-workflow-board {
-  background:
-    radial-gradient(circle at 50% -26%, rgb(255 255 255 / 0.98), transparent 54%),
-    linear-gradient(180deg, #fbfbfd 0%, #f5f5f7 100%) !important;
-  color: var(--pico-ink) !important;
-}
-
-.pico-apple-shell .pico-studio-main::before,
-.pico-apple-shell .pico-studio-main::after,
-.pico-apple-shell .pico-subpage-main::before,
-.pico-apple-shell .pico-subpage-main::after {
-  display: none !important;
-}
-
-.pico-apple-shell .pico-utility-rail,
-.pico-apple-shell .pico-subpage-rail,
-.pico-apple-shell .pico-utility-tools,
-.pico-apple-shell .pico-pixel-mobilebar {
-  border-color: var(--pico-line) !important;
-  background: rgb(255 255 255 / 0.72) !important;
-  box-shadow: none !important;
-  backdrop-filter: blur(24px) saturate(160%);
-  -webkit-backdrop-filter: blur(24px) saturate(160%);
-}
-
-.pico-apple-shell .pico-utility-rail,
-.pico-apple-shell .pico-subpage-rail {
-  border-right: 1px solid var(--pico-line) !important;
-}
-
-.pico-apple-shell .pico-utility-tool,
-.pico-apple-shell .pico-subpage-rail a,
-.pico-apple-shell .pico-pixel-mobilebar button {
-  border: 1px solid transparent !important;
-  border-radius: 14px !important;
-  color: var(--pico-muted) !important;
-  font-weight: 600 !important;
-  box-shadow: none !important;
-  transform: none !important;
-}
-
-.pico-apple-shell .pico-utility-tool:hover,
-.pico-apple-shell .pico-subpage-rail a:hover,
-.pico-apple-shell .pico-subpage-rail a.border-primary\/40,
-.pico-apple-shell .pico-pixel-mobilebar button:hover {
-  border-color: rgb(0 113 227 / 0.14) !important;
-  background: rgb(0 113 227 / 0.09) !important;
-  color: var(--pico-blue) !important;
-  box-shadow: none !important;
-  transform: none !important;
-}
-
-.pico-apple-shell .pico-subpage-main .page-container {
-  color: var(--pico-ink) !important;
-}
-
-.pico-apple-shell .pico-subpage-main .page-container .soft-card,
-.pico-apple-shell .pico-subpage-main .page-container .rounded-2xl.border,
-.pico-apple-shell .pico-workflow-board .soft-card,
-.pico-apple-shell .pico-workflow-board .soft-input,
-.pico-apple-shell .pico-workflow-board .rounded-2xl.border {
-  border: 1px solid var(--pico-line) !important;
-  border-radius: 22px !important;
-  background: var(--pico-surface) !important;
-  box-shadow: var(--pico-shadow) !important;
-}
-
-.pico-apple-shell .pico-subpage-main .page-container input,
-.pico-apple-shell .pico-subpage-main .page-container select,
-.pico-apple-shell .pico-subpage-main .page-container textarea,
-.pico-apple-shell .pico-workflow-board input,
-.pico-apple-shell .pico-workflow-board textarea,
-.pico-apple-shell .pico-workflow-board select {
-  border-color: var(--pico-line) !important;
-  border-radius: 12px !important;
-  background: rgb(255 255 255 / 0.82) !important;
-  color: var(--pico-ink) !important;
-  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.55) !important;
-}
-
-.pico-apple-shell .pico-subpage-main [class*="bg-primary"],
-.pico-apple-shell .pico-subpage-main [class*="bg-gray-900"],
-.pico-apple-shell .pico-workflow-board [class*="bg-primary"],
-.pico-apple-shell .pico-workflow-board [class*="bg-cyan"] {
-  border: 0 !important;
-  background: var(--pico-blue) !important;
-  color: #fff !important;
-  box-shadow: 0 7px 18px rgb(0 113 227 / 0.2) !important;
-}
-
-.pico-apple-shell .pico-subpage-main h1,
-.pico-apple-shell .pico-subpage-main h2,
-.pico-apple-shell .pico-subpage-main h3,
-.pico-apple-shell .pico-subpage-main .text-gray-900,
-.pico-apple-shell .pico-workflow-board h1,
-.pico-apple-shell .pico-workflow-board h2,
-.pico-apple-shell .pico-workflow-board h3 {
-  color: var(--pico-ink) !important;
-  letter-spacing: -0.025em;
-}
-
-.pico-apple-shell .pico-subpage-main .text-gray-500,
-.pico-apple-shell .pico-subpage-main .text-gray-400,
-.pico-apple-shell .pico-workflow-board .text-gray-500,
-.pico-apple-shell .pico-workflow-board .text-gray-400 {
-  color: var(--pico-muted) !important;
-}
-
-/* Creation desk */
-.pico-apple-shell:has(.pico-studio-simple) .pico-studio-simple .soft-input {
-  border: 1px solid rgb(29 29 31 / 0.13) !important;
-  border-radius: 26px !important;
-  background: rgb(255 255 255 / 0.88) !important;
-  box-shadow: 0 24px 60px rgb(15 23 42 / 0.10), inset 0 1px rgb(255 255 255 / 0.9) !important;
-}
-
-.pico-apple-shell:has(.pico-studio-simple) .pico-simple-mode-tabs {
-  width: fit-content;
-  max-width: 100%;
-  margin: 0 auto 14px;
-  border: 1px solid rgb(29 29 31 / 0.09) !important;
-  border-radius: 999px !important;
-  background: rgb(235 235 240 / 0.75) !important;
-  padding: 4px !important;
-  box-shadow: inset 0 1px rgb(255 255 255 / 0.84) !important;
-}
-
-.pico-apple-shell:has(.pico-studio-simple) .pico-simple-mode-tabs .pico-mode-chip,
-.pico-apple-shell:has(.pico-studio-simple) .pico-studio-mode-switcher .pico-mode-chip {
-  border: 0 !important;
-  border-radius: 999px !important;
-  color: var(--pico-muted) !important;
-  font-weight: 600 !important;
-}
-
-.pico-apple-shell:has(.pico-studio-simple) .pico-simple-mode-tabs .pico-mode-chip:hover,
-.pico-apple-shell:has(.pico-studio-simple) .pico-simple-mode-tabs .pico-mode-chip.is-active,
-.pico-apple-shell:has(.pico-studio-simple) .pico-studio-mode-switcher .pico-mode-chip.is-active {
-  border: 0 !important;
-  background: #fff !important;
-  color: var(--pico-ink) !important;
-  box-shadow: 0 2px 7px rgb(15 23 42 / 0.12) !important;
-}
-
-.pico-apple-shell:has(.pico-studio-simple) .pico-universal-welcome {
-  border: 0 !important;
-  border-radius: 28px !important;
-  background: linear-gradient(145deg, rgb(255 255 255 / 0.92), rgb(247 249 252 / 0.84)) !important;
-  box-shadow: 0 16px 48px rgb(15 23 42 / 0.07) !important;
-}
-
-.pico-apple-shell:has(.pico-studio-simple) .pico-current-model-button,
-.pico-apple-shell:has(.pico-studio-simple) .pico-inline-model-menu {
-  border: 1px solid var(--pico-line) !important;
-  border-radius: 18px !important;
-  background: rgb(255 255 255 / 0.94) !important;
-  color: var(--pico-ink) !important;
-  box-shadow: var(--pico-shadow) !important;
-}
-
-.pico-apple-shell:has(.pico-studio-simple) .pico-inline-model-menu {
-  box-shadow: 0 32px 86px rgb(15 23 42 / 0.18) !important;
-  backdrop-filter: blur(24px) saturate(140%);
-}
-
-.pico-apple-shell:has(.pico-studio-simple) .pico-inline-model-menu-head,
-.pico-apple-shell:has(.pico-studio-simple) .pico-inline-menu-tabs {
-  border-color: var(--pico-line) !important;
-  background: transparent !important;
-}
-
-.pico-apple-shell:has(.pico-studio-simple) .pico-inline-menu-tabs button {
-  border: 0 !important;
-  border-radius: 9px !important;
-  color: var(--pico-muted) !important;
-}
-
-.pico-apple-shell:has(.pico-studio-simple) .pico-inline-menu-tabs button.is-active,
-.pico-apple-shell:has(.pico-studio-simple) .pico-inline-model-option:hover,
-.pico-apple-shell:has(.pico-studio-simple) .pico-inline-model-option.is-active {
-  border: 0 !important;
-  background: rgb(0 113 227 / 0.09) !important;
-  color: var(--pico-blue) !important;
-}
-
-.pico-apple-shell:has(.pico-studio-simple) .pico-inline-model-option {
-  border-radius: 12px !important;
-  color: var(--pico-ink) !important;
-}
-
-.pico-apple-shell:has(.pico-studio-simple) .pico-inline-model-icon,
-.pico-apple-shell:has(.pico-studio-simple) .pico-inline-menu-close {
-  border: 1px solid var(--pico-line) !important;
-  border-radius: 10px !important;
-  background: #f5f5f7 !important;
-  color: var(--pico-blue) !important;
-}
-
-.pico-apple-shell:has(.pico-studio-simple) .pico-studio-empty .pico-cream-composer-wrap {
-  max-width: min(1080px, calc(100vw - 150px)) !important;
-}
-
-/* Model Plaza: a calm data table instead of a themed card wall. */
-.pico-apple-shell:has(.pico-model-plaza) .pico-model-plaza {
-  background: transparent !important;
-}
-
-.pico-apple-shell:has(.pico-model-plaza) .pico-model-plaza-inner {
-  width: min(1220px, 100%);
-  padding-top: clamp(34px, 6vw, 76px);
-}
-
-.pico-apple-shell:has(.pico-model-plaza) .pico-model-plaza-hero {
-  align-items: center;
-  border: 0 !important;
-  border-radius: 28px !important;
-  background: linear-gradient(135deg, #ffffff, #eef6ff) !important;
-  padding: clamp(24px, 4vw, 42px) !important;
-  box-shadow: var(--pico-shadow) !important;
-  transform: none !important;
-}
-
-.pico-apple-shell:has(.pico-model-plaza) .pico-model-plaza-sparkle {
-  width: 48px;
-  height: 48px;
-  border: 0 !important;
-  border-radius: 15px !important;
-  background: var(--pico-blue) !important;
-  color: #fff;
-  box-shadow: 0 10px 24px rgb(0 113 227 / 0.22) !important;
-}
-
-.pico-apple-shell:has(.pico-model-plaza) .pico-model-plaza-kicker {
-  color: var(--pico-blue) !important;
-  font-size: 11px;
-  letter-spacing: 0.12em;
-}
-
-.pico-apple-shell:has(.pico-model-plaza) .pico-model-plaza-hero h1 {
-  color: var(--pico-ink) !important;
-  font-size: clamp(30px, 5vw, 48px) !important;
-  letter-spacing: -0.05em;
-}
-
-.pico-apple-shell:has(.pico-model-plaza) .pico-model-plaza-hero p:not(.pico-model-plaza-kicker),
-.pico-apple-shell:has(.pico-model-plaza) .pico-model-plaza-description,
-.pico-apple-shell:has(.pico-model-plaza) .pico-model-plaza-model-cell code {
-  color: var(--pico-muted) !important;
-}
-
-.pico-apple-shell:has(.pico-model-plaza) .pico-model-plaza-count,
-.pico-apple-shell:has(.pico-model-plaza) .pico-model-plaza-type {
-  border: 1px solid rgb(0 113 227 / 0.16) !important;
-  border-radius: 999px !important;
-  background: rgb(0 113 227 / 0.08) !important;
-  color: var(--pico-blue) !important;
-  font-weight: 650 !important;
-}
-
-.pico-apple-shell:has(.pico-model-plaza) .pico-model-plaza-controls { margin-top: 28px; }
-.pico-apple-shell:has(.pico-model-plaza) .pico-model-plaza-categories { padding: 4px; border-radius: 999px; background: rgb(232 232 237 / 0.78); }
-.pico-apple-shell:has(.pico-model-plaza) .pico-model-plaza-categories button {
-  border: 0 !important;
-  border-radius: 999px !important;
-  background: transparent !important;
-  color: var(--pico-muted) !important;
-  font-weight: 600 !important;
-}
-.pico-apple-shell:has(.pico-model-plaza) .pico-model-plaza-categories button.is-active {
-  background: #fff !important;
-  color: var(--pico-ink) !important;
-  box-shadow: 0 2px 8px rgb(15 23 42 / 0.12) !important;
-  transform: none !important;
-}
-
-.pico-apple-shell:has(.pico-model-plaza) .pico-model-plaza-search {
-  border: 1px solid var(--pico-line) !important;
-  border-radius: 14px !important;
-  background: rgb(255 255 255 / 0.82) !important;
-  box-shadow: none !important;
-}
-.pico-apple-shell:has(.pico-model-plaza) .pico-model-plaza-search input,
-.pico-apple-shell:has(.pico-model-plaza) .pico-model-plaza-search input::placeholder { color: var(--pico-muted) !important; }
-
-.pico-apple-shell:has(.pico-model-plaza) .pico-model-plaza-table-wrap {
-  border: 1px solid var(--pico-line) !important;
-  border-radius: 22px !important;
-  background: rgb(255 255 255 / 0.86) !important;
-  box-shadow: var(--pico-shadow) !important;
-}
-.pico-apple-shell:has(.pico-model-plaza) .pico-model-plaza-table { color: var(--pico-ink) !important; }
-.pico-apple-shell:has(.pico-model-plaza) .pico-model-plaza-table th {
-  border-bottom: 1px solid var(--pico-line) !important;
-  background: rgb(250 250 252 / 0.96) !important;
-  color: var(--pico-muted) !important;
-  font-size: 11px !important;
-  font-weight: 650 !important;
-}
-.pico-apple-shell:has(.pico-model-plaza) .pico-model-plaza-table td {
-  border-bottom: 1px solid rgb(29 29 31 / 0.08) !important;
-  color: var(--pico-ink) !important;
-  font-weight: 500 !important;
-}
-.pico-apple-shell:has(.pico-model-plaza) .pico-model-plaza-table tbody tr:nth-child(even),
-.pico-apple-shell:has(.pico-model-plaza) .pico-model-plaza-table tbody tr:hover { background: rgb(0 113 227 / 0.045) !important; }
-.pico-apple-shell:has(.pico-model-plaza) .pico-model-plaza-model-cell strong { font-weight: 650 !important; }
-.pico-apple-shell:has(.pico-model-plaza) .pico-model-plaza-icon {
-  border: 1px solid var(--pico-line) !important;
-  border-radius: 11px !important;
-  background: #f5f5f7 !important;
-}
-.pico-apple-shell:has(.pico-model-plaza) .pico-model-plaza-action button {
-  border: 0 !important;
-  border-radius: 999px !important;
-  background: var(--pico-blue) !important;
-  color: #fff !important;
-  box-shadow: 0 6px 15px rgb(0 113 227 / 0.18) !important;
-}
-.pico-apple-shell:has(.pico-model-plaza) .pico-model-plaza-action button:hover { background: var(--pico-blue-deep) !important; transform: translateY(-1px) !important; }
-.pico-apple-shell:has(.pico-model-plaza) .pico-model-plaza-status {
-  border: 1px solid var(--pico-line) !important;
-  font-weight: 650 !important;
-}
-.pico-apple-shell:has(.pico-model-plaza) .pico-model-plaza-status.is-ready {
-  border-color: rgb(0 113 227 / 0.18) !important;
-  background: rgb(0 113 227 / 0.08) !important;
-  color: var(--pico-blue) !important;
-}
-.pico-apple-shell:has(.pico-model-plaza) .pico-model-plaza-status.is-pending {
-  background: rgb(120 120 128 / 0.12) !important;
-  color: var(--pico-muted) !important;
-}
-.pico-apple-shell:has(.pico-model-plaza) .pico-model-plaza-table tbody tr.is-pending { background: rgb(120 120 128 / 0.05) !important; }
-.pico-apple-shell:has(.pico-model-plaza) .pico-model-plaza-action button:disabled,
-.pico-apple-shell:has(.pico-model-plaza) .pico-model-plaza-action button:disabled:hover {
-  background: rgb(120 120 128 / 0.22) !important;
-  color: var(--pico-muted) !important;
-  box-shadow: none !important;
-  transform: none !important;
-}
-
-/* API management and the remaining function pages use the same surface. */
-.pico-apple-shell .pico-api-hero,
-.pico-apple-shell .pico-api-card {
-  border: 1px solid var(--pico-line) !important;
-  border-radius: 22px !important;
-  background: rgb(255 255 255 / 0.84) !important;
-  box-shadow: var(--pico-shadow) !important;
-  transform: none !important;
-}
-.pico-apple-shell .pico-api-hero { background: linear-gradient(135deg, #fff, #eff7ff) !important; }
-.pico-apple-shell .pico-api-hero-icon,
-.pico-apple-shell .pico-api-step {
-  border: 0 !important;
-  border-radius: 13px !important;
-  background: var(--pico-blue) !important;
-  color: #fff !important;
-}
-.pico-apple-shell .pico-api-hero p,
-.pico-apple-shell .pico-api-card-title p,
-.pico-apple-shell .pico-api-route small,
-.pico-apple-shell .pico-api-protocol-grid span,
-.pico-apple-shell .pico-api-protocol-grid small,
-.pico-apple-shell .pico-api-key-row code { color: var(--pico-muted) !important; }
-.pico-apple-shell .pico-api-protocol-grid button,
-.pico-apple-shell .pico-api-address-row,
-.pico-apple-shell .pico-api-new-key,
-.pico-apple-shell .pico-api-route {
-  border: 1px solid var(--pico-line) !important;
-  border-radius: 14px !important;
-  background: #fbfbfd !important;
-  box-shadow: none !important;
-}
-.pico-apple-shell .pico-api-protocol-grid button.is-active,
-.pico-apple-shell .pico-api-protocol-grid button:hover {
-  border-color: rgb(0 113 227 / 0.34) !important;
-  background: rgb(0 113 227 / 0.08) !important;
-  color: var(--pico-blue) !important;
-  transform: none !important;
-}
-.pico-apple-shell .pico-api-address-row button,
-.pico-apple-shell .pico-api-generate-row button,
-.pico-apple-shell .pico-api-new-key > button,
-.pico-apple-shell .pico-api-key-actions button {
-  border: 0 !important;
-  border-radius: 999px !important;
-  background: var(--pico-blue) !important;
-  color: #fff !important;
-  box-shadow: 0 6px 16px rgb(0 113 227 / 0.18) !important;
-}
-.pico-apple-shell .pico-api-address-row button:hover,
-.pico-apple-shell .pico-api-generate-row button:hover,
-.pico-apple-shell .pico-api-new-key > button:hover { background: var(--pico-blue-deep) !important; transform: translateY(-1px) !important; }
-.pico-apple-shell .pico-api-key-list,
-.pico-apple-shell .pico-api-key-row { border-color: var(--pico-line) !important; }
-
-.pico-apple-shell:has(.pico-workflow-main) .infinite-canvas-flow,
-.pico-apple-shell:has(.pico-workflow-main) .infinite-canvas-flow .react-flow__pane {
-  background: #f7f8fa !important;
-}
-.pico-apple-shell:has(.pico-workflow-main) .infinite-canvas-flow .react-flow__controls,
-.pico-apple-shell:has(.pico-workflow-main) .infinite-canvas-flow .react-flow__minimap {
-  border: 1px solid var(--pico-line) !important;
-  border-radius: 14px !important;
-  background: rgb(255 255 255 / 0.9) !important;
-  box-shadow: var(--pico-shadow) !important;
-}
-.pico-apple-shell:has(.pico-workflow-main) .infinite-canvas-flow .react-flow__controls button {
-  border-color: var(--pico-line) !important;
-  background: #fff !important;
-  color: var(--pico-ink) !important;
-}
-
-/* Public entry page */
-.pico-apple-landing {
-  background: #fbfbfd !important;
-  color: var(--pico-ink) !important;
-}
-.pico-apple-landing .pico-clubhouse-hero {
-  background:
-    radial-gradient(circle at 74% 20%, rgb(214 234 255 / 0.74), transparent 30%),
-    radial-gradient(circle at 20% 78%, rgb(238 242 255 / 0.9), transparent 37%),
-    #fbfbfd !important;
-}
-.pico-apple-landing .pico-clubhouse-hero::before,
-.pico-apple-landing .pico-clubhouse-hero::after,
-.pico-apple-landing .pico-clubhouse-sky { display: none !important; }
-.pico-apple-landing .pico-clubhouse-copy h1 { color: var(--pico-ink) !important; text-shadow: none !important; letter-spacing: -0.065em; }
-.pico-apple-landing .pico-clubhouse-copy h1 span { color: var(--pico-blue) !important; text-shadow: none !important; }
-.pico-apple-landing .pico-clubhouse-badge,
-.pico-apple-landing .pico-clubhouse-actions button,
-.pico-apple-landing .pico-clubhouse-stat {
-  border: 1px solid var(--pico-line) !important;
-  border-radius: 18px !important;
-  background: rgb(255 255 255 / 0.76) !important;
-  color: var(--pico-ink) !important;
-  box-shadow: 0 10px 26px rgb(15 23 42 / 0.06) !important;
-  transform: none !important;
-}
-.pico-apple-landing .pico-clubhouse-badge { border-radius: 999px !important; color: var(--pico-blue) !important; }
-.pico-apple-landing .pico-clubhouse-actions button:nth-child(n) { background: rgb(255 255 255 / 0.76) !important; }
-.pico-apple-landing .pico-clubhouse-actions button:hover { background: rgb(0 113 227 / 0.07) !important; color: var(--pico-blue) !important; transform: translateY(-2px) !important; }
-.pico-apple-landing .pico-clubhouse-start {
-  border: 0 !important;
-  border-radius: 999px !important;
-  background: var(--pico-blue) !important;
-  color: #fff !important;
-  box-shadow: 0 10px 24px rgb(0 113 227 / 0.25) !important;
-}
-.pico-apple-landing .pico-clubhouse-start:hover { background: var(--pico-blue-deep) !important; transform: translateY(-2px) !important; }
-.pico-apple-landing .pico-clubhouse-desc,
-.pico-apple-landing .pico-clubhouse-stat span,
-.pico-apple-landing .pico-clubhouse-screen-body { color: var(--pico-muted) !important; }
-.pico-apple-landing .pico-clubhouse-stage {
-  min-height: 480px;
-  border: 1px solid rgb(29 29 31 / 0.08) !important;
-  border-radius: 30px !important;
-  background: linear-gradient(145deg, rgb(255 255 255 / 0.95), rgb(242 246 252 / 0.92)) !important;
-  box-shadow: 0 28px 80px rgb(15 23 42 / 0.13) !important;
-  transform: none !important;
-}
-.pico-apple-landing .pico-clubhouse-window { border-color: var(--pico-line) !important; background: rgb(255 255 255 / 0.76) !important; }
-.pico-apple-landing .pico-clubhouse-window span { border: 0 !important; box-shadow: none !important; }
-.pico-apple-landing .pico-clubhouse-screen {
-  border: 1px solid var(--pico-line) !important;
-  border-radius: 20px !important;
-  background: rgb(255 255 255 / 0.94) !important;
-  box-shadow: var(--pico-shadow) !important;
-}
-.pico-apple-landing .pico-clubhouse-screen-tabs { border-color: var(--pico-line) !important; }
-.pico-apple-landing .pico-clubhouse-screen-tabs span {
-  border: 0 !important;
-  border-radius: 9px !important;
-  background: transparent !important;
-  color: var(--pico-muted) !important;
-}
-.pico-apple-landing .pico-clubhouse-screen-tabs span:first-child { background: rgb(0 113 227 / 0.1) !important; color: var(--pico-blue) !important; }
-.pico-apple-landing .pico-clubhouse-screen-body i,
-.pico-apple-landing .pico-clubhouse-note { display: none !important; }
-.pico-apple-landing .pico-clubhouse-stat div { color: var(--pico-ink) !important; text-shadow: none !important; }
-
-@media (max-width: 820px) {
-  .pico-apple-shell:has(.pico-studio-simple) .pico-studio-empty .pico-cream-composer-wrap { max-width: calc(100vw - 32px) !important; }
-  .pico-apple-shell:has(.pico-model-plaza) .pico-model-plaza-hero { border-radius: 22px !important; }
-}
-
-/* Match the legacy selectors' specificity so none of the notebook skin leaks
-   back into the new system when a workspace changes state. */
-.pico-apple-shell:has(.pico-studio-simple) .pico-studio-main,
-.pico-apple-shell:has(.pico-studio-simple) .model-workspace.workspace-surface,
-.pico-apple-shell:has(.pico-model-plaza) .pico-studio-main,
-.pico-apple-shell:has(.pico-workflow-main) .pico-studio-main,
-.pico-apple-shell:has(.pico-workflow-main) .pico-workflow-board,
-.pico-apple-shell:has(.pico-doodle-page) .pico-subpage-main {
-  background:
-    radial-gradient(circle at 50% -24%, rgb(255 255 255 / 0.98), transparent 54%),
-    linear-gradient(180deg, #fbfbfd 0%, #f5f5f7 100%) !important;
-}
-
-.pico-apple-shell:has(.pico-studio-simple) .pico-utility-rail,
-.pico-apple-shell:has(.pico-studio-simple) .pico-utility-tools,
-.pico-apple-shell:has(.pico-model-plaza) .pico-utility-rail,
-.pico-apple-shell:has(.pico-model-plaza) .pico-utility-tools,
-.pico-apple-shell:has(.pico-workflow-main) .pico-utility-rail,
-.pico-apple-shell:has(.pico-workflow-main) .pico-utility-tools,
-.pico-apple-shell:has(.pico-doodle-page) .pico-subpage-rail,
-.pico-apple-shell:has(.pico-doodle-page) .pico-pixel-mobilebar {
-  border-color: var(--pico-line) !important;
-  background: rgb(255 255 255 / 0.72) !important;
-  box-shadow: none !important;
-}
-
-.pico-apple-shell:has(.pico-studio-simple) .pico-utility-tool,
-.pico-apple-shell:has(.pico-model-plaza) .pico-utility-tool,
-.pico-apple-shell:has(.pico-workflow-main) .pico-utility-tool,
-.pico-apple-shell:has(.pico-doodle-page) .pico-subpage-rail a,
-.pico-apple-shell:has(.pico-doodle-page) .pico-pixel-mobilebar button {
-  border-color: transparent !important;
-  background: transparent !important;
-  color: var(--pico-muted) !important;
-  box-shadow: none !important;
-  transform: none !important;
-}
-
-.pico-apple-shell:has(.pico-studio-simple) .pico-utility-tool:hover,
-.pico-apple-shell:has(.pico-model-plaza) .pico-utility-tool:hover,
-.pico-apple-shell:has(.pico-workflow-main) .pico-utility-tool:hover,
-.pico-apple-shell:has(.pico-doodle-page) .pico-subpage-rail a:hover,
-.pico-apple-shell:has(.pico-doodle-page) .pico-subpage-rail a.border-primary\/40 {
-  border-color: rgb(0 113 227 / 0.14) !important;
-  background: rgb(0 113 227 / 0.09) !important;
-  color: var(--pico-blue) !important;
-  box-shadow: none !important;
-}
-
-.pico-apple-shell:has(.pico-studio-simple) .pico-inline-model-bar {
-  border-bottom: 1px solid var(--pico-line) !important;
-}
-
-.pico-apple-shell:has(.pico-studio-simple) .pico-studio-simple .soft-input .border-b,
-.pico-apple-shell:has(.pico-studio-simple) .pico-composer-input [class*="border-"] {
-  border-color: var(--pico-line) !important;
-  border-style: solid !important;
-}
-
-.pico-apple-shell:has(.pico-studio-simple),
-.pico-apple-shell:has(.pico-model-plaza),
-.pico-apple-shell:has(.pico-workflow-main),
-.pico-apple-shell:has(.pico-doodle-page) {
-  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", Arial, sans-serif !important;
-}
-
-.pico-apple-shell:has(.pico-doodle-page) .pico-api-route > div span {
-  border: 1px solid var(--pico-line) !important;
-  border-radius: 10px !important;
-  background: #fff !important;
-  color: var(--pico-ink) !important;
-  font-weight: 600 !important;
-}
-
-.pico-apple-shell:has(.pico-doodle-page) .pico-api-route > div b {
-  color: var(--pico-muted) !important;
-  font-weight: 500 !important;
-}
-
-/* PICO Nocturne — the whole product uses one high-contrast dark system. */
-.pico-apple-shell,
-.pico-apple-landing {
-  --pico-ink: #f5f5f7;
-  --pico-muted: #a1a1aa;
-  --pico-canvas: #090a0d;
-  --pico-surface: rgb(23 24 30 / 0.80);
-  --pico-line: rgb(255 255 255 / 0.12);
-  --pico-blue: #0a84ff;
-  --pico-blue-deep: #409cff;
-  --pico-shadow: 0 24px 70px rgb(0 0 0 / 0.34), inset 0 1px rgb(255 255 255 / 0.035);
-  color: var(--pico-ink) !important;
-  color-scheme: dark;
-  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Helvetica Neue", Arial, sans-serif !important;
-  -webkit-font-smoothing: antialiased;
-  text-rendering: optimizeLegibility;
-}
-
-body:has(.pico-apple-shell),
-body:has(.pico-apple-landing) {
-  background: #090a0d !important;
-  background-image: radial-gradient(circle at 52% -18%, rgb(35 63 105 / 0.46), transparent 45%) !important;
-  color: var(--pico-ink);
-}
-
-.pico-apple-shell,
-.pico-apple-shell:has(.pico-studio-simple),
-.pico-apple-shell:has(.pico-model-plaza),
-.pico-apple-shell:has(.pico-workflow-main),
-.pico-apple-shell:has(.pico-doodle-page),
-.pico-apple-landing {
-  background: #090a0d !important;
-}
-
-.pico-apple-shell .pico-studio-main,
-.pico-apple-shell .model-workspace.workspace-surface,
-.pico-apple-shell .pico-subpage-main,
-.pico-apple-shell .pico-model-plaza,
-.pico-apple-shell .pico-workflow-board,
-.pico-apple-shell:has(.pico-studio-simple) .pico-studio-main,
-.pico-apple-shell:has(.pico-studio-simple) .model-workspace.workspace-surface,
-.pico-apple-shell:has(.pico-model-plaza) .pico-studio-main,
-.pico-apple-shell:has(.pico-workflow-main) .pico-studio-main,
-.pico-apple-shell:has(.pico-workflow-main) .pico-workflow-board,
-.pico-apple-shell:has(.pico-doodle-page) .pico-subpage-main {
-  background:
-    radial-gradient(circle at 52% -28%, rgb(37 71 121 / 0.44), transparent 48%),
-    linear-gradient(180deg, #101218 0%, #090a0d 92%) !important;
-  color: var(--pico-ink) !important;
-}
-
-.pico-apple-shell .pico-utility-rail,
-.pico-apple-shell .pico-subpage-rail,
-.pico-apple-shell .pico-utility-tools,
-.pico-apple-shell .pico-pixel-mobilebar,
-.pico-apple-shell:has(.pico-studio-simple) .pico-utility-rail,
-.pico-apple-shell:has(.pico-studio-simple) .pico-utility-tools,
-.pico-apple-shell:has(.pico-model-plaza) .pico-utility-rail,
-.pico-apple-shell:has(.pico-model-plaza) .pico-utility-tools,
-.pico-apple-shell:has(.pico-workflow-main) .pico-utility-rail,
-.pico-apple-shell:has(.pico-workflow-main) .pico-utility-tools,
-.pico-apple-shell:has(.pico-doodle-page) .pico-subpage-rail,
-.pico-apple-shell:has(.pico-doodle-page) .pico-pixel-mobilebar {
-  border-color: var(--pico-line) !important;
-  background: rgb(14 15 20 / 0.84) !important;
-  box-shadow: none !important;
-  backdrop-filter: blur(28px) saturate(145%);
-  -webkit-backdrop-filter: blur(28px) saturate(145%);
-}
-
-.pico-apple-shell .pico-utility-tool,
-.pico-apple-shell .pico-subpage-rail a,
-.pico-apple-shell .pico-pixel-mobilebar button,
-.pico-apple-shell:has(.pico-studio-simple) .pico-utility-tool,
-.pico-apple-shell:has(.pico-model-plaza) .pico-utility-tool,
-.pico-apple-shell:has(.pico-workflow-main) .pico-utility-tool,
-.pico-apple-shell:has(.pico-doodle-page) .pico-subpage-rail a {
-  color: #a8abb6 !important;
-}
-
-.pico-apple-shell .pico-utility-tool:hover,
-.pico-apple-shell .pico-subpage-rail a:hover,
-.pico-apple-shell .pico-subpage-rail a.border-primary\/40,
-.pico-apple-shell:has(.pico-studio-simple) .pico-utility-tool:hover,
-.pico-apple-shell:has(.pico-model-plaza) .pico-utility-tool:hover,
-.pico-apple-shell:has(.pico-workflow-main) .pico-utility-tool:hover,
-.pico-apple-shell:has(.pico-doodle-page) .pico-subpage-rail a:hover,
-.pico-apple-shell:has(.pico-doodle-page) .pico-subpage-rail a.border-primary\/40 {
-  border-color: rgb(10 132 255 / 0.34) !important;
-  background: rgb(10 132 255 / 0.14) !important;
-  color: #fff !important;
-  box-shadow: inset 0 0 0 1px rgb(10 132 255 / 0.12) !important;
-}
-
-.pico-apple-shell .text-gray-950,
-.pico-apple-shell .text-gray-900,
-.pico-apple-shell .text-gray-800,
-.pico-apple-shell .text-gray-700,
-.pico-apple-shell .pico-subpage-main h1,
-.pico-apple-shell .pico-subpage-main h2,
-.pico-apple-shell .pico-subpage-main h3,
-.pico-apple-shell .pico-workflow-board h1,
-.pico-apple-shell .pico-workflow-board h2,
-.pico-apple-shell .pico-workflow-board h3 {
-  color: var(--pico-ink) !important;
-}
-
-.pico-apple-shell .text-gray-600,
-.pico-apple-shell .text-gray-500,
-.pico-apple-shell .text-gray-400,
-.pico-apple-shell .pico-subpage-main .text-gray-500,
-.pico-apple-shell .pico-subpage-main .text-gray-400,
-.pico-apple-shell .pico-workflow-board .text-gray-500,
-.pico-apple-shell .pico-workflow-board .text-gray-400 {
-  color: var(--pico-muted) !important;
-}
-
-.pico-apple-shell .soft-card,
-.pico-apple-shell .soft-input,
-.pico-apple-shell .pico-subpage-main .page-container .soft-card,
-.pico-apple-shell .pico-subpage-main .page-container .rounded-2xl.border,
-.pico-apple-shell .pico-workflow-board .soft-card,
-.pico-apple-shell .pico-workflow-board .soft-input,
-.pico-apple-shell .pico-workflow-board .rounded-2xl.border {
-  border-color: var(--pico-line) !important;
-  background: var(--pico-surface) !important;
-  box-shadow: var(--pico-shadow) !important;
-}
-
-.pico-apple-shell input,
-.pico-apple-shell textarea,
-.pico-apple-shell select,
-.pico-apple-shell .pico-subpage-main .page-container input,
-.pico-apple-shell .pico-subpage-main .page-container textarea,
-.pico-apple-shell .pico-subpage-main .page-container select,
-.pico-apple-shell .pico-workflow-board input,
-.pico-apple-shell .pico-workflow-board textarea,
-.pico-apple-shell .pico-workflow-board select {
-  border-color: var(--pico-line) !important;
-  background: rgb(8 9 13 / 0.56) !important;
-  color: var(--pico-ink) !important;
-}
-.pico-apple-shell input::placeholder,
-.pico-apple-shell textarea::placeholder { color: #8b8e99 !important; opacity: 1; }
-
-.pico-apple-shell [class*="bg-white"],
-.pico-apple-shell [class*="bg-gray-50"] {
-  --tw-bg-opacity: 1;
-  background-color: rgb(255 255 255 / 0.065) !important;
-}
-
-.pico-apple-shell:has(.pico-studio-simple) .pico-universal-welcome,
-.pico-apple-shell:has(.pico-studio-simple) .pico-studio-simple .soft-input {
-  border-color: rgb(255 255 255 / 0.14) !important;
-  background: linear-gradient(145deg, rgb(29 31 39 / 0.94), rgb(16 17 23 / 0.92)) !important;
-  box-shadow: 0 32px 80px rgb(0 0 0 / 0.34), inset 0 1px rgb(255 255 255 / 0.055) !important;
-}
-
-.pico-apple-shell:has(.pico-studio-simple) .pico-simple-mode-tabs {
-  border-color: rgb(255 255 255 / 0.10) !important;
-  background: rgb(31 33 42 / 0.84) !important;
-  box-shadow: inset 0 1px rgb(255 255 255 / 0.05) !important;
-}
-.pico-apple-shell:has(.pico-studio-simple) .pico-simple-mode-tabs .pico-mode-chip,
-.pico-apple-shell:has(.pico-studio-simple) .pico-studio-mode-switcher .pico-mode-chip { color: #b9bcc5 !important; }
-.pico-apple-shell:has(.pico-studio-simple) .pico-simple-mode-tabs .pico-mode-chip.is-active,
-.pico-apple-shell:has(.pico-studio-simple) .pico-simple-mode-tabs .pico-mode-chip:hover,
-.pico-apple-shell:has(.pico-studio-simple) .pico-studio-mode-switcher .pico-mode-chip.is-active {
-  background: #f5f5f7 !important;
-  color: #17181d !important;
-  box-shadow: 0 3px 14px rgb(0 0 0 / 0.28) !important;
-}
-
-.pico-apple-shell:has(.pico-studio-simple) .pico-inline-model-bar,
-.pico-apple-shell:has(.pico-studio-simple) .pico-studio-simple .soft-input .border-b,
-.pico-apple-shell:has(.pico-studio-simple) .pico-composer-input [class*="border-"] {
-  border-color: var(--pico-line) !important;
-}
-.pico-apple-shell:has(.pico-studio-simple) .pico-current-model-button,
-.pico-apple-shell:has(.pico-studio-simple) .pico-inline-model-menu {
-  border-color: var(--pico-line) !important;
-  background: rgb(25 27 34 / 0.96) !important;
-  color: var(--pico-ink) !important;
-  box-shadow: 0 34px 88px rgb(0 0 0 / 0.46) !important;
-}
-.pico-apple-shell:has(.pico-studio-simple) .pico-current-model-label,
-.pico-apple-shell:has(.pico-studio-simple) .pico-inline-menu-tabs button { color: var(--pico-muted) !important; }
-.pico-apple-shell:has(.pico-studio-simple) .pico-inline-menu-tabs button.is-active,
-.pico-apple-shell:has(.pico-studio-simple) .pico-inline-model-option:hover,
-.pico-apple-shell:has(.pico-studio-simple) .pico-inline-model-option.is-active {
-  background: rgb(10 132 255 / 0.16) !important;
-  color: #fff !important;
-}
-.pico-apple-shell:has(.pico-studio-simple) .pico-inline-model-icon,
-.pico-apple-shell:has(.pico-studio-simple) .pico-inline-menu-close {
-  border-color: var(--pico-line) !important;
-  background: rgb(255 255 255 / 0.08) !important;
-  color: #7ab8ff !important;
-}
-
-.pico-apple-shell:has(.pico-model-plaza) .pico-model-plaza-hero,
-.pico-apple-shell:has(.pico-model-plaza) .pico-model-plaza-table-wrap {
-  border-color: rgb(255 255 255 / 0.13) !important;
-  background: linear-gradient(145deg, rgb(28 30 38 / 0.92), rgb(17 18 24 / 0.90)) !important;
-  box-shadow: var(--pico-shadow) !important;
-}
-.pico-apple-shell:has(.pico-model-plaza) .pico-model-plaza-hero h1,
-.pico-apple-shell:has(.pico-model-plaza) .pico-model-plaza-model-cell strong,
-.pico-apple-shell:has(.pico-model-plaza) .pico-model-plaza-table { color: var(--pico-ink) !important; }
-.pico-apple-shell:has(.pico-model-plaza) .pico-model-plaza-hero p:not(.pico-model-plaza-kicker),
-.pico-apple-shell:has(.pico-model-plaza) .pico-model-plaza-description,
-.pico-apple-shell:has(.pico-model-plaza) .pico-model-plaza-model-cell code { color: var(--pico-muted) !important; }
-.pico-apple-shell:has(.pico-model-plaza) .pico-model-plaza-categories { background: rgb(255 255 255 / 0.09) !important; }
-.pico-apple-shell:has(.pico-model-plaza) .pico-model-plaza-categories button { color: #b9bcc5 !important; }
-.pico-apple-shell:has(.pico-model-plaza) .pico-model-plaza-categories button.is-active {
-  background: #f5f5f7 !important;
-  color: #17181d !important;
-}
-.pico-apple-shell:has(.pico-model-plaza) .pico-model-plaza-search,
-.pico-apple-shell:has(.pico-model-plaza) .pico-model-plaza-icon {
-  border-color: var(--pico-line) !important;
-  background: rgb(255 255 255 / 0.055) !important;
-  color: var(--pico-ink) !important;
-}
-.pico-apple-shell:has(.pico-model-plaza) .pico-model-plaza-table th {
-  border-color: var(--pico-line) !important;
-  background: rgb(255 255 255 / 0.045) !important;
-  color: #b9bcc5 !important;
-}
-.pico-apple-shell:has(.pico-model-plaza) .pico-model-plaza-table td { border-color: rgb(255 255 255 / 0.08) !important; color: var(--pico-ink) !important; }
-.pico-apple-shell:has(.pico-model-plaza) .pico-model-plaza-table tbody tr:nth-child(even),
-.pico-apple-shell:has(.pico-model-plaza) .pico-model-plaza-table tbody tr:hover { background: rgb(255 255 255 / 0.035) !important; }
-.pico-apple-shell:has(.pico-model-plaza) .pico-model-plaza-count,
-.pico-apple-shell:has(.pico-model-plaza) .pico-model-plaza-type {
-  border-color: rgb(10 132 255 / 0.30) !important;
-  background: rgb(10 132 255 / 0.13) !important;
-  color: #8ec7ff !important;
-}
-
-.pico-apple-shell .pico-api-hero,
-.pico-apple-shell .pico-api-card,
-.pico-apple-shell .pico-api-protocol-grid button,
-.pico-apple-shell .pico-api-address-row,
-.pico-apple-shell .pico-api-new-key,
-.pico-apple-shell .pico-api-route {
-  border-color: var(--pico-line) !important;
-  background: linear-gradient(145deg, rgb(28 30 38 / 0.92), rgb(17 18 24 / 0.90)) !important;
-  color: var(--pico-ink) !important;
-  box-shadow: var(--pico-shadow) !important;
-}
-.pico-apple-shell .pico-api-hero p,
-.pico-apple-shell .pico-api-card-title p,
-.pico-apple-shell .pico-api-route small,
-.pico-apple-shell .pico-api-protocol-grid span,
-.pico-apple-shell .pico-api-protocol-grid small,
-.pico-apple-shell .pico-api-key-row code { color: var(--pico-muted) !important; }
-.pico-apple-shell .pico-api-route > div span {
-  border-color: var(--pico-line) !important;
-  background: rgb(255 255 255 / 0.06) !important;
-  color: var(--pico-ink) !important;
-}
-.pico-apple-shell .pico-api-route > div b { color: #7ab8ff !important; }
-.pico-apple-shell .pico-api-protocol-grid button.is-active,
-.pico-apple-shell .pico-api-protocol-grid button:hover {
-  border-color: rgb(10 132 255 / 0.34) !important;
-  background: rgb(10 132 255 / 0.17) !important;
-  color: #fff !important;
-}
-
-.pico-apple-shell:has(.pico-workflow-main) .infinite-canvas-flow,
-.pico-apple-shell:has(.pico-workflow-main) .infinite-canvas-flow .react-flow__pane { background: #0d0f14 !important; }
-.pico-apple-shell:has(.pico-workflow-main) .infinite-canvas-flow .react-flow__controls,
-.pico-apple-shell:has(.pico-workflow-main) .infinite-canvas-flow .react-flow__minimap {
-  border-color: var(--pico-line) !important;
-  background: rgb(23 24 30 / 0.92) !important;
-  box-shadow: var(--pico-shadow) !important;
-}
-
-.pico-apple-landing .pico-clubhouse-hero {
-  background:
-    radial-gradient(circle at 72% 14%, rgb(28 85 161 / 0.48), transparent 32%),
-    radial-gradient(circle at 18% 82%, rgb(58 39 125 / 0.26), transparent 39%),
-    #090a0d !important;
-}
-.pico-apple-landing .pico-clubhouse-copy h1,
-.pico-apple-landing .pico-clubhouse-stat div { color: var(--pico-ink) !important; }
-.pico-apple-landing .pico-clubhouse-copy h1 span { color: #5eafff !important; }
-.pico-apple-landing .pico-clubhouse-desc,
-.pico-apple-landing .pico-clubhouse-stat span,
-.pico-apple-landing .pico-clubhouse-screen-body { color: var(--pico-muted) !important; }
-.pico-apple-landing .pico-clubhouse-badge,
-.pico-apple-landing .pico-clubhouse-actions button,
-.pico-apple-landing .pico-clubhouse-stat,
-.pico-apple-landing .pico-clubhouse-stage,
-.pico-apple-landing .pico-clubhouse-screen {
-  border-color: var(--pico-line) !important;
-  background: linear-gradient(145deg, rgb(28 30 38 / 0.90), rgb(16 17 23 / 0.88)) !important;
-  color: var(--pico-ink) !important;
-  box-shadow: var(--pico-shadow) !important;
-}
-.pico-apple-landing .pico-clubhouse-badge { color: #8ec7ff !important; }
-.pico-apple-landing .pico-clubhouse-actions button:nth-child(n) { color: var(--pico-ink) !important; }
-.pico-apple-landing .pico-clubhouse-actions button:hover { background: rgb(10 132 255 / 0.14) !important; color: #fff !important; }
-.pico-apple-landing .pico-clubhouse-window,
-.pico-apple-landing .pico-clubhouse-screen-tabs { border-color: var(--pico-line) !important; background: rgb(255 255 255 / 0.04) !important; }
-.pico-apple-landing .pico-clubhouse-screen-tabs span { color: var(--pico-muted) !important; }
-.pico-apple-landing .pico-clubhouse-screen-tabs span:first-child { background: rgb(10 132 255 / 0.18) !important; color: #8ec7ff !important; }
-
-.pico-apple-shell:has(.pico-doodle-page) .pico-api-hero h1,
-.pico-apple-shell:has(.pico-doodle-page) .pico-api-card h2,
-.pico-apple-shell:has(.pico-doodle-page) .pico-api-card strong {
-  color: var(--pico-ink) !important;
-}
-.pico-apple-shell:has(.pico-doodle-page) .pico-api-hero p,
-.pico-apple-shell:has(.pico-doodle-page) .pico-api-hero > div > span,
-.pico-apple-shell:has(.pico-doodle-page) .pico-api-card-title p,
-.pico-apple-shell:has(.pico-doodle-page) .pico-api-route small,
-.pico-apple-shell:has(.pico-doodle-page) .pico-api-protocol-grid span,
-.pico-apple-shell:has(.pico-doodle-page) .pico-api-protocol-grid small,
-.pico-apple-shell:has(.pico-doodle-page) .pico-api-key-row code {
-  color: var(--pico-muted) !important;
-}
-.pico-apple-shell:has(.pico-doodle-page) .pico-api-route > div span {
-  border-color: var(--pico-line) !important;
-  background: rgb(255 255 255 / 0.065) !important;
-  color: var(--pico-ink) !important;
-}
-.pico-apple-shell:has(.pico-doodle-page) .pico-api-route > div b { color: #7ab8ff !important; }
-
 /* --------------------------------------------------------------------------
    PICO premium public application
    This isolated frame deliberately does not inherit the retired pixel/doodle
    layers above. Every public application view now shares these materials.
    -------------------------------------------------------------------------- */
 .pico-premium-shell {
-  --pico-premium-bg: #07080b;
-  --pico-premium-panel: #12141a;
-  --pico-premium-panel-strong: #181b22;
-  --pico-premium-line: rgb(255 255 255 / 0.10);
-  --pico-premium-line-strong: rgb(255 255 255 / 0.16);
-  --pico-premium-text: #f5f5f7;
-  --pico-premium-muted: #a1a5b0;
-  --pico-premium-blue: #0a84ff;
-  --pico-premium-shadow: 0 18px 54px rgb(0 0 0 / 0.28);
+  /* Style A (light). Every rule in this region reads these tokens or a literal
+     from the same palette — the dark values were converted wholesale, so there
+     is no longer a mix. If you flip these back to dark you must flip the
+     `--plaza-*` and `--pico-flow-*` blocks below too; those three blocks are
+     the whole surface. */
+  --pico-premium-bg: #ffffff;
+  --pico-premium-panel: #ffffff;
+  --pico-premium-panel-strong: #fafafa;
+  --pico-premium-line: #e8e8ea;
+  --pico-premium-line-strong: #d4d4d8;
+  --pico-premium-text: #18181b;
+  --pico-premium-muted: #52525b;
+  --pico-premium-blue: #2563eb;
+  /* Style A separates surfaces with lines, not shadows. Every rule that reads
+     this token already carries a 1px border, so `none` is not a loss. */
+  --pico-premium-shadow: none;
+  /* Channel colors — the product's only color semantics, one per creation mode.
+     Identical to the `ch.*` scale in tailwind.config.ts so the landing page, the
+     login modal and the workbench mode strip all speak the same colour. */
+  --pico-ch-chat: #2563eb;
+  --pico-ch-image: #059669;
+  --pico-ch-video: #7c3aed;
+  --pico-ch-audio: #ea580c;
+  --pico-ch-flow: #475569;
   display: flex;
   min-height: 100dvh;
   overflow: hidden;
-  background:
-    radial-gradient(900px 560px at 20% -14%, rgb(10 132 255 / 0.16), transparent 60%),
-    radial-gradient(680px 460px at 78% 88%, rgb(94 92 230 / 0.10), transparent 62%),
-    var(--pico-premium-bg);
+  /* No gradient wash: Style A carries no decorative colour on the base surface. */
+  background: var(--pico-premium-bg);
   color: var(--pico-premium-text);
   font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "PingFang SC", "Helvetica Neue", Arial, sans-serif;
   letter-spacing: 0;
@@ -3711,7 +1154,7 @@ body:has(.pico-premium-shell) {
   justify-content: space-between;
   gap: 18px;
   border-bottom: 1px solid var(--pico-premium-line);
-  background: rgb(8 9 13 / 0.74);
+  background: #ffffff;
   padding: 0 30px;
   backdrop-filter: blur(18px);
 }
@@ -3724,10 +1167,10 @@ body:has(.pico-premium-shell) {
 }
 
 .pico-premium-wordmark > span {
-  color: #fff;
+  color: var(--pico-premium-text);
   font-size: 17px;
-  font-weight: 760;
-  letter-spacing: 0.08em;
+  font-weight: 600;
+  letter-spacing: -0.01em;
 }
 
 .pico-premium-wordmark small {
@@ -3745,10 +1188,10 @@ body:has(.pico-premium-shell) {
 }
 
 .pico-premium-recharge {
-  border: 1px solid rgb(10 132 255 / 0.55);
+  border: 1px solid rgb(37 99 235 / 0.44);
   border-radius: 999px;
-  background: rgb(10 132 255 / 0.13);
-  color: #8fc7ff;
+  background: rgb(37 99 235 / 0.10);
+  color: #2563eb;
   padding: 6px 13px;
   font-size: 12px;
   font-weight: 620;
@@ -3798,7 +1241,7 @@ body:has(.pico-premium-shell) {
   flex-direction: column;
   align-items: center;
   border-left: 1px solid var(--pico-premium-line);
-  background: rgb(13 14 18 / 0.9);
+  background: rgb(0 0 0 / 0.02);
   padding: 18px 10px 14px;
   backdrop-filter: blur(22px);
 }
@@ -3808,13 +1251,13 @@ body:has(.pico-premium-shell) {
   width: 38px;
   height: 38px;
   place-items: center;
-  border: 1px solid var(--pico-premium-line-strong);
-  border-radius: 12px;
-  background: linear-gradient(145deg, #272b36, #101218);
+  border-radius: 8px;
+  /* Solid ink mark, matching the login modal's brand mark. White text needs a
+     filled dark surface — on light it can only live inside one. */
+  background: #18181b;
   color: #fff;
   font-size: 16px;
-  font-weight: 750;
-  box-shadow: inset 0 1px rgb(255 255 255 / 0.12), 0 8px 18px rgb(0 0 0 / 0.22);
+  font-weight: 600;
 }
 
 .pico-premium-rail-actions {
@@ -3834,8 +1277,8 @@ body:has(.pico-premium-shell) {
   justify-content: center;
   gap: 5px;
   border: 1px solid transparent;
-  border-radius: 12px;
-  color: #8f949f;
+  border-radius: 8px;
+  color: #52525b;
   font-size: 10px;
   font-weight: 580;
   line-height: 1.15;
@@ -3843,16 +1286,15 @@ body:has(.pico-premium-shell) {
 }
 
 .pico-premium-rail-item:hover {
-  border-color: rgb(255 255 255 / 0.10);
-  background: rgb(255 255 255 / 0.055);
-  color: #fff;
+  border-color: rgb(0 0 0 / 0.08);
+  background: rgb(0 0 0 / 0.05);
+  color: var(--pico-premium-text);
 }
 
 .pico-premium-rail-item.is-active {
-  border-color: rgb(10 132 255 / 0.34);
-  background: linear-gradient(145deg, rgb(10 132 255 / 0.20), rgb(10 132 255 / 0.08));
-  color: #9dceff;
-  box-shadow: inset 0 1px rgb(255 255 255 / 0.07);
+  border-color: rgb(37 99 235 / 0.27);
+  background: rgb(37 99 235 / 0.08);
+  color: #2563eb;
 }
 
 .pico-premium-rail-divider {
@@ -3879,19 +1321,19 @@ body:has(.pico-premium-shell) {
   align-items: center;
   gap: 2px;
   border: 1px solid var(--pico-premium-line);
-  border-radius: 10px;
-  background: rgb(255 255 255 / 0.035);
+  border-radius: 8px;
+  background: rgb(0 0 0 / 0.03);
   padding: 7px 4px;
   color: var(--pico-premium-muted);
   text-align: center;
   transition: border-color 160ms ease, background 160ms ease;
 }
 
-.pico-premium-balance:hover { border-color: rgb(10 132 255 / 0.45); background: rgb(10 132 255 / 0.10); }
+.pico-premium-balance:hover { border-color: rgb(37 99 235 / 0.35); background: rgb(37 99 235 / 0.08); }
 .pico-premium-balance span { font-size: 9px; }
-.pico-premium-balance strong { color: #fff; font-size: 11px; font-variant-numeric: tabular-nums; }
-.pico-premium-account-avatar { display: grid; width: 34px; height: 34px; place-items: center; border: 1px solid var(--pico-premium-line-strong); border-radius: 50%; background: linear-gradient(145deg, #303541, #161920); color: #fff; font-size: 12px; font-weight: 700; }
-.pico-premium-account-avatar:hover { border-color: rgb(10 132 255 / 0.55); color: #9dceff; }
+.pico-premium-balance strong { color: var(--pico-premium-text); font-size: 11px; font-variant-numeric: tabular-nums; }
+.pico-premium-account-avatar { display: grid; width: 34px; height: 34px; place-items: center; border-radius: 50%; background: #18181b; color: #fff; font-size: 12px; font-weight: 600; }
+.pico-premium-account-avatar:hover { background: var(--pico-premium-blue); }
 
 .pico-premium-mobile-dock { display: none; }
 
@@ -3918,15 +1360,15 @@ body:has(.pico-premium-shell) {
 .pico-premium-shell .pico-universal-welcome {
   max-width: 920px !important;
   border: 1px solid var(--pico-premium-line) !important;
-  border-radius: 18px !important;
-  background: linear-gradient(145deg, rgb(27 30 38 / 0.92), rgb(16 17 22 / 0.94)) !important;
-  box-shadow: var(--pico-premium-shadow), inset 0 1px rgb(255 255 255 / 0.055) !important;
+  border-radius: 8px !important;
+  background: var(--pico-premium-panel) !important;
+  box-shadow: var(--pico-premium-shadow) !important;
   color: var(--pico-premium-text) !important;
 }
 
 .pico-premium-shell .pico-universal-welcome .tech-icon {
-  border-color: rgb(10 132 255 / 0.32) !important;
-  background: rgb(10 132 255 / 0.10) !important;
+  border-color: rgb(37 99 235 / 0.25) !important;
+  background: rgb(37 99 235 / 0.08) !important;
   box-shadow: none !important;
 }
 
@@ -3946,44 +1388,16 @@ body:has(.pico-premium-shell) {
   padding-top: 0 !important;
 }
 
-.pico-premium-shell .pico-simple-mode-tabs {
-  width: max-content;
-  max-width: 100%;
-  margin: 0 auto 10px !important;
-  border: 1px solid var(--pico-premium-line) !important;
-  border-radius: 12px !important;
-  background: rgb(20 22 28 / 0.82) !important;
-  padding: 4px !important;
-  box-shadow: inset 0 1px rgb(255 255 255 / 0.04) !important;
-}
-
-.pico-premium-shell .pico-mode-chip {
-  min-height: 34px;
-  border-radius: 9px !important;
-  color: #a7acb7 !important;
-  font-size: 12px !important;
-  font-weight: 590 !important;
-}
-
-.pico-premium-shell .pico-mode-chip:hover,
-.pico-premium-shell .pico-mode-chip.is-active {
-  background: #f5f5f7 !important;
-  color: #15171c !important;
-  box-shadow: 0 4px 16px rgb(0 0 0 / 0.28) !important;
-}
-.pico-premium-shell .pico-simple-mode-tabs { display: flex !important; align-items: center !important; justify-content: center; }
-.pico-premium-shell .pico-simple-mode-tabs .pico-mode-chip { display: inline-flex !important; width: auto !important; min-width: 72px !important; flex: 0 0 auto !important; align-items: center; justify-content: center; padding: 0 12px !important; white-space: nowrap; }
-
 .pico-premium-shell .pico-composer-meta {
-  color: #767c87 !important;
+  color: #9a9aa2 !important;
 }
 
 .pico-premium-shell .pico-balance-warning {
-  border-color: rgb(255 159 10 / 0.30) !important;
-  background: rgb(255 159 10 / 0.08) !important;
-  color: #ffd08a !important;
+  border-color: rgb(217 119 6 / 0.24) !important;
+  background: rgb(217 119 6 / 0.06) !important;
+  color: #b45309 !important;
 }
-.pico-premium-shell .pico-balance-warning button { color: #ffd08a !important; }
+.pico-premium-shell .pico-balance-warning button { color: #b45309 !important; }
 
 .pico-premium-shell .soft-card,
 .pico-premium-shell .soft-input,
@@ -3997,9 +1411,9 @@ body:has(.pico-premium-shell) {
 .pico-premium-shell .pico-composer-input {
   overflow: visible !important;
   border: 1px solid var(--pico-premium-line-strong) !important;
-  border-radius: 16px !important;
-  background: linear-gradient(145deg, rgb(29 32 41 / 0.98), rgb(18 20 26 / 0.98)) !important;
-  box-shadow: 0 20px 50px rgb(0 0 0 / 0.30), inset 0 1px rgb(255 255 255 / 0.055) !important;
+  border-radius: 8px !important;
+  background: var(--pico-premium-panel) !important;
+  box-shadow: none !important;
 }
 
 .pico-premium-shell .pico-inline-model-bar,
@@ -4009,9 +1423,9 @@ body:has(.pico-premium-shell) {
 .pico-premium-shell .pico-current-model-button,
 .pico-premium-shell .pico-inline-model-menu {
   border-color: var(--pico-premium-line) !important;
-  background: #1b1e26 !important;
+  background: #fafafa !important;
   color: var(--pico-premium-text) !important;
-  box-shadow: 0 24px 70px rgb(0 0 0 / 0.42) !important;
+  box-shadow: 0 24px 70px rgb(0 0 0 / 0.10) !important;
 }
 
 .pico-premium-shell .pico-current-model-label,
@@ -4020,28 +1434,30 @@ body:has(.pico-premium-shell) {
 
 .pico-premium-shell .pico-inline-menu-tabs button.is-active,
 .pico-premium-shell .pico-inline-model-option:hover,
-.pico-premium-shell .pico-inline-model-option.is-active { background: rgb(10 132 255 / 0.16) !important; color: #fff !important; }
+.pico-premium-shell .pico-inline-model-option.is-active { background: rgb(37 99 235 / 0.10) !important; color: #1d4ed8 !important; }
 
 .pico-premium-shell input,
 .pico-premium-shell textarea,
 .pico-premium-shell select {
   border-color: var(--pico-premium-line) !important;
-  background-color: rgb(4 5 8 / 0.36) !important;
+  background-color: rgb(0 0 0 / 0.04) !important;
   color: var(--pico-premium-text) !important;
 }
 
 .pico-premium-shell input::placeholder,
-.pico-premium-shell textarea::placeholder { color: #7c828f !important; opacity: 1; }
+.pico-premium-shell textarea::placeholder { color: #9a9aa2 !important; opacity: 1; }
 
+/* Primary buttons: Style A fills them with ink, not the legacy mint. White
+   text needs a filled dark surface, and `bg-primary` (#12D6A3) is not one. */
 .pico-premium-shell .bg-primary,
-.pico-premium-shell [class*="bg-primary"] { color: #fff !important; }
+.pico-premium-shell [class*="bg-primary"] { background: #18181b !important; color: #fff !important; }
 
 .pico-premium-shell .pico-model-plaza { color: var(--pico-premium-text) !important; }
 .pico-premium-shell .pico-model-plaza-inner { max-width: 1320px !important; padding: 34px 38px 52px !important; }
 .pico-premium-shell .pico-model-plaza-hero,
 .pico-premium-shell .pico-model-plaza-table-wrap {
   border-color: var(--pico-premium-line) !important;
-  border-radius: 16px !important;
+  border-radius: 8px !important;
   background: var(--pico-premium-panel) !important;
   box-shadow: var(--pico-premium-shadow) !important;
 }
@@ -4051,19 +1467,19 @@ body:has(.pico-premium-shell) {
 .pico-premium-shell .pico-model-plaza-hero p:not(.pico-model-plaza-kicker),
 .pico-premium-shell .pico-model-plaza-description,
 .pico-premium-shell .pico-model-plaza-model-cell code { color: var(--pico-premium-muted) !important; }
-.pico-premium-shell .pico-model-plaza-kicker { color: #78b9ff !important; letter-spacing: 0.12em !important; }
+.pico-premium-shell .pico-model-plaza-kicker { color: #2563eb !important; letter-spacing: 0.12em !important; }
 .pico-premium-shell .pico-model-plaza-categories,
 .pico-premium-shell .pico-model-plaza-search,
-.pico-premium-shell .pico-model-plaza-icon { border-color: var(--pico-premium-line) !important; background: rgb(255 255 255 / 0.055) !important; color: var(--pico-premium-text) !important; }
+.pico-premium-shell .pico-model-plaza-icon { border-color: var(--pico-premium-line) !important; background: rgb(0 0 0 / 0.05) !important; color: var(--pico-premium-text) !important; }
 .pico-premium-shell .pico-model-plaza-categories button { color: var(--pico-premium-muted) !important; }
-.pico-premium-shell .pico-model-plaza-categories button.is-active { background: #f5f5f7 !important; color: #15171c !important; }
-.pico-premium-shell .pico-model-plaza-table th { border-color: var(--pico-premium-line) !important; background: rgb(255 255 255 / 0.045) !important; color: #aeb3be !important; }
+.pico-premium-shell .pico-model-plaza-categories button.is-active { background: #18181b !important; color: #fafafa !important; }
+.pico-premium-shell .pico-model-plaza-table th { border-color: var(--pico-premium-line) !important; background: rgb(0 0 0 / 0.04) !important; color: #52525b !important; }
 .pico-premium-shell .pico-model-plaza-table td { border-color: var(--pico-premium-line) !important; color: var(--pico-premium-text) !important; }
 .pico-premium-shell .pico-model-plaza-table tbody tr:nth-child(even),
-.pico-premium-shell .pico-model-plaza-table tbody tr:hover { background: rgb(255 255 255 / 0.035) !important; }
+.pico-premium-shell .pico-model-plaza-table tbody tr:hover { background: rgb(0 0 0 / 0.03) !important; }
 .pico-premium-shell .pico-model-plaza-count,
-.pico-premium-shell .pico-model-plaza-type { border-color: rgb(10 132 255 / 0.32) !important; background: rgb(10 132 255 / 0.13) !important; color: #8fc7ff !important; }
-.pico-premium-shell .pico-model-plaza-action button { border-radius: 9px !important; background: var(--pico-premium-blue) !important; color: #fff !important; }
+.pico-premium-shell .pico-model-plaza-type { border-color: rgb(37 99 235 / 0.25) !important; background: rgb(37 99 235 / 0.10) !important; color: #2563eb !important; }
+.pico-premium-shell .pico-model-plaza-action button { border-radius: 8px !important; background: var(--pico-premium-blue) !important; color: #fff !important; }
 
 .pico-premium-shell .pico-api-page,
 .pico-premium-shell .page-container { color: var(--pico-premium-text) !important; }
@@ -4076,7 +1492,7 @@ body:has(.pico-premium-shell) {
 .pico-premium-shell .pico-api-new-key,
 .pico-premium-shell .pico-api-route {
   border-color: var(--pico-premium-line) !important;
-  border-radius: 16px !important;
+  border-radius: 8px !important;
   background: var(--pico-premium-panel) !important;
   color: var(--pico-premium-text) !important;
   box-shadow: var(--pico-premium-shadow) !important;
@@ -4091,47 +1507,47 @@ body:has(.pico-premium-shell) {
 .pico-premium-shell .pico-api-protocol-grid small,
 .pico-premium-shell .pico-api-key-row code { color: var(--pico-premium-muted) !important; }
 .pico-premium-shell .pico-api-protocol-grid button.is-active,
-.pico-premium-shell .pico-api-protocol-grid button:hover { border-color: rgb(10 132 255 / 0.48) !important; background: rgb(10 132 255 / 0.15) !important; color: #fff !important; }
+.pico-premium-shell .pico-api-protocol-grid button:hover { border-color: rgb(37 99 235 / 0.38) !important; background: rgb(37 99 235 / 0.10) !important; color: #1d4ed8 !important; }
 .pico-premium-shell .pico-api-scope-toggle button,
-.pico-premium-shell .pico-api-model-picker { border-color: var(--pico-premium-line) !important; background: rgb(255 255 255 / 0.035) !important; color: var(--pico-premium-text) !important; }
+.pico-premium-shell .pico-api-model-picker { border-color: var(--pico-premium-line) !important; background: rgb(0 0 0 / 0.03) !important; color: var(--pico-premium-text) !important; }
 .pico-premium-shell .pico-api-scope-toggle button.is-active,
 .pico-premium-shell .pico-api-scope-toggle button:hover,
 .pico-premium-shell .pico-api-model-picker label.is-selected,
-.pico-premium-shell .pico-api-model-picker label:hover { border-color: rgb(10 132 255 / 0.48) !important; background: rgb(10 132 255 / 0.15) !important; }
+.pico-premium-shell .pico-api-model-picker label:hover { border-color: rgb(37 99 235 / 0.38) !important; background: rgb(37 99 235 / 0.12) !important; }
 .pico-premium-shell .pico-api-scope-toggle small,
 .pico-premium-shell .pico-api-model-picker label code,
 .pico-premium-shell .pico-api-key-scope { color: var(--pico-premium-muted) !important; }
 .pico-premium-shell .pico-api-model-picker label { color: var(--pico-premium-text) !important; }
-.pico-premium-shell .pico-api-universal-note { display: flex; flex-direction: column; gap: 4px; margin-top: 16px; border-left: 2px solid #0a84ff; border-radius: 2px; background: rgb(10 132 255 / 0.07); padding: 10px 12px; }
-.pico-premium-shell .pico-api-universal-note strong { color: #a6d1ff !important; font-size: 12px; }
+.pico-premium-shell .pico-api-universal-note { display: flex; flex-direction: column; gap: 4px; margin-top: 16px; border-left: 2px solid #2563eb; border-radius: 2px; background: rgb(37 99 235 / 0.06); padding: 10px 12px; }
+.pico-premium-shell .pico-api-universal-note strong { color: #2563eb !important; font-size: 12px; }
 .pico-premium-shell .pico-api-universal-note span { color: var(--pico-premium-muted) !important; font-size: 12px; line-height: 1.6; }
-.pico-premium-shell .pico-api-header-row { display: flex; align-items: center; gap: 10px; margin-top: 10px; border: 1px solid var(--pico-premium-line); border-radius: 10px; background: rgb(255 255 255 / 0.035); padding: 10px 12px; }
+.pico-premium-shell .pico-api-header-row { display: flex; align-items: center; gap: 10px; margin-top: 10px; border: 1px solid var(--pico-premium-line); border-radius: 8px; background: rgb(0 0 0 / 0.03); padding: 10px 12px; }
 .pico-premium-shell .pico-api-header-row > span { flex: 0 0 auto; color: var(--pico-premium-muted); font-size: 11px; }
-.pico-premium-shell .pico-api-header-row code { min-width: 0; flex: 1; overflow: auto; color: #cbdfff; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 11px; white-space: nowrap; }
-.pico-premium-shell .pico-api-header-row button { display: grid; width: 28px; height: 28px; flex: 0 0 auto; place-items: center; border-radius: 7px; color: var(--pico-premium-muted); }
-.pico-premium-shell .pico-api-header-row button:hover { background: rgb(255 255 255 / 0.08); color: #fff; }
+.pico-premium-shell .pico-api-header-row code { min-width: 0; flex: 1; overflow: auto; color: #2563eb; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 11px; white-space: nowrap; }
+.pico-premium-shell .pico-api-header-row button { display: grid; width: 28px; height: 28px; flex: 0 0 auto; place-items: center; border-radius: 6px; color: var(--pico-premium-muted); }
+.pico-premium-shell .pico-api-header-row button:hover { background: rgb(0 0 0 / 0.06); color: var(--pico-premium-text); }
 .pico-premium-shell .pico-api-guide-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin-top: 6px; }
-.pico-premium-shell .pico-api-guide-grid > div { display: flex; min-width: 0; flex-direction: column; gap: 5px; border: 1px solid var(--pico-premium-line); border-radius: 10px; background: rgb(255 255 255 / 0.035); padding: 12px; }
-.pico-premium-shell .pico-api-guide-grid strong { color: #e8ebf1 !important; font-size: 12px; }
-.pico-premium-shell .pico-api-guide-grid code { overflow: auto; color: #9ec8ff; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 10px; white-space: nowrap; }
+.pico-premium-shell .pico-api-guide-grid > div { display: flex; min-width: 0; flex-direction: column; gap: 5px; border: 1px solid var(--pico-premium-line); border-radius: 8px; background: rgb(0 0 0 / 0.03); padding: 12px; }
+.pico-premium-shell .pico-api-guide-grid strong { color: #18181b !important; font-size: 12px; }
+.pico-premium-shell .pico-api-guide-grid code { overflow: auto; color: #2563eb; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 10px; white-space: nowrap; }
 .pico-premium-shell .pico-api-guide-tip { margin: 13px 0 0; color: var(--pico-premium-muted) !important; font-size: 12px; line-height: 1.65; }
-.pico-premium-shell .pico-api-empty { border: 1px dashed var(--pico-premium-line-strong) !important; border-radius: 11px !important; background: rgb(255 255 255 / 0.035) !important; color: var(--pico-premium-muted) !important; }
+.pico-premium-shell .pico-api-empty { border: 1px dashed var(--pico-premium-line-strong) !important; border-radius: 8px !important; background: rgb(0 0 0 / 0.03) !important; color: var(--pico-premium-muted) !important; }
 .pico-premium-shell .pico-api-key-list { border-color: var(--pico-premium-line) !important; }
 .pico-premium-shell .pico-api-key-row { border-color: var(--pico-premium-line) !important; }
-.pico-premium-shell .pico-api-key-protocol { border: 1px solid rgb(10 132 255 / 0.30) !important; background: rgb(10 132 255 / 0.10) !important; color: #9dceff !important; }
-.pico-premium-shell .pico-api-key-once { display: block; margin-top: 5px; color: #777d89 !important; font-size: 10px; }
-.pico-premium-shell .pico-api-key-locked { color: #777d89; font-size: 10px; white-space: nowrap; }
-.pico-premium-shell .pico-api-message { color: #ffb4a9 !important; }
+.pico-premium-shell .pico-api-key-protocol { border: 1px solid rgb(37 99 235 / 0.24) !important; background: rgb(37 99 235 / 0.08) !important; color: #2563eb !important; }
+.pico-premium-shell .pico-api-key-once { display: block; margin-top: 5px; color: #9a9aa2 !important; font-size: 10px; }
+.pico-premium-shell .pico-api-key-locked { color: #9a9aa2; font-size: 10px; white-space: nowrap; }
+.pico-premium-shell .pico-api-message { color: #dc2626 !important; }
 
 .pico-premium-shell .pico-workflow-board,
-.pico-premium-shell .infinite-canvas-flow .react-flow__pane { background: #0a0c11 !important; }
+.pico-premium-shell .infinite-canvas-flow .react-flow__pane { background: #ffffff !important; }
 .pico-premium-shell .infinite-canvas-flow .react-flow__controls,
-.pico-premium-shell .infinite-canvas-flow .react-flow__minimap { border-color: var(--pico-premium-line) !important; background: #151820 !important; }
+.pico-premium-shell .infinite-canvas-flow .react-flow__minimap { border-color: var(--pico-premium-line) !important; background: #fafafa !important; }
 
 /* ReactFlow panels still carry the legacy light utility classes. Keep the
    workflow surface readable even when the OS/browser is in light mode. */
 .pico-premium-shell .infinite-canvas-flow {
-  background: #0a0c11 !important;
+  background: #ffffff !important;
   color: var(--pico-premium-text);
 }
 
@@ -4140,7 +1556,7 @@ body:has(.pico-premium-shell) {
 .pico-premium-shell .infinite-canvas-flow [class*="bg-gray-100"],
 .pico-premium-shell .infinite-canvas-flow [class*="bg-gray-900"] {
   border-color: var(--pico-premium-line) !important;
-  background: #151820 !important;
+  background: #fafafa !important;
   color: var(--pico-premium-text) !important;
 }
 
@@ -4160,192 +1576,80 @@ body:has(.pico-premium-shell) {
 .pico-premium-shell .infinite-canvas-flow textarea,
 .pico-premium-shell .infinite-canvas-flow select {
   border-color: var(--pico-premium-line) !important;
-  background: rgb(5 6 9 / 0.55) !important;
+  background: rgb(0 0 0 / 0.06) !important;
   color: var(--pico-premium-text) !important;
   color-scheme: dark;
 }
 
 .pico-premium-empty { display: grid; flex: 1; min-height: 0; place-items: center; color: var(--pico-premium-muted); font-size: 14px; }
 
-.pico-premium-unavailable {
-  display: flex;
-  width: min(1020px, calc(100% - 48px));
-  min-height: 0;
-  margin: auto;
-  flex-direction: column;
-  justify-content: center;
-  gap: 20px;
-  padding: 42px 0;
-}
-
-.pico-premium-unavailable-intro { text-align: center; }
-.pico-premium-unavailable-intro p { margin: 0 0 10px; color: #7dbdff; font-size: 11px; font-weight: 680; letter-spacing: 0.15em; }
-.pico-premium-unavailable-intro h1 { margin: 0; color: #fff; font-size: clamp(28px, 3.4vw, 44px); font-weight: 720; line-height: 1.12; }
-.pico-premium-unavailable-intro span { display: block; margin-top: 12px; color: var(--pico-premium-muted); font-size: 14px; }
-
-.pico-premium-unavailable-composer {
-  overflow: hidden;
-  border: 1px solid var(--pico-premium-line-strong);
-  border-radius: 20px;
-  background: linear-gradient(145deg, rgb(30 33 43 / 0.98), rgb(17 19 25 / 0.98));
-  box-shadow: 0 32px 90px rgb(0 0 0 / 0.34), inset 0 1px rgb(255 255 255 / 0.06);
-}
-
-.pico-premium-unavailable-modes {
-  display: flex;
-  gap: 4px;
-  border-bottom: 1px solid var(--pico-premium-line);
-  padding: 10px 12px;
-}
-
-.pico-premium-unavailable-modes button {
-  display: inline-flex;
-  min-height: 36px;
-  align-items: center;
-  gap: 7px;
-  border-radius: 10px;
-  color: #a4a9b4;
-  padding: 0 14px;
-  font-size: 13px;
-  font-weight: 600;
-  transition: background 160ms ease, color 160ms ease;
-}
-
-.pico-premium-unavailable-modes button:hover,
-.pico-premium-unavailable-modes button.is-active { background: #f5f5f7; color: #15171c; }
-.pico-premium-unavailable-model { display: flex; align-items: center; gap: 9px; width: max-content; max-width: calc(100% - 36px); margin: 22px 22px 0; border: 1px solid var(--pico-premium-line); border-radius: 10px; background: rgb(255 255 255 / 0.045); color: var(--pico-premium-muted); padding: 9px 12px; cursor: pointer; }
-.pico-premium-unavailable-model strong { overflow: hidden; color: #f5f5f7; font-size: 12px; text-overflow: ellipsis; white-space: nowrap; }
-.pico-premium-unavailable-model span { font-size: 11px; }
-.pico-premium-unavailable-input { min-height: 140px; color: #777d89; padding: 23px; font-size: 15px; }
-.pico-premium-unavailable-footer { display: flex; align-items: center; justify-content: space-between; gap: 16px; border-top: 1px solid var(--pico-premium-line); padding: 13px 16px 13px 22px; }
-.pico-premium-unavailable-footer span { color: var(--pico-premium-muted); font-size: 12px; }
-.pico-premium-unavailable-footer button,
-.pico-premium-balance-alert button { flex: 0 0 auto; border-radius: 10px; background: var(--pico-premium-blue); color: #fff; padding: 9px 13px; font-size: 12px; font-weight: 650; }
-.pico-premium-balance-alert { display: flex; align-items: center; justify-content: space-between; gap: 20px; border: 1px solid rgb(255 159 10 / 0.28); border-radius: 14px; background: rgb(255 159 10 / 0.07); padding: 15px 18px; }
-.pico-premium-balance-alert div { display: flex; flex-direction: column; gap: 4px; }
-.pico-premium-balance-alert strong { color: #ffd08a; font-size: 13px; }
-.pico-premium-balance-alert span { color: #c5a87b; font-size: 12px; }
-.pico-premium-balance-alert.is-ready { border-color: rgb(48 209 88 / 0.24); background: rgb(48 209 88 / 0.07); }
-.pico-premium-balance-alert.is-ready strong,
-.pico-premium-balance-alert.is-ready span { color: #9ee6ac; }
-
-.pico-premium-landing {
-  min-height: 100vh;
-  background: #07080b !important;
-  color: var(--pico-premium-text);
-  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "PingFang SC", "Helvetica Neue", Arial, sans-serif;
-}
-.pico-premium-landing .pico-clubhouse-hero {
-  background: radial-gradient(900px 640px at 76% 24%, rgb(10 132 255 / 0.20), transparent 58%), #07080b !important;
-}
-.pico-premium-landing .pico-clubhouse-copy h1,
-.pico-premium-landing .pico-clubhouse-stat div { color: #fff !important; text-shadow: none !important; }
-.pico-premium-landing .pico-clubhouse-copy h1 span { color: #8fc7ff !important; }
-.pico-premium-landing .pico-clubhouse-desc,
-.pico-premium-landing .pico-clubhouse-stat span,
-.pico-premium-landing .pico-clubhouse-screen-body { color: var(--pico-premium-muted) !important; }
-.pico-premium-landing .pico-clubhouse-badge,
-.pico-premium-landing .pico-clubhouse-actions button,
-.pico-premium-landing .pico-clubhouse-stat,
-.pico-premium-landing .pico-clubhouse-stage,
-.pico-premium-landing .pico-clubhouse-screen {
-  border-color: var(--pico-premium-line) !important;
-  border-radius: 16px !important;
-  background: rgb(20 22 28 / 0.82) !important;
-  color: #fff !important;
-  box-shadow: var(--pico-premium-shadow) !important;
-}
-.pico-premium-landing .pico-clubhouse-actions button:hover { background: rgb(10 132 255 / 0.20) !important; color: #fff !important; transform: none !important; }
-.pico-premium-landing .pico-clubhouse-start { border-radius: 12px !important; background: var(--pico-premium-blue) !important; box-shadow: none !important; }
-.pico-premium-landing .pico-clubhouse-window,
-.pico-premium-landing .pico-clubhouse-screen-tabs { border-color: var(--pico-premium-line) !important; background: rgb(255 255 255 / 0.035) !important; }
-.pico-premium-landing .pico-clubhouse-screen-tabs span { color: var(--pico-premium-muted) !important; }
-.pico-premium-landing .pico-clubhouse-screen-tabs span:first-child { background: rgb(10 132 255 / 0.18) !important; color: #9dceff !important; }
-
-/* Public landing: quiet product-first Apple-like treatment. */
-.pico-premium-landing .pico-clubhouse-hero { min-height: 100svh !important; }
-.pico-premium-landing .pico-clubhouse-nav { padding-top: 22px !important; }
-.pico-premium-landing .pico-clubhouse-nav .pico-brand-mark { border: 1px solid rgb(255 255 255 / 0.16) !important; border-radius: 12px !important; background: linear-gradient(145deg, #29303a, #11141a) !important; color: #fff !important; box-shadow: inset 0 1px rgb(255 255 255 / 0.10) !important; }
-.pico-premium-landing .pico-clubhouse-nav a:not(.pico-brand-mark) { color: #a6abb5 !important; }
-.pico-premium-landing .pico-clubhouse-nav .font-black,
-.pico-premium-landing .pico-clubhouse-nav .font-bold { color: #f5f5f7 !important; }
-.pico-premium-landing .pico-clubhouse-nav .text-xs,
-.pico-premium-landing .pico-clubhouse-nav .text-sm { color: #969ca8 !important; }
-.pico-premium-landing .pico-clubhouse-nav button,
-.pico-premium-landing .pico-clubhouse-nav a[href="/app/api-docs"] { border: 1px solid var(--pico-premium-line) !important; border-radius: 10px !important; background: rgb(255 255 255 / 0.045) !important; color: #eef1f6 !important; box-shadow: none !important; }
-.pico-premium-landing .pico-clubhouse-nav button:hover,
-.pico-premium-landing .pico-clubhouse-nav a[href="/app/api-docs"]:hover { border-color: rgb(10 132 255 / 0.46) !important; background: rgb(10 132 255 / 0.14) !important; color: #fff !important; transform: none !important; }
-.pico-premium-landing .pico-clubhouse-copy { max-width: 650px !important; }
-.pico-premium-landing .pico-clubhouse-copy h1 { max-width: 650px; color: #f5f5f7 !important; font-size: clamp(3.3rem, 7vw, 6.4rem) !important; font-weight: 720 !important; letter-spacing: 0 !important; line-height: 1.02 !important; text-shadow: none !important; }
-.pico-premium-landing h1,
-.pico-premium-landing h2,
-.pico-premium-landing h3,
-.pico-premium-landing p,
-.pico-premium-landing button,
-.pico-premium-landing a,
-.pico-premium-landing span { font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "PingFang SC", "Helvetica Neue", Arial, sans-serif !important; }
-.pico-premium-landing .pico-clubhouse-copy h1 span { color: #8fc7ff !important; }
-.pico-premium-landing .pico-clubhouse-desc { max-width: 560px; font-size: 17px !important; line-height: 1.75 !important; }
-.pico-premium-landing .pico-clubhouse-badge { width: max-content; max-width: 100%; border: 1px solid rgb(10 132 255 / 0.33) !important; border-radius: 999px !important; background: rgb(10 132 255 / 0.09) !important; color: #9dceff !important; box-shadow: none !important; }
-.pico-premium-landing .pico-clubhouse-actions { display: flex !important; flex-wrap: wrap; gap: 9px !important; }
-.pico-premium-landing .pico-clubhouse-actions button { min-height: 44px !important; border: 1px solid var(--pico-premium-line) !important; border-radius: 10px !important; background: rgb(255 255 255 / 0.045) !important; color: #e9edf3 !important; box-shadow: none !important; font-weight: 600 !important; }
-.pico-premium-landing .pico-clubhouse-actions button:hover { border-color: rgb(10 132 255 / 0.44) !important; background: rgb(10 132 255 / 0.15) !important; color: #fff !important; transform: translateY(-1px) !important; }
-.pico-premium-landing .pico-clubhouse-start { min-height: 46px; border-radius: 11px !important; background: #0a84ff !important; color: #fff !important; box-shadow: none !important; font-weight: 650 !important; }
-.pico-premium-landing .pico-clubhouse-start:hover { background: #3798ff !important; transform: translateY(-1px) !important; }
-.pico-premium-landing .pico-clubhouse-stage { min-height: 530px; border: 1px solid var(--pico-premium-line) !important; border-radius: 22px !important; background: linear-gradient(145deg, rgb(26 29 36 / 0.92), rgb(14 16 21 / 0.95)) !important; box-shadow: 0 30px 100px rgb(0 0 0 / 0.32) !important; }
-.pico-premium-landing .pico-clubhouse-window { border-color: var(--pico-premium-line) !important; background: rgb(255 255 255 / 0.035) !important; }
-.pico-premium-landing .pico-clubhouse-window span { box-shadow: none !important; }
-.pico-premium-landing .pico-clubhouse-screen { border: 1px solid var(--pico-premium-line) !important; border-radius: 15px !important; background: #0d0f14 !important; box-shadow: none !important; }
-.pico-premium-landing .pico-clubhouse-screen-tabs { border-bottom: 1px solid var(--pico-premium-line) !important; }
-.pico-premium-landing .pico-clubhouse-screen-tabs span { border: 0 !important; border-radius: 7px !important; color: #8f96a3 !important; }
-.pico-premium-landing .pico-clubhouse-screen-tabs span:first-child { background: rgb(10 132 255 / 0.18) !important; color: #9dceff !important; }
-.pico-premium-landing .pico-clubhouse-note { border: 1px solid rgb(10 132 255 / 0.28) !important; border-radius: 9px !important; background: rgb(10 132 255 / 0.12) !important; color: #9dceff !important; box-shadow: none !important; }
-.pico-premium-landing .pico-clubhouse-stat { border: 1px solid var(--pico-premium-line) !important; border-radius: 12px !important; background: rgb(255 255 255 / 0.035) !important; box-shadow: none !important; }
-.pico-premium-landing .pico-clubhouse-stat div { color: #f5f5f7 !important; text-shadow: none !important; }
-.pico-premium-landing .pico-clubhouse-stat span { color: #8f96a3 !important; }
-.pico-premium-landing .pico-legacy-landing-sections { display: none !important; }
-
+/* Login modal — Style A (light). This modal is rendered only by
+   LandingPageClient, which is now white, so it must not be dark. The child
+   hooks (.pico-login-brand-strip / -brand-mark / .pico-login-capabilities)
+   have no base rules anywhere else in this file: they exist only here, so this
+   block cannot be deleted, only re-skinned. `.pico-login-modal` was removed
+   from the element's class list in LoginModal.tsx — the arcade-theme rule for
+   that class (dark purple, pink border) was what these !important
+   declarations used to fight. */
 .pico-premium-login-modal {
-  border: 1px solid rgb(255 255 255 / 0.14) !important;
-  background: #15171d !important;
-  color: #f5f5f7 !important;
-  box-shadow: 0 34px 100px rgb(0 0 0 / 0.52) !important;
+  border: 1px solid #e8e8ea !important;
+  background: #ffffff !important;
+  color: #18181b !important;
+  box-shadow: 0 24px 70px rgb(24 24 27 / 0.14) !important;
 }
-.pico-premium-login-modal .pico-login-pet-strip { border-color: rgb(255 255 255 / 0.08) !important; background: rgb(255 255 255 / 0.035) !important; color: #9dceff !important; }
 .pico-premium-login-modal .pico-login-brand-strip {
   display: flex;
   align-items: center;
   gap: 10px;
   margin-bottom: 18px;
-  color: #f5f5f7;
+  color: #18181b;
   font-size: 13px;
-  font-weight: 650;
-  letter-spacing: 0.02em;
+  font-weight: 600;
 }
 .pico-premium-login-modal .pico-login-brand-mark {
   display: grid;
   width: 36px;
   height: 36px;
   place-items: center;
-  border: 1px solid rgb(255 255 255 / 0.15);
-  border-radius: 11px;
-  background: linear-gradient(145deg, #303541, #15171d);
+  border-radius: 8px;
+  background: #18181b;
   color: #fff;
   font-size: 14px;
-  font-weight: 750;
+  font-weight: 600;
 }
 .pico-premium-login-modal h2,
-.pico-premium-login-modal [data-radix-dialog-title] { color: #fff !important; }
+.pico-premium-login-modal [data-radix-dialog-title] { color: #18181b !important; }
 .pico-premium-login-modal [data-radix-dialog-description],
-.pico-premium-login-modal .text-gray-500,
-.pico-premium-login-modal .text-gray-400 { color: #a1a5b0 !important; }
-.pico-premium-login-modal input { border-color: rgb(255 255 255 / 0.12) !important; background: rgb(5 6 9 / 0.45) !important; color: #f5f5f7 !important; }
-.pico-premium-login-modal input::placeholder { color: #777d89 !important; }
+.pico-premium-login-modal .text-gray-500 { color: #52525b !important; }
+.pico-premium-login-modal .text-gray-400 { color: #9a9aa2 !important; }
+.pico-premium-login-modal input {
+  border-color: #e8e8ea !important;
+  background: #ffffff !important;
+  color: #18181b !important;
+}
+.pico-premium-login-modal input:focus { border-color: #d4d4d8 !important; }
+.pico-premium-login-modal input::placeholder { color: #9a9aa2 !important; }
+/* The five spans are hardcoded in LoginModal.tsx in channel order
+   (对话/生图/视频/音频/工作流), so nth-child maps 1:1 onto the channel colours
+   used on the landing page and in the workbench mode strip. */
 .pico-premium-login-modal .pico-login-capabilities { display: flex; gap: 6px; margin: -8px 0 18px; overflow-x: auto; }
-.pico-premium-login-modal .pico-login-capabilities span { border: 1px solid rgb(255 255 255 / 0.10); border-radius: 999px; background: rgb(255 255 255 / 0.045); color: #aeb4bf; padding: 5px 10px; font-size: 11px; white-space: nowrap; }
-.pico-premium-login-modal button:not([aria-label]) { border-radius: 10px; }
-.pico-premium-login-modal .bg-gray-100 { background: rgb(255 255 255 / 0.06) !important; color: #b8bdc8 !important; }
-.pico-premium-login-modal .bg-primary { background: #0a84ff !important; color: #fff !important; }
+.pico-premium-login-modal .pico-login-capabilities span {
+  border: 1px solid #e8e8ea;
+  border-radius: 999px;
+  background: #fff;
+  color: #52525b;
+  padding: 5px 10px;
+  font-size: 11px;
+  white-space: nowrap;
+}
+.pico-premium-login-modal .pico-login-capabilities span:nth-child(1) { border-color: #2563eb; color: #2563eb; }
+.pico-premium-login-modal .pico-login-capabilities span:nth-child(2) { border-color: #059669; color: #059669; }
+.pico-premium-login-modal .pico-login-capabilities span:nth-child(3) { border-color: #7c3aed; color: #7c3aed; }
+.pico-premium-login-modal .pico-login-capabilities span:nth-child(4) { border-color: #ea580c; color: #ea580c; }
+.pico-premium-login-modal .pico-login-capabilities span:nth-child(5) { border-color: #475569; color: #475569; }
+.pico-premium-login-modal button:not([aria-label]) { border-radius: 8px; }
+.pico-premium-login-modal .bg-gray-100 { background: #fafafa !important; color: #52525b !important; }
+.pico-premium-login-modal .bg-primary { background: #18181b !important; color: #fff !important; }
 
 @media (max-width: 1023px) {
   .pico-premium-shell { display: block; padding-bottom: 72px; overflow: visible; }
@@ -4353,6 +1657,10 @@ body:has(.pico-premium-shell) {
   .pico-premium-topbar { min-height: 56px; padding: 0 18px; }
   .pico-premium-user-name { max-width: 130px; }
   .pico-premium-content { min-height: calc(100dvh - 128px); overflow: visible; }
+  /* The workbench mode strip is a third row inside .pico-premium-main. Without
+     subtracting its height the viewport-filling minimum overshoots and the
+     studio scrolls past the fold with nothing in the gap. */
+  .pico-premium-content.has-mode-tabs { min-height: calc(100dvh - 173px); }
   .pico-premium-content.is-studio { overflow: visible; }
   .pico-premium-rail { display: none; }
   .pico-premium-mobile-dock {
@@ -4365,19 +1673,13 @@ body:has(.pico-premium-shell) {
     grid-template-columns: repeat(6, minmax(0, 1fr));
     gap: 2px;
     border-top: 1px solid var(--pico-premium-line);
-    background: rgb(14 16 21 / 0.96);
+    background: #ffffff;
     padding: 6px 4px max(8px, env(safe-area-inset-bottom));
     backdrop-filter: blur(18px);
   }
-  .pico-premium-mobile-dock .pico-premium-rail-item { min-height: 46px; border-radius: 9px; font-size: 9px; }
+  .pico-premium-mobile-dock .pico-premium-rail-item { min-height: 46px; border-radius: 8px; font-size: 9px; }
   .pico-premium-shell .model-workspace { min-height: calc(100dvh - 128px); }
   .pico-premium-shell .pico-model-plaza-inner { padding: 20px 16px 38px !important; }
-  .pico-premium-unavailable { width: min(100% - 28px, 720px); padding: 26px 0; }
-  .pico-premium-unavailable-intro h1 { font-size: 28px; }
-  .pico-premium-unavailable-modes { overflow-x: auto; }
-  .pico-premium-unavailable-modes button { flex: 0 0 auto; padding: 0 11px; }
-  .pico-premium-unavailable-footer { align-items: flex-start; flex-direction: column; }
-  .pico-premium-balance-alert { align-items: flex-start; flex-direction: column; gap: 12px; }
   .pico-premium-shell .pico-api-guide-grid { grid-template-columns: 1fr; }
   .pico-premium-shell .pico-api-header-row { align-items: flex-start; flex-wrap: wrap; }
   .pico-premium-shell .pico-api-header-row code { flex-basis: calc(100% - 38px); order: 3; }
@@ -4394,51 +1696,6 @@ body:has(.pico-premium-shell) {
   display: none !important;
 }
 
-.pico-premium-landing,
-.pico-premium-landing * {
-  letter-spacing: 0 !important;
-}
-
-.pico-premium-landing .pico-clubhouse-copy h1,
-.pico-premium-landing .pico-clubhouse-copy h1 span,
-.pico-premium-landing .pico-clubhouse-desc,
-.pico-premium-landing .pico-clubhouse-stat div,
-.pico-premium-landing .pico-clubhouse-stat span {
-  text-shadow: none !important;
-  filter: none !important;
-  -webkit-text-stroke: 0 !important;
-}
-
-.pico-premium-landing .pico-clubhouse-copy h1 {
-  font-size: clamp(3rem, 6vw, 5.8rem) !important;
-  font-weight: 680 !important;
-  line-height: 1.04 !important;
-}
-
-.pico-premium-landing .pico-clubhouse-desc {
-  color: #b8bdc8 !important;
-  font-weight: 420 !important;
-}
-
-.pico-premium-landing .pico-clubhouse-stage {
-  border-radius: 20px !important;
-  background: #12141a !important;
-  box-shadow: 0 28px 80px rgb(0 0 0 / 0.34) !important;
-}
-
-.pico-premium-landing .pico-clubhouse-stage .pixel-pet {
-  filter: drop-shadow(0 12px 20px rgb(0 0 0 / 0.26)) !important;
-}
-
-.pico-premium-landing .pico-clubhouse-screen {
-  background: #0b0d12 !important;
-}
-
-.pico-premium-landing .pico-clubhouse-stat {
-  min-height: 76px;
-  align-content: center;
-}
-
 .pico-premium-loading {
   display: grid;
   min-height: calc(100dvh - 62px);
@@ -4452,8 +1709,8 @@ body:has(.pico-premium-shell) {
   display: block;
   width: 18px;
   height: 18px;
-  border: 2px solid rgb(255 255 255 / 0.14);
-  border-top-color: #0a84ff;
+  border: 2px solid rgb(0 0 0 / 0.12);
+  border-top-color: #2563eb;
   border-radius: 50%;
   animation: pico-premium-spin 0.8s linear infinite;
 }
@@ -4503,36 +1760,13 @@ body:has(.pico-premium-shell) {
 
   .pico-premium-loading {
     min-height: calc(100dvh - 128px);
-  }
-
-  .pico-premium-landing .pico-clubhouse-main {
-    min-height: auto !important;
-    justify-content: flex-start !important;
-    padding-top: 32px !important;
-    padding-bottom: 36px !important;
-  }
-
-  .pico-premium-landing .pico-clubhouse-copy h1 {
-    font-size: clamp(2.7rem, 13vw, 4.4rem) !important;
-  }
-
-  .pico-premium-landing .pico-clubhouse-stage {
-    min-height: 360px !important;
-  }
-
-  .pico-premium-landing .pico-clubhouse-cat { width: 116px !important; height: 116px !important; }
-  .pico-premium-landing .pico-clubhouse-bunny { width: 92px !important; height: 92px !important; }
-  .pico-premium-landing .pico-clubhouse-bear { width: 78px !important; height: 78px !important; }
-}
+  }}
 
 @media (max-width: 420px) {
   .pico-premium-topbar { padding-inline: 14px; }
   .pico-premium-wordmark small { display: none; }
   .pico-premium-user-name { max-width: 105px; }
-  .pico-premium-mobile-dock .pico-premium-rail-item { min-height: 44px; font-size: 8px; }
-  .pico-premium-landing .pico-clubhouse-nav { padding-inline: 16px !important; }
-  .pico-premium-landing .pico-clubhouse-actions button { min-height: 40px !important; padding-inline: 10px !important; }
-}
+  .pico-premium-mobile-dock .pico-premium-rail-item { min-height: 44px; font-size: 8px; }}
 
 /* The catalog fallback is a real composer, so its textarea must fill the
    available surface instead of keeping the browser's intrinsic 20-column
@@ -4551,7 +1785,7 @@ body:has(.pico-premium-shell) {
 .pico-premium-shell .pico-premium-account-page {
   color: var(--pico-premium-text) !important;
   background: transparent !important;
-  scrollbar-color: rgb(255 255 255 / 0.20) transparent;
+  scrollbar-color: rgb(0 0 0 / 0.15) transparent;
 }
 
 .pico-premium-shell .pico-premium-account-page .soft-card,
@@ -4580,7 +1814,7 @@ body:has(.pico-premium-shell) {
 .pico-premium-shell .pico-premium-account-page [class*="bg-white"],
 .pico-premium-shell .pico-premium-account-page [class*="bg-gray-50"],
 .pico-premium-shell .pico-premium-account-page [class*="bg-gray-100"] {
-  background: rgb(255 255 255 / 0.045) !important;
+  background: rgb(0 0 0 / 0.04) !important;
 }
 
 .pico-premium-shell .pico-premium-account-page [class*="border-gray-100"],
@@ -4592,31 +1826,34 @@ body:has(.pico-premium-shell) {
 .pico-premium-shell .pico-premium-account-page select,
 .pico-premium-shell .pico-premium-account-page textarea {
   border-color: var(--pico-premium-line) !important;
-  background: rgb(5 6 9 / 0.52) !important;
+  background: rgb(0 0 0 / 0.06) !important;
   color: var(--pico-premium-text) !important;
   color-scheme: dark;
 }
 
 .pico-premium-shell .pico-premium-account-page input::placeholder,
 .pico-premium-shell .pico-premium-account-page textarea::placeholder {
-  color: #777d89 !important;
+  color: #9a9aa2 !important;
   opacity: 1;
 }
 
 .pico-premium-shell .pico-premium-account-page [class*="bg-dark"] {
   border: 1px solid var(--pico-premium-line) !important;
   background: var(--pico-premium-panel-strong) !important;
+  /* `bg-dark` panels carry light text of their own; the surface is now light so
+     the text has to come with it, or it disappears. */
+  color: var(--pico-premium-text) !important;
 }
 
 .pico-premium-shell .pico-premium-account-page [class*="bg-amber-50"] {
-  border-color: rgb(255 159 10 / 0.28) !important;
-  background: rgb(255 159 10 / 0.08) !important;
-  color: #ffd08a !important;
+  border-color: rgb(217 119 6 / 0.22) !important;
+  background: rgb(217 119 6 / 0.06) !important;
+  color: #b45309 !important;
 }
 
 .pico-premium-shell .pico-premium-account-page [class~="bg-gray-900"] {
-  background: #f5f5f7 !important;
-  color: #15171c !important;
+  background: #18181b !important;
+  color: #fafafa !important;
 }
 
 .pico-premium-shell .pico-premium-account-page [class*="bg-primary"] {
@@ -4629,7 +1866,7 @@ body:has(.pico-premium-shell) {
 }
 
 .pico-premium-shell .pico-premium-account-page table thead {
-  background: rgb(255 255 255 / 0.055) !important;
+  background: rgb(0 0 0 / 0.05) !important;
   color: var(--pico-premium-muted) !important;
 }
 
@@ -4656,18 +1893,19 @@ body:has(.pico-premium-shell) {
   }
 }
 
-/* Model plaza final contrast pass. Older pixel and light-theme rules remain
-   in this stylesheet for legacy routes; this block is intentionally last and
-   scoped to the current premium shell so the catalog always stays readable. */
+/* Model plaza contrast pass. Scoped to the premium shell and deliberately last
+   so the catalog table always stays readable regardless of the Tailwind classes
+   the component itself carries. Style A: white rows on a white page, separated
+   by lines rather than by fills. */
 .pico-premium-shell .pico-model-plaza,
 .pico-premium-shell .pico-model-plaza * {
-  --plaza-bg: #12141a;
-  --plaza-bg-alt: #171a22;
-  --plaza-bg-hover: #1d2330;
-  --plaza-border: rgb(255 255 255 / 0.11);
-  --plaza-text: #f5f5f7;
-  --plaza-muted: #a1a5b0;
-  --plaza-blue: #0a84ff;
+  --plaza-bg: #ffffff;
+  --plaza-bg-alt: #fafafa;
+  --plaza-bg-hover: #fafafa;
+  --plaza-border: #e8e8ea;
+  --plaza-text: #18181b;
+  --plaza-muted: #52525b;
+  --plaza-blue: #2563eb;
 }
 
 .pico-premium-shell .pico-model-plaza,
@@ -4698,7 +1936,7 @@ body:has(.pico-premium-shell) {
 .pico-premium-shell .pico-model-plaza-table thead,
 .pico-premium-shell .pico-model-plaza-table th {
   background: var(--plaza-bg-alt) !important;
-  color: #cbd0da !important;
+  color: #52525b !important;
 }
 
 .pico-premium-shell .pico-model-plaza-table tbody tr:hover {
@@ -4724,7 +1962,7 @@ body:has(.pico-premium-shell) {
 }
 
 .pico-premium-shell .pico-model-plaza-categories button.is-active {
-  border-color: rgb(10 132 255 / 0.46) !important;
+  border-color: rgb(37 99 235 / 0.37) !important;
   background: var(--plaza-blue) !important;
   color: #fff !important;
 }
@@ -4749,10 +1987,10 @@ body:has(.pico-premium-shell) {
   min-width: 76px;
   align-items: center;
   border: 1px solid var(--plaza-border);
-  border-radius: 7px;
-  background: rgb(255 255 255 / 0.045);
+  border-radius: 6px;
+  background: rgb(0 0 0 / 0.04);
   padding: 4px 7px;
-  color: #d5d9e1;
+  color: #18181b;
   font-size: 11px;
   font-weight: 620;
   white-space: nowrap;
@@ -4761,26 +1999,26 @@ body:has(.pico-premium-shell) {
 .pico-premium-shell .pico-model-plaza-type,
 .pico-premium-shell .pico-model-plaza-status,
 .pico-premium-shell .pico-model-plaza-action button {
-  border-color: rgb(10 132 255 / 0.34) !important;
-  background: rgb(10 132 255 / 0.13) !important;
-  color: #9dceff !important;
+  border-color: rgb(37 99 235 / 0.27) !important;
+  background: rgb(37 99 235 / 0.10) !important;
+  color: #2563eb !important;
   box-shadow: none !important;
 }
 
 .pico-premium-shell .pico-model-plaza-status.is-ready {
-  border-color: rgb(48 209 88 / 0.30) !important;
-  background: rgb(48 209 88 / 0.12) !important;
-  color: #9ee6ac !important;
+  border-color: rgb(5 150 105 / 0.25) !important;
+  background: rgb(5 150 105 / 0.10) !important;
+  color: #059669 !important;
 }
 
 .pico-premium-shell .pico-model-plaza-status.is-pending {
-  border-color: rgb(255 159 10 / 0.30) !important;
-  background: rgb(255 159 10 / 0.10) !important;
-  color: #ffd08a !important;
+  border-color: rgb(217 119 6 / 0.24) !important;
+  background: rgb(217 119 6 / 0.08) !important;
+  color: #b45309 !important;
 }
 
 .pico-premium-shell .pico-model-plaza-action button:hover:not(:disabled) {
-  border-color: rgb(10 132 255 / 0.68) !important;
+  border-color: rgb(37 99 235 / 0.54) !important;
   background: var(--plaza-blue) !important;
   color: #fff !important;
 }
@@ -4788,8 +2026,8 @@ body:has(.pico-premium-shell) {
 .pico-premium-shell .pico-model-plaza-action button:disabled,
 .pico-premium-shell .pico-model-plaza-action button:disabled:hover {
   border-color: var(--plaza-border) !important;
-  background: rgb(255 255 255 / 0.06) !important;
-  color: #777d89 !important;
+  background: rgb(0 0 0 / 0.05) !important;
+  color: #9a9aa2 !important;
   opacity: 1 !important;
 }
 
@@ -4821,8 +2059,8 @@ body:has(.pico-premium-shell) {
   align-items: center;
   gap: 8px;
   border: 1px solid var(--pico-premium-line-strong) !important;
-  border-radius: 10px !important;
-  background: rgb(255 255 255 / 0.055) !important;
+  border-radius: 8px !important;
+  background: rgb(0 0 0 / 0.05) !important;
   padding: 8px 10px;
   color: var(--pico-premium-text) !important;
   font-size: 12px;
@@ -4834,8 +2072,8 @@ body:has(.pico-premium-shell) {
 
 .pico-premium-shell .pico-current-model-button:hover,
 .pico-premium-shell .pico-current-model-button[aria-expanded="true"] {
-  border-color: rgb(10 132 255 / 0.56) !important;
-  background: rgb(10 132 255 / 0.13) !important;
+  border-color: rgb(37 99 235 / 0.44) !important;
+  background: rgb(37 99 235 / 0.10) !important;
 }
 
 .pico-premium-shell .pico-collab-config-button {
@@ -4847,15 +2085,15 @@ body:has(.pico-premium-shell) {
   justify-content: center;
   margin-left: 8px;
   border: 1px solid var(--pico-premium-line-strong);
-  border-radius: 9px;
-  background: rgb(255 255 255 / 0.035);
+  border-radius: 8px;
+  background: rgb(0 0 0 / 0.03);
   color: var(--pico-premium-muted);
   transition: border-color 160ms ease, background 160ms ease, color 160ms ease;
 }
 
 .pico-premium-shell .pico-collab-config-button:hover {
-  border-color: rgb(10 132 255 / 0.56);
-  background: rgb(10 132 255 / 0.13);
+  border-color: rgb(37 99 235 / 0.44);
+  background: rgb(37 99 235 / 0.10);
   color: var(--pico-premium-text);
 }
 
@@ -4880,10 +2118,10 @@ body:has(.pico-premium-shell) {
   flex-direction: column;
   overflow: hidden;
   border: 1px solid var(--pico-premium-line-strong) !important;
-  border-radius: 14px !important;
-  background: #1b1e26 !important;
+  border-radius: 8px !important;
+  background: #fafafa !important;
   color: var(--pico-premium-text) !important;
-  box-shadow: 0 26px 70px rgb(0 0 0 / 0.46) !important;
+  box-shadow: 0 26px 70px rgb(0 0 0 / 0.12) !important;
 }
 
 .pico-premium-shell .pico-inline-model-menu-head {
@@ -4895,7 +2133,7 @@ body:has(.pico-premium-shell) {
   gap: 10px;
   border-bottom: 1px solid var(--pico-premium-line);
   padding: 13px 14px 10px;
-  background: rgb(255 255 255 / 0.025);
+  background: rgb(0 0 0 / 0.02);
 }
 
 .pico-premium-shell .pico-inline-model-menu-head > div {
@@ -4918,13 +2156,13 @@ body:has(.pico-premium-shell) {
   place-items: center;
   border: 1px solid var(--pico-premium-line) !important;
   border-radius: 8px !important;
-  background: rgb(255 255 255 / 0.045) !important;
+  background: rgb(0 0 0 / 0.04) !important;
   color: var(--pico-premium-muted) !important;
 }
 
 .pico-premium-shell .pico-inline-menu-close:hover {
-  border-color: rgb(10 132 255 / 0.48) !important;
-  color: #fff !important;
+  border-color: rgb(37 99 235 / 0.38) !important;
+  color: var(--pico-premium-text) !important;
 }
 
 .pico-premium-shell .pico-inline-menu-tabs {
@@ -4955,9 +2193,9 @@ body:has(.pico-premium-shell) {
 
 .pico-premium-shell .pico-inline-menu-tabs button:hover,
 .pico-premium-shell .pico-inline-menu-tabs button.is-active {
-  border-color: rgb(10 132 255 / 0.42);
-  background: rgb(10 132 255 / 0.15) !important;
-  color: #fff !important;
+  border-color: rgb(37 99 235 / 0.33);
+  background: rgb(37 99 235 / 0.10) !important;
+  color: #1d4ed8 !important;
 }
 
 .pico-premium-shell .pico-inline-model-list {
@@ -4967,7 +2205,7 @@ body:has(.pico-premium-shell) {
   overflow-x: hidden;
   padding: 8px;
   overscroll-behavior: contain;
-  scrollbar-color: rgb(255 255 255 / 0.24) transparent;
+  scrollbar-color: rgb(0 0 0 / 0.18) transparent;
 }
 
 .pico-premium-shell .pico-inline-model-option {
@@ -4977,7 +2215,7 @@ body:has(.pico-premium-shell) {
   align-items: center;
   gap: 10px;
   border: 1px solid transparent;
-  border-radius: 10px;
+  border-radius: 8px;
   padding: 9px;
   color: var(--pico-premium-text) !important;
   text-align: left;
@@ -4986,8 +2224,8 @@ body:has(.pico-premium-shell) {
 
 .pico-premium-shell .pico-inline-model-option:hover,
 .pico-premium-shell .pico-inline-model-option.is-active {
-  border-color: rgb(10 132 255 / 0.34);
-  background: rgb(10 132 255 / 0.12) !important;
+  border-color: rgb(37 99 235 / 0.27);
+  background: rgb(37 99 235 / 0.10) !important;
 }
 
 .pico-premium-shell .pico-inline-model-option .text-\[11px\] {
@@ -5002,9 +2240,9 @@ body:has(.pico-premium-shell) {
   place-items: center;
   overflow: hidden;
   border: 1px solid var(--pico-premium-line) !important;
-  border-radius: 9px !important;
-  background: rgb(255 255 255 / 0.07) !important;
-  color: #9dceff !important;
+  border-radius: 8px !important;
+  background: rgb(0 0 0 / 0.06) !important;
+  color: #2563eb !important;
   font-size: 15px;
   font-weight: 700;
 }
@@ -5106,12 +2344,12 @@ body:has(.pico-premium-shell) {
    the same premium material as the model composer without changing the
    workflow behaviour or its semantic success/error colours. */
 .pico-premium-shell .infinite-canvas-flow {
-  --pico-flow-surface: #151820;
-  --pico-flow-surface-strong: #1b1f28;
-  --pico-flow-line: rgb(255 255 255 / 0.12);
-  --pico-flow-muted: #a1a5b0;
-  --pico-flow-text: #f5f5f7;
-  --pico-flow-accent: #0a84ff;
+  --pico-flow-surface: #ffffff;
+  --pico-flow-surface-strong: #fafafa;
+  --pico-flow-line: #e8e8ea;
+  --pico-flow-muted: #52525b;
+  --pico-flow-text: #18181b;
+  --pico-flow-accent: #2563eb;
   color: var(--pico-flow-text);
 }
 
@@ -5123,10 +2361,9 @@ body:has(.pico-premium-shell) {
 .pico-premium-shell .infinite-canvas-flow .react-flow__minimap,
 .pico-premium-shell .infinite-canvas-flow .react-flow__attribution {
   border: 1px solid var(--pico-flow-line) !important;
-  border-radius: 10px !important;
-  background: rgb(21 24 32 / 0.94) !important;
+  border-radius: 8px !important;
+  background: #ffffff !important;
   color: var(--pico-flow-muted) !important;
-  box-shadow: 0 14px 34px rgb(0 0 0 / 0.28) !important;
 }
 
 .pico-premium-shell .infinite-canvas-flow .react-flow__controls button {
@@ -5136,8 +2373,8 @@ body:has(.pico-premium-shell) {
 }
 
 .pico-premium-shell .infinite-canvas-flow .react-flow__controls button:hover {
-  background: rgb(10 132 255 / 0.14) !important;
-  color: #fff !important;
+  background: rgb(37 99 235 / 0.10) !important;
+  color: #1d4ed8 !important;
 }
 
 /* Normalize legacy utility surfaces used by node cards and floating panels. */
@@ -5176,7 +2413,7 @@ body:has(.pico-premium-shell) {
 .pico-premium-shell .infinite-canvas-flow [class*="text-pink-"],
 .pico-premium-shell .infinite-canvas-flow [class*="text-orange-"],
 .pico-premium-shell .infinite-canvas-flow [class*="text-emerald-"] {
-  color: #9dceff !important;
+  color: #2563eb !important;
 }
 
 .pico-premium-shell .infinite-canvas-flow input,
@@ -5184,14 +2421,14 @@ body:has(.pico-premium-shell) {
 .pico-premium-shell .infinite-canvas-flow select {
   border-color: var(--pico-flow-line) !important;
   border-radius: 8px !important;
-  background: rgb(5 6 9 / 0.58) !important;
+  background: rgb(0 0 0 / 0.06) !important;
   color: var(--pico-flow-text) !important;
   color-scheme: dark;
 }
 
 .pico-premium-shell .infinite-canvas-flow input::placeholder,
 .pico-premium-shell .infinite-canvas-flow textarea::placeholder {
-  color: #777d89 !important;
+  color: #9a9aa2 !important;
 }
 
 .pico-premium-shell .infinite-canvas-flow button {
@@ -5200,20 +2437,20 @@ body:has(.pico-premium-shell) {
 }
 
 .pico-premium-shell .infinite-canvas-flow button:hover:not(:disabled) {
-  border-color: rgb(10 132 255 / 0.46);
-  background: rgb(10 132 255 / 0.12);
+  border-color: rgb(37 99 235 / 0.37);
+  background: rgb(37 99 235 / 0.10);
 }
 
 .pico-premium-shell .infinite-canvas-flow button[class*="bg-cyan-500"],
 .pico-premium-shell .infinite-canvas-flow button[class*="bg-emerald-500"] {
-  border-color: rgb(10 132 255 / 0.44) !important;
+  border-color: rgb(37 99 235 / 0.35) !important;
   background: var(--pico-flow-accent) !important;
   color: #fff !important;
 }
 
 .pico-premium-shell .infinite-canvas-flow button[class*="bg-red-500"] {
-  border-color: rgb(255 69 58 / 0.45) !important;
-  background: rgb(255 69 58 / 0.86) !important;
+  border-color: #dc2626 !important;
+  background: #dc2626 !important;
   color: #fff !important;
 }
 
@@ -5230,71 +2467,11 @@ body:has(.pico-premium-shell) {
   stroke: rgb(157 206 255 / 0.62);
 }
 
-/* Current public surface: keep the product preview quiet and interface-led.
-   The former pixel pets and animated canvas belong to the retired theme and
-   compete with the Apple-like product hierarchy on the landing page. */
-.pico-premium-landing .pico-clubhouse-stage .pixel-pet,
-.pico-premium-landing .pico-clubhouse-hero > canvas {
-  display: none !important;
-}
-
-.pico-premium-landing .pico-clubhouse-stage {
-  min-height: 560px !important;
-  overflow: hidden !important;
-  border: 1px solid rgb(255 255 255 / 0.13) !important;
-  border-radius: 24px !important;
-  background: #12141a !important;
-  box-shadow: 0 32px 90px rgb(0 0 0 / 0.38), inset 0 1px rgb(255 255 255 / 0.06) !important;
-}
-
-.pico-premium-landing .pico-clubhouse-stage::before {
-  position: absolute;
-  inset: 58px 28px auto;
-  height: 1px;
-  background: rgb(255 255 255 / 0.07);
-  content: "";
-}
-
-.pico-premium-landing .pico-clubhouse-screen {
-  top: 50% !important;
-  width: min(84%, 560px) !important;
-  border-radius: 16px !important;
-}
-
-.pico-premium-landing .pico-clubhouse-screen-tabs span {
-  border: 0 !important;
-  background: transparent !important;
-  color: #8f96a3 !important;
-}
-
-.pico-premium-landing .pico-clubhouse-screen-tabs span:first-child {
-  background: rgb(10 132 255 / 0.18) !important;
-  color: #9dceff !important;
-}
-
-.pico-premium-landing .pico-clubhouse-screen-body {
-  min-height: 190px !important;
-  padding: 28px !important;
-}
-
-.pico-premium-landing .pico-clubhouse-note {
-  bottom: 28px !important;
-  transform: translateX(-50%) !important;
-}
-
 .pico-premium-shell .pico-composer-input textarea {
   min-height: 180px !important;
 }
 
 @media (max-width: 1023px) {
-  .pico-premium-landing .pico-clubhouse-stage {
-    min-height: 390px !important;
-  }
-
-  .pico-premium-landing .pico-clubhouse-screen-body {
-    min-height: 136px !important;
-    padding: 20px !important;
-  }
 
   .pico-premium-shell .pico-composer-input textarea {
     min-height: 150px !important;

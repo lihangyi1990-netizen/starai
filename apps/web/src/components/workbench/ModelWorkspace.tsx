@@ -23,6 +23,7 @@ import {
   Video,
   X,
 } from "lucide-react";
+import { ModelCategoryIcon } from "./CategoryIcon";
 import { api, API_URL, clearClientAuth, clientAuthSnapshot, hasUserSession, legacyAuthHeaders, uploadAsset } from "@/lib/api";
 import { publicError, publicText } from "@/lib/publicText";
 import type { Model } from "@starai/shared-types";
@@ -45,7 +46,7 @@ import { WorkbenchUserMenu } from "@/components/WorkbenchUserMenu";
 import { UILanguageSelector } from "@/components/UILanguageSelector";
 import { useI18n } from "@/i18n/I18nProvider";
 import { notificationTitle } from "@/lib/notificationText";
-import { CATEGORY_TAG, MODEL_ICONS, isStandaloneAudioModel } from "./categoryMeta";
+import { CATEGORY_TAG, isStandaloneAudioModel } from "./categoryMeta";
 import { SchemaForm, schemaDefaults, schemaProperties } from "./SchemaForm";
 import { ChatTopTools, type BottomBarState } from "./BottomBar";
 import { AudioOptionToolbar, AudioTopControls } from "./audio/AudioOptionToolbar";
@@ -568,7 +569,7 @@ function ModelMediaResultCard({
     setImageFailed(false);
   }, [url]);
   return (
-    <div className="rounded-2xl border border-gray-100 bg-white p-2.5 transition hover:-translate-y-0.5 hover:border-primary/30 dark:bg-white/5 dark:border-white/10">
+    <div className="rounded-2xl border border-gray-100 bg-white p-2.5 transition hover:border-primary/30 dark:bg-white/5 dark:border-white/10">
       <div className="flex items-center justify-between mb-2">
         <span className="text-xs text-gray-400">#{index + 1}</span>
         <span className="text-xs text-emerald-600">{t("status.succeeded")}</span>
@@ -577,7 +578,7 @@ function ModelMediaResultCard({
         {type === "video" ? (
           <div className="relative h-full w-full bg-black flex items-center justify-center">
             <TaskMediaVideo src={url} className="h-full w-full bg-black object-contain" />
-            <button type="button" onClick={() => onPreview(url, "video")} className="absolute right-2 top-2 z-20 rounded-lg border border-white/20 bg-gray-950/85 px-2.5 py-1 text-xs font-medium text-white shadow-lg backdrop-blur hover:bg-gray-900 dark:bg-gray-900/90 dark:text-white dark:border-white/10 dark:hover:bg-gray-800">{t("common.preview")}</button>
+            <button type="button" onClick={() => onPreview(url, "video")} className="absolute right-2 top-2 z-20 rounded-lg border border-white/20 bg-gray-950/85 px-2.5 py-1 text-xs font-medium text-white shadow-lg hover:bg-gray-900 dark:bg-gray-900/90 dark:text-white dark:border-white/10 dark:hover:bg-gray-800">{t("common.preview")}</button>
           </div>
         ) : !imageFailed ? (
           <div className="relative h-full w-full">
@@ -587,7 +588,7 @@ function ModelMediaResultCard({
             </button>
             <button
               type="button"
-              className="absolute right-2 top-2 z-20 flex h-8 w-8 items-center justify-center rounded-lg border border-white/20 bg-gray-950/85 text-white shadow-lg backdrop-blur hover:bg-gray-900 dark:bg-gray-900/90 dark:text-white dark:border-white/10 dark:hover:bg-gray-800"
+              className="absolute right-2 top-2 z-20 flex h-8 w-8 items-center justify-center rounded-lg border border-white/20 bg-gray-950/85 text-white shadow-lg hover:bg-gray-900 dark:bg-gray-900/90 dark:text-white dark:border-white/10 dark:hover:bg-gray-800"
               title={t("workspace.downloadImage")}
               onClick={(e) => {
                 e.stopPropagation();
@@ -2391,7 +2392,7 @@ export function ModelWorkspace({
       )}
     >
       {onOpenModelPicker && (
-        <div className="pico-mobile-studio-bar lg:hidden flex items-center gap-2 px-3 py-2 bg-white/70 border-b border-white/60 shrink-0 backdrop-blur-xl dark:bg-white/[0.04] dark:border-white/10">
+        <div className="pico-mobile-studio-bar lg:hidden flex items-center gap-2 px-3 py-2 bg-white/70 border-b border-white/60 shrink-0 dark:bg-white/[0.04] dark:border-white/10">
           <button
             type="button"
             onClick={() => onOpenModelPicker()}
@@ -2417,7 +2418,7 @@ export function ModelWorkspace({
         </div>
       )}
       {/* Top action bar */}
-      <div className="pico-hidden-studio-toolbar pico-pixel-topbar flex items-center justify-between gap-2 px-3 sm:px-5 py-1.5 sm:py-3 max-lg:border-b max-lg:border-white/60 shrink-0 flex-wrap bg-white/35 backdrop-blur-xl dark:bg-white/[0.02] dark:border-white/10">
+      <div className="pico-hidden-studio-toolbar pico-pixel-topbar flex items-center justify-between gap-2 px-3 sm:px-5 py-1.5 sm:py-3 max-lg:border-b max-lg:border-white/60 shrink-0 flex-wrap bg-white/35 dark:bg-white/[0.02] dark:border-white/10">
         <div className="flex items-center gap-2 sm:gap-3 min-w-0">
           {onOpenModelPicker && (
             <div className="pico-studio-mode-switcher flex items-center gap-1.5 overflow-x-auto">
@@ -2429,42 +2430,6 @@ export function ModelWorkspace({
               >
                 <span className="max-w-[112px] truncate">{modelName}</span>
                 <ChevronDown size={14} />
-              </button>
-              <button
-                type="button"
-                onClick={() => openInlineModelMenu("chat")}
-                className={clsx("pico-mode-chip", isChat && "is-active")}
-                title={t("category.chat")}
-              >
-                <MessageCircle size={14} />
-                <span>{t("nav.chat")}</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => openInlineModelMenu("image")}
-                className={clsx("pico-mode-chip", isImage && "is-active")}
-                title={t("category.image")}
-              >
-                <ImageIcon size={14} />
-                <span>{t("nav.image")}</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => openInlineModelMenu("video")}
-                className={clsx("pico-mode-chip", isVideo && "is-active")}
-                title={t("category.video")}
-              >
-                <Video size={14} />
-                <span>{t("nav.video")}</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => openInlineModelMenu("audio")}
-                className={clsx("pico-mode-chip", isAudio && "is-active")}
-                title={t("category.audio")}
-              >
-                <Mic size={14} />
-                <span>{t("nav.audio")}</span>
               </button>
             </div>
           )}
@@ -2555,7 +2520,7 @@ export function ModelWorkspace({
                     // eslint-disable-next-line @next/next/no-img-element
                     <img src={model.icon_url} alt="" className="w-full h-full object-cover" />
                   ) : (
-                    MODEL_ICONS[model.category] || "AI"
+                    <ModelCategoryIcon category={model.category} className="h-5 w-5 sm:h-7 sm:w-7" />
                   )}
                 </div>
                 <h1 className={clsx("text-base sm:text-xl font-bold text-gray-900 mb-1 sm:mb-1.5 dark:text-gray-100", (isImage || isVideo) && "tech-title")}>{modelName}</h1>
@@ -2598,18 +2563,15 @@ export function ModelWorkspace({
                   {(homeCards.length ? homeCards : []).map((f) => {
                     const title = td(`homeCard.${f.key}.title`, f.title);
                     const description = td(`homeCard.${f.key}.description`, f.description || "");
-                    const bg =
-                      f.theme === "amber"
-                        ? "bg-amber-50 text-amber-600"
-                        : f.theme === "purple"
-                        ? "bg-purple-50 text-purple-600"
-                        : f.theme === "blue"
-                        ? "bg-blue-50 text-blue-600"
-                        : f.theme === "pink"
-                        ? "bg-pink-50 text-pink-600"
-                        : f.theme === "green"
-                        ? "bg-emerald-50 text-emerald-600"
-                        : "bg-gray-50 text-gray-600";
+                    // `f.theme` used to map to one of five hues (amber/purple/blue/pink/
+                    // green). Colour in this UI means "which channel" and nothing else,
+                    // so a per-card hue chosen in the admin panel competed with that
+                    // signal instead of adding to it - the cards are already told apart
+                    // by their icon and title. Existing `theme` values are ignored rather
+                    // than erroring, so no data change is needed; to bring the hues back,
+                    // restore the ternary and accept that a colour no longer identifies
+                    // a channel.
+                    const bg = "bg-sunk text-ink-mid";
                     return (
                       <div key={f.key} className="soft-card p-3 sm:p-4 flex gap-2.5 sm:gap-3 items-start">
                         <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl flex items-center justify-center text-base sm:text-lg shrink-0 ${bg} overflow-hidden`}>
@@ -2838,7 +2800,7 @@ export function ModelWorkspace({
       {/* Input section */}
       <div className="pico-universal-composer flex flex-col shrink-0 px-3 sm:px-5 pt-2 max-lg:pt-2 pb-4 sm:pb-6 max-lg:pb-4">
         <div className="pico-workspace-actions relative z-30 mx-auto mb-2.5 w-full max-w-[1080px]">
-          <div className="flex min-w-0 items-center justify-between gap-3 rounded-2xl border border-gray-200/80 bg-white/70 px-3 py-2 shadow-sm backdrop-blur-xl dark:border-white/10 dark:bg-white/[0.04]">
+          <div className="flex min-w-0 items-center justify-between gap-3 rounded-2xl border border-gray-200/80 bg-white/70 px-3 py-2 shadow-sm dark:border-white/10 dark:bg-white/[0.04]">
             <div className="flex min-w-0 items-center gap-2">
               <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
                 {isChat ? <MessageCircle size={15} /> : isVideo ? <Video size={15} /> : isAudio ? <Mic size={15} /> : <ImageIcon size={15} />}
@@ -2880,42 +2842,6 @@ export function ModelWorkspace({
           <PixelPet kind="cat" size={62} className="pico-composer-pet pico-composer-pet-cat" />
           <PixelPet kind="bunny" size={54} className="pico-composer-pet pico-composer-pet-bunny" />
           <PixelPet kind="bear" size={48} className="pico-composer-pet pico-composer-pet-bear" />
-          {onOpenModelPicker && (
-            <div className="pico-simple-mode-tabs" aria-label={t("workspace.creationMode")}>
-              <button
-                type="button"
-                onClick={() => openInlineModelMenu("chat")}
-                className={clsx("pico-mode-chip", isChat && "is-active")}
-              >
-                <MessageCircle size={16} />
-                <span>{t("nav.chat")}</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => openInlineModelMenu("image")}
-                className={clsx("pico-mode-chip", isImage && "is-active")}
-              >
-                <ImageIcon size={16} />
-                <span>{t("nav.image")}</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => openInlineModelMenu("video")}
-                className={clsx("pico-mode-chip", isVideo && "is-active")}
-              >
-                <Video size={16} />
-                <span>{t("nav.video")}</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => openInlineModelMenu("audio")}
-                className={clsx("pico-mode-chip", isAudio && "is-active")}
-              >
-                <Mic size={16} />
-                <span>{t("nav.audio")}</span>
-              </button>
-            </div>
-          )}
           <div className="pico-composer-meta flex items-center justify-between text-xs text-gray-400 mb-2 px-1">
             <div className="flex items-center gap-1.5">
             <Plus size={12} />
@@ -3012,7 +2938,7 @@ export function ModelWorkspace({
                                 // eslint-disable-next-line @next/next/no-img-element
                                 <img src={item.icon_url} alt="" />
                               ) : (
-                                MODEL_ICONS[item.category] || "✦"
+                                <ModelCategoryIcon category={item.category} />
                               )}
                             </span>
                             <span className="min-w-0 flex-1 text-left">
