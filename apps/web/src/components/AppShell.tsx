@@ -480,7 +480,6 @@ export function AppShell({ children, selectedModelCode, selectedAgentCode }: App
 
   const desktopRail = (
     <aside className="pico-premium-rail" aria-label={t("nav.pageNav")}>
-      <div className="pico-premium-rail-logo" aria-label={brandName}>{brandName.slice(0, 1).toUpperCase()}</div>
       <div className="pico-premium-rail-actions">
         <button type="button" className={navClass(isWorkbench && section === "models")} onClick={() => openStudio("models")}>
           <Sparkles size={19} /><span>{t("nav.workspace")}</span>
@@ -502,15 +501,6 @@ export function AppShell({ children, selectedModelCode, selectedAgentCode }: App
           <Settings size={19} /><span>{t("nav.settings")}</span>
         </Link>
       </div>
-      <div className="pico-premium-rail-account">
-        <Link href="/app/wallet" className="pico-premium-balance" title={t("nav.wallet")}>
-          <span>{t("common.compute")}</span>
-          <strong>{wallet?.compute_balance?.toFixed(2) ?? "0.00"}</strong>
-        </Link>
-        <Link href="/app/settings" className="pico-premium-account-avatar" aria-label={t("nav.settings")}>
-          {(user?.nickname || user?.email || "P").slice(0, 1).toUpperCase()}
-        </Link>
-      </div>
     </aside>
   );
 
@@ -519,9 +509,7 @@ export function AppShell({ children, selectedModelCode, selectedAgentCode }: App
       <button type="button" className={navClass(isWorkbench && section === "models")} onClick={() => openStudio("models")}><Sparkles size={18} /><span>{t("nav.short.workspace")}</span></button>
       <button type="button" className={navClass(isWorkbench && section === "agents")} onClick={() => openStudio("agents")}><Workflow size={18} /><span>{t("category.workflow")}</span></button>
       <button type="button" className={navClass(isWorkbench && section === "gallery")} onClick={() => openStudio("gallery")}><LibraryBig size={18} /><span>{t("nav.models")}</span></button>
-      <Link href="/app/api-docs" className={navClass(pathname.startsWith("/app/api-docs"))}><KeyRound size={18} /><span>API</span></Link>
-      <Link href="/app/wallet" className={navClass(pathname.startsWith("/app/wallet"))}><WalletCards size={18} /><span>{t("nav.short.wallet")}</span></Link>
-      <Link href="/app/settings" className={navClass(pathname.startsWith("/app/settings"))}><Settings size={18} /><span>{t("nav.short.settings")}</span></Link>
+      <Link href="/app/settings" className={navClass(pathname.startsWith("/app/settings") || pathname.startsWith("/app/wallet") || pathname.startsWith("/app/api-docs"))}><Settings size={18} /><span>{t("nav.short.settings")}</span></Link>
     </nav>
   );
 
@@ -593,18 +581,23 @@ export function AppShell({ children, selectedModelCode, selectedAgentCode }: App
       <Suspense fallback={null}>
         <QueryStateBridge onChange={handleQueryState} />
       </Suspense>
+      <header className="pico-premium-topbar">
+        <div className="pico-premium-wordmark">
+          <span>{brandName}</span>
+          <small>{isWorkbench ? "AI STUDIO" : pageTitle}</small>
+        </div>
+        <div className="pico-premium-topbar-meta">
+          <Link href="/app/wallet" className="pico-premium-balance" title={t("nav.wallet")}>
+            <span>{t("common.compute")}</span>
+            <strong>{wallet?.compute_balance?.toFixed(2) ?? "0.00"}</strong>
+          </Link>
+          {isWorkbench && <button type="button" onClick={() => setShowRecharge(true)} className="pico-premium-recharge">{t("common.recharge")}</button>}
+          <span className="pico-premium-user-name">{user?.nickname || user?.email || `${brandName} ${ts("用户")}`}</span>
+          <WorkbenchTopActions onRecharge={!isWorkbench ? () => setShowRecharge(true) : undefined} />
+        </div>
+      </header>
+      {desktopRail}
       <main className="pico-premium-main">
-        <header className="pico-premium-topbar">
-          <div className="pico-premium-wordmark">
-            <span>{brandName}</span>
-            <small>{isWorkbench ? "AI STUDIO" : pageTitle}</small>
-          </div>
-          <div className="pico-premium-topbar-meta">
-            {isWorkbench && <button type="button" onClick={() => setShowRecharge(true)} className="pico-premium-recharge">{t("common.recharge")}</button>}
-            <span className="pico-premium-user-name">{user?.nickname || user?.email || `${brandName} ${ts("用户")}`}</span>
-            <WorkbenchTopActions onRecharge={!isWorkbench ? () => setShowRecharge(true) : undefined} />
-          </div>
-        </header>
         {/* Mode is the first decision, so it sits between the topbar and the
             workspace rather than inside it — visible at every breakpoint and on
             every model. The plaza is a catalog view and has its own filters. */}
@@ -615,7 +608,6 @@ export function AppShell({ children, selectedModelCode, selectedAgentCode }: App
           {isWorkbench ? studioContent() : children}
         </div>
       </main>
-      {desktopRail}
       {mobileDock}
       <RechargeModal
         open={showRecharge}

@@ -1122,7 +1122,10 @@ body {
   --pico-ch-video: #7c3aed;
   --pico-ch-audio: #ea580c;
   --pico-ch-flow: #475569;
-  display: flex;
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  grid-template-rows: auto 1fr;
+  height: 100dvh;
   min-height: 100dvh;
   overflow: hidden;
   /* No gradient wash: Style A carries no decorative colour on the base surface. */
@@ -1140,14 +1143,18 @@ body:has(.pico-premium-shell) {
 
 .pico-premium-main {
   display: flex;
+  grid-column: 2;
+  grid-row: 2;
   min-width: 0;
-  flex: 1;
+  min-height: 0;
   flex-direction: column;
   overflow: hidden;
 }
 
 .pico-premium-topbar {
   display: flex;
+  grid-column: 1 / -1;
+  grid-row: 1;
   min-height: 62px;
   flex: 0 0 auto;
   align-items: center;
@@ -1200,6 +1207,25 @@ body:has(.pico-premium-shell) {
 
 .pico-premium-recharge:hover { background: var(--pico-premium-blue); color: #fff; }
 
+.pico-premium-balance {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+  color: var(--pico-premium-muted);
+  font-size: 12px;
+  white-space: nowrap;
+  transition: color 160ms ease;
+}
+
+.pico-premium-balance strong {
+  color: var(--pico-premium-text);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+
+.pico-premium-balance:hover { color: var(--pico-premium-blue); }
+.pico-premium-balance:hover strong { color: var(--pico-premium-blue); }
+
 .pico-premium-user-name {
   max-width: 220px;
   overflow: hidden;
@@ -1236,104 +1262,61 @@ body:has(.pico-premium-shell) {
 
 .pico-premium-rail {
   display: flex;
-  width: 104px;
-  flex: 0 0 104px;
+  grid-column: 1;
+  grid-row: 2;
+  width: 200px;
   flex-direction: column;
-  align-items: center;
-  border-left: 1px solid var(--pico-premium-line);
-  background: rgb(0 0 0 / 0.02);
-  padding: 18px 10px 14px;
-  backdrop-filter: blur(22px);
-}
-
-.pico-premium-rail-logo {
-  display: grid;
-  width: 38px;
-  height: 38px;
-  place-items: center;
-  border-radius: 8px;
-  /* Solid ink mark, matching the login modal's brand mark. White text needs a
-     filled dark surface — on light it can only live inside one. */
-  background: #18181b;
-  color: #fff;
-  font-size: 16px;
-  font-weight: 600;
+  border-right: 1px solid var(--pico-premium-line);
+  background: var(--pico-premium-panel-strong);
+  padding: 16px 12px;
+  overflow-y: auto;
 }
 
 .pico-premium-rail-actions {
   display: flex;
   width: 100%;
   flex-direction: column;
-  gap: 6px;
-  margin-top: 30px;
+  gap: 2px;
 }
 
 .pico-premium-rail-item {
   display: flex;
-  min-height: 58px;
+  min-height: 38px;
   width: 100%;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
-  justify-content: center;
-  gap: 5px;
+  justify-content: flex-start;
+  gap: 12px;
   border: 1px solid transparent;
-  border-radius: 8px;
-  color: #52525b;
-  font-size: 10px;
-  font-weight: 580;
+  border-radius: 6px;
+  padding: 8px 12px;
+  color: var(--pico-premium-muted);
+  font-size: 13.5px;
+  font-weight: 500;
   line-height: 1.15;
-  transition: background 160ms ease, border-color 160ms ease, color 160ms ease, transform 160ms ease;
+  transition: background 160ms ease, color 160ms ease;
 }
 
+.pico-premium-rail-item svg { flex-shrink: 0; }
+
 .pico-premium-rail-item:hover {
-  border-color: rgb(0 0 0 / 0.08);
-  background: rgb(0 0 0 / 0.05);
+  background: rgb(0 0 0 / 0.03);
   color: var(--pico-premium-text);
 }
 
 .pico-premium-rail-item.is-active {
-  border-color: rgb(37 99 235 / 0.27);
-  background: rgb(37 99 235 / 0.08);
-  color: #2563eb;
+  background: rgb(0 0 0 / 0.04);
+  color: var(--pico-premium-text);
+  font-weight: 600;
 }
 
 .pico-premium-rail-divider {
   display: block;
-  width: 28px;
+  width: calc(100% - 8px);
   height: 1px;
-  margin: 10px auto;
+  margin: 10px 4px;
   background: var(--pico-premium-line);
 }
-
-.pico-premium-rail-account {
-  display: flex;
-  width: 100%;
-  margin-top: auto;
-  flex-direction: column;
-  align-items: center;
-  gap: 10px;
-}
-
-.pico-premium-balance {
-  display: flex;
-  width: 100%;
-  flex-direction: column;
-  align-items: center;
-  gap: 2px;
-  border: 1px solid var(--pico-premium-line);
-  border-radius: 8px;
-  background: rgb(0 0 0 / 0.03);
-  padding: 7px 4px;
-  color: var(--pico-premium-muted);
-  text-align: center;
-  transition: border-color 160ms ease, background 160ms ease;
-}
-
-.pico-premium-balance:hover { border-color: rgb(37 99 235 / 0.35); background: rgb(37 99 235 / 0.08); }
-.pico-premium-balance span { font-size: 9px; }
-.pico-premium-balance strong { color: var(--pico-premium-text); font-size: 11px; font-variant-numeric: tabular-nums; }
-.pico-premium-account-avatar { display: grid; width: 34px; height: 34px; place-items: center; border-radius: 50%; background: #18181b; color: #fff; font-size: 12px; font-weight: 600; }
-.pico-premium-account-avatar:hover { background: var(--pico-premium-blue); }
 
 .pico-premium-mobile-dock { display: none; }
 
@@ -1652,7 +1635,7 @@ body:has(.pico-premium-shell) {
 .pico-premium-login-modal .bg-primary { background: #18181b !important; color: #fff !important; }
 
 @media (max-width: 1023px) {
-  .pico-premium-shell { display: block; padding-bottom: 72px; overflow: visible; }
+  .pico-premium-shell { display: block; padding-bottom: 72px; overflow: visible; height: auto; }
   .pico-premium-main { min-height: calc(100dvh - 72px); overflow: visible; }
   .pico-premium-topbar { min-height: 56px; padding: 0 18px; }
   .pico-premium-user-name { max-width: 130px; }
@@ -1670,14 +1653,14 @@ body:has(.pico-premium-shell) {
     left: 0;
     z-index: 45;
     display: grid;
-    grid-template-columns: repeat(6, minmax(0, 1fr));
+    grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: 2px;
     border-top: 1px solid var(--pico-premium-line);
     background: #ffffff;
     padding: 6px 4px max(8px, env(safe-area-inset-bottom));
     backdrop-filter: blur(18px);
   }
-  .pico-premium-mobile-dock .pico-premium-rail-item { min-height: 46px; border-radius: 8px; font-size: 9px; }
+  .pico-premium-mobile-dock .pico-premium-rail-item { min-height: 46px; flex-direction: column; justify-content: center; gap: 4px; border-radius: 8px; font-size: 10px; }
   .pico-premium-shell .model-workspace { min-height: calc(100dvh - 128px); }
   .pico-premium-shell .pico-model-plaza-inner { padding: 20px 16px 38px !important; }
   .pico-premium-shell .pico-api-guide-grid { grid-template-columns: 1fr; }
@@ -1766,7 +1749,7 @@ body:has(.pico-premium-shell) {
   .pico-premium-topbar { padding-inline: 14px; }
   .pico-premium-wordmark small { display: none; }
   .pico-premium-user-name { max-width: 105px; }
-  .pico-premium-mobile-dock .pico-premium-rail-item { min-height: 44px; font-size: 8px; }}
+  .pico-premium-mobile-dock .pico-premium-rail-item { min-height: 44px; font-size: 9px; }}
 
 /* The catalog fallback is a real composer, so its textarea must fill the
    available surface instead of keeping the browser's intrinsic 20-column

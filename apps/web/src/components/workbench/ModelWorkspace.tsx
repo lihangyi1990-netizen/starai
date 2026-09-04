@@ -27,7 +27,6 @@ import { ModelCategoryIcon } from "./CategoryIcon";
 import { api, API_URL, clearClientAuth, clientAuthSnapshot, hasUserSession, legacyAuthHeaders, uploadAsset } from "@/lib/api";
 import { publicError, publicText } from "@/lib/publicText";
 import type { Model } from "@starai/shared-types";
-import { PixelPet } from "@/components/PixelPet";
 import {
   buildAudioTaskParams,
   buildVideoTaskParams,
@@ -467,9 +466,9 @@ function ModelMediaResultGrid({
   if (items.length === 0) return null;
 
   return (
-    <div className="soft-card tech-card p-3 sm:p-4">
+    <div className="rounded-2xl p-3 sm:p-4" style={{ background: "var(--pico-premium-panel)", border: "1px solid var(--pico-premium-line)" }}>
       <div className="mb-2 flex items-center justify-between gap-3">
-        <div className="text-sm font-semibold text-gray-900 dark:text-gray-100">{t("workspace.generationResult")}</div>
+        <div className="text-sm font-semibold" style={{ color: "var(--pico-premium-text)" }}>{t("workspace.generationResult")}</div>
       </div>
       <div className={`grid ${gridClass} gap-2 sm:gap-3`}>
         {visibleItems.map((url, idx) => (
@@ -485,15 +484,16 @@ function ModelMediaResultGrid({
       </div>
       {preview && createPortal(
         <div role="dialog" aria-modal="true" className="fixed inset-0 z-[200] flex h-[100dvh] w-screen items-center justify-center overflow-hidden bg-black/80 p-4" onClick={() => setPreview(null)}>
-          <div className={`relative flex max-h-[calc(100dvh-2rem)] w-full items-center justify-center overflow-hidden rounded-2xl bg-black shadow-2xl ${preview.type === "video" ? "max-w-6xl" : "max-w-4xl"}`} onClick={(e) => e.stopPropagation()}>
-            <button type="button" onClick={() => setPreview(null)} className="absolute right-3 top-3 z-20 flex h-9 w-9 items-center justify-center rounded-xl border border-gray-200 bg-white/90 text-gray-900 shadow dark:border-white/10 dark:bg-gray-900/90 dark:text-white" aria-label={t("common.close")}><X size={16} /></button>
+          <div className={`relative flex max-h-[calc(100dvh-2rem)] w-full items-center justify-center overflow-hidden rounded-2xl bg-black ${preview.type === "video" ? "max-w-6xl" : "max-w-4xl"}`} onClick={(e) => e.stopPropagation()}>
+            <button type="button" onClick={() => setPreview(null)} className="absolute right-3 top-3 z-20 flex h-9 w-9 items-center justify-center rounded-xl text-gray-900" style={{ border: "1px solid var(--pico-premium-line)", background: "rgba(255,255,255,0.9)" }} aria-label={t("common.close")}><X size={16} /></button>
             {preview.type === "video" ? (
               <TaskMediaVideo src={preview.url} className="h-auto max-h-[82dvh] w-full object-contain" />
             ) : (
               <div className="relative flex max-h-[82dvh] w-full items-center justify-center">
                 <button
                   type="button"
-                  className="absolute left-3 top-3 z-20 flex h-9 items-center gap-1.5 rounded-xl border border-gray-200 bg-white/90 px-3 text-sm font-medium text-gray-900 shadow dark:border-white/10 dark:bg-gray-900/90 dark:text-white"
+                  className="absolute left-3 top-3 z-20 flex h-9 items-center gap-1.5 rounded-xl px-3 text-sm font-medium text-gray-900"
+                  style={{ border: "1px solid var(--pico-premium-line)", background: "rgba(255,255,255,0.9)" }}
                   title={t("workspace.downloadImage")}
                   onClick={(e) => {
                     e.stopPropagation();
@@ -529,17 +529,17 @@ function ModelMediaPendingGrid({ type, count }: { type: "image" | "video"; count
           : "grid-cols-1 sm:grid-cols-2 xl:grid-cols-4";
   const mediaHeight = safeCount <= 1 ? "h-[210px] sm:h-[240px] lg:h-[260px]" : "h-[150px] sm:h-[170px] lg:h-[190px]";
   return (
-    <div className="soft-card p-3 sm:p-4">
-      <div className="mb-2 text-sm font-semibold text-gray-900 dark:text-gray-100">{t("workspace.generationResult")}</div>
+    <div className="rounded-2xl p-3 sm:p-4" style={{ background: "var(--pico-premium-panel)", border: "1px solid var(--pico-premium-line)" }}>
+      <div className="mb-2 text-sm font-semibold" style={{ color: "var(--pico-premium-text)" }}>{t("workspace.generationResult")}</div>
       <div className={`grid ${gridClass} gap-2 sm:gap-3`}>
         {placeholders.map((_, idx) => (
-          <div key={idx} className="rounded-2xl border border-gray-100 bg-white p-2.5 dark:bg-white/5 dark:border-white/10">
+          <div key={idx} className="rounded-2xl p-2.5" style={{ background: "var(--pico-premium-panel)", border: "1px solid var(--pico-premium-line)" }}>
             <div className="mb-2 flex items-center justify-between">
-              <span className="text-xs text-gray-400">#{idx + 1}</span>
+              <span className="text-xs" style={{ color: "var(--pico-premium-muted)" }}>#{idx + 1}</span>
               <span className="text-xs text-amber-600">{t("status.running")}</span>
             </div>
-            <div className={`result-scan rounded-xl border border-gray-100 ${mediaHeight} flex items-center justify-center overflow-hidden bg-gray-50 dark:bg-gray-950 dark:border-white/10`}>
-              <div className="px-4 text-center text-sm text-gray-500 dark:text-gray-300">
+            <div className={`result-scan rounded-xl ${mediaHeight} flex items-center justify-center overflow-hidden`} style={{ border: "1px solid var(--pico-premium-line)", background: "var(--pico-premium-panel-strong)" }}>
+              <div className="px-4 text-center text-sm" style={{ color: "var(--pico-premium-muted)" }}>
                 {type === "video" ? t("workspace.videoGenerating") : t("workspace.imageGenerating")}
               </div>
             </div>
@@ -569,16 +569,17 @@ function ModelMediaResultCard({
     setImageFailed(false);
   }, [url]);
   return (
-    <div className="rounded-2xl border border-gray-100 bg-white p-2.5 transition hover:border-primary/30 dark:bg-white/5 dark:border-white/10">
+    <div className="relative rounded-2xl p-2.5 transition" style={{ background: "var(--pico-premium-panel)", border: "1px solid var(--pico-premium-line)" }}>
+      <span className="absolute left-2 top-2 z-10 h-3 w-3 rounded-sm" style={{ background: type === "video" ? "var(--pico-ch-video)" : "var(--pico-ch-image)" }} aria-hidden="true" />
       <div className="flex items-center justify-between mb-2">
-        <span className="text-xs text-gray-400">#{index + 1}</span>
+        <span className="text-xs" style={{ color: "var(--pico-premium-muted)" }}>#{index + 1}</span>
         <span className="text-xs text-emerald-600">{t("status.succeeded")}</span>
       </div>
-      <div className={`rounded-xl border border-gray-100 ${mediaHeight} flex items-center justify-center overflow-hidden bg-gray-50 dark:bg-gray-950 dark:border-white/10`}>
+      <div className={`rounded-xl ${mediaHeight} flex items-center justify-center overflow-hidden`} style={{ border: "1px solid var(--pico-premium-line)", background: "var(--pico-premium-panel-strong)" }}>
         {type === "video" ? (
           <div className="relative h-full w-full bg-black flex items-center justify-center">
             <TaskMediaVideo src={url} className="h-full w-full bg-black object-contain" />
-            <button type="button" onClick={() => onPreview(url, "video")} className="absolute right-2 top-2 z-20 rounded-lg border border-white/20 bg-gray-950/85 px-2.5 py-1 text-xs font-medium text-white shadow-lg hover:bg-gray-900 dark:bg-gray-900/90 dark:text-white dark:border-white/10 dark:hover:bg-gray-800">{t("common.preview")}</button>
+            <button type="button" onClick={() => onPreview(url, "video")} className="absolute right-2 top-2 z-20 rounded-lg border border-white/20 bg-gray-950/85 px-2.5 py-1 text-xs font-medium text-white hover:bg-gray-900">{t("common.preview")}</button>
           </div>
         ) : !imageFailed ? (
           <div className="relative h-full w-full">
@@ -588,7 +589,7 @@ function ModelMediaResultCard({
             </button>
             <button
               type="button"
-              className="absolute right-2 top-2 z-20 flex h-8 w-8 items-center justify-center rounded-lg border border-white/20 bg-gray-950/85 text-white shadow-lg hover:bg-gray-900 dark:bg-gray-900/90 dark:text-white dark:border-white/10 dark:hover:bg-gray-800"
+              className="absolute right-2 top-2 z-20 flex h-8 w-8 items-center justify-center rounded-lg border border-white/20 bg-gray-950/85 text-white hover:bg-gray-900"
               title={t("workspace.downloadImage")}
               onClick={(e) => {
                 e.stopPropagation();
@@ -599,7 +600,7 @@ function ModelMediaResultCard({
             </button>
           </div>
         ) : (
-          <div className="px-4 text-center text-sm text-gray-500 dark:text-gray-300">{t("workspace.imageLoadFailed")}</div>
+          <div className="px-4 text-center text-sm" style={{ color: "var(--pico-premium-muted)" }}>{t("workspace.imageLoadFailed")}</div>
         )}
       </div>
     </div>
@@ -633,14 +634,43 @@ function copyToClipboard(text: string) {
   return Promise.resolve();
 }
 
+function compactCostNumber(value: unknown) {
+  const number = Number(value);
+  if (!Number.isFinite(number) || number <= 0) return null;
+  return number >= 100 ? number.toFixed(0) : number >= 1 ? number.toFixed(2) : number.toFixed(4);
+}
+
+/** Mirrors ModelPlaza.tsx's priceSummary() but formatted for the compact generate-button label. */
+function estimatedCostLabel(model: Model): string | null {
+  const rule = model.price_rule as unknown as Record<string, unknown> | undefined;
+  if (!rule) return null;
+  const unit = typeof rule.currency === "string" && rule.currency.trim() ? rule.currency.trim() : "算力";
+  switch (rule.billing_type) {
+    case "per_image": {
+      const value = compactCostNumber(rule.unit_price);
+      return value ? `${value} ${unit}/张` : null;
+    }
+    case "per_request": {
+      const value = compactCostNumber(rule.unit_price);
+      return value ? `${value} ${unit}/次` : null;
+    }
+    case "per_second": {
+      const value = compactCostNumber(rule.unit_price);
+      return value ? `${value} ${unit}/秒` : null;
+    }
+    default:
+      return null;
+  }
+}
+
 function renderInlineMarkdown(text: string, keyPrefix: string): ReactNode[] {
   return text.split(/(`[^`]+`|\*\*[^*]+\*\*)/g).filter(Boolean).map((part, idx) => {
     const key = `${keyPrefix}-${idx}`;
     if (part.startsWith("**") && part.endsWith("**")) {
-      return <strong key={key} className="font-semibold text-gray-950 dark:text-gray-100">{part.slice(2, -2)}</strong>;
+      return <strong key={key} className="font-semibold text-gray-950">{part.slice(2, -2)}</strong>;
     }
     if (part.startsWith("`") && part.endsWith("`")) {
-      return <code key={key} className="px-1.5 py-0.5 rounded-md bg-gray-100 text-[0.92em] text-gray-800 dark:bg-white/10 dark:text-gray-100">{part.slice(1, -1)}</code>;
+      return <code key={key} className="px-1.5 py-0.5 rounded-md bg-gray-100 text-[0.92em] text-gray-800">{part.slice(1, -1)}</code>;
     }
     return <span key={key}>{part}</span>;
   });
@@ -655,7 +685,7 @@ function RichMarkdown({ content, emptyText }: { content: string; emptyText?: str
     const body = parts.join(" ").trim();
     if (!body) return;
     nodes.push(
-      <p key={key} className="my-2 text-[15px] leading-7 text-gray-700 dark:text-gray-200">
+      <p key={key} className="my-2 text-[15px] leading-7 text-gray-700">
         {renderInlineMarkdown(body, key)}
       </p>
     );
@@ -686,11 +716,11 @@ function RichMarkdown({ content, emptyText }: { content: string; emptyText?: str
       const level = heading[1].length;
       const body = heading[2].replace(/#+$/, "").trim();
       if (level === 1) {
-        nodes.push(<h1 key={`h1-${i}`} className="mb-3 mt-1 text-xl font-bold leading-8 text-gray-950 dark:text-gray-100">{body}</h1>);
+        nodes.push(<h1 key={`h1-${i}`} className="mb-3 mt-1 text-xl font-bold leading-8 text-gray-950">{body}</h1>);
       } else if (level === 2) {
-        nodes.push(<h2 key={`h2-${i}`} className="mb-2 mt-5 text-lg font-bold leading-7 text-gray-950 dark:text-gray-100">{body}</h2>);
+        nodes.push(<h2 key={`h2-${i}`} className="mb-2 mt-5 text-lg font-bold leading-7 text-gray-950">{body}</h2>);
       } else {
-        nodes.push(<h3 key={`h3-${i}`} className="mb-2 mt-4 text-base font-semibold leading-6 text-gray-900 dark:text-gray-100">{body}</h3>);
+        nodes.push(<h3 key={`h3-${i}`} className="mb-2 mt-4 text-base font-semibold leading-6 text-gray-900">{body}</h3>);
       }
       continue;
     }
@@ -703,7 +733,7 @@ function RichMarkdown({ content, emptyText }: { content: string; emptyText?: str
       }
       i--;
       nodes.push(
-        <ul key={`ul-${i}`} className="my-3 list-disc space-y-1.5 pl-5 text-[15px] leading-7 text-gray-700 dark:text-gray-200">
+        <ul key={`ul-${i}`} className="my-3 list-disc space-y-1.5 pl-5 text-[15px] leading-7 text-gray-700">
           {items.map((item, idx) => <li key={idx}>{renderInlineMarkdown(item, `ul-${i}-${idx}`)}</li>)}
         </ul>
       );
@@ -718,7 +748,7 @@ function RichMarkdown({ content, emptyText }: { content: string; emptyText?: str
       }
       i--;
       nodes.push(
-        <ol key={`ol-${i}`} className="my-3 list-decimal space-y-1.5 pl-5 text-[15px] leading-7 text-gray-700 dark:text-gray-200">
+        <ol key={`ol-${i}`} className="my-3 list-decimal space-y-1.5 pl-5 text-[15px] leading-7 text-gray-700">
           {items.map((item, idx) => <li key={idx}>{renderInlineMarkdown(item, `ol-${i}-${idx}`)}</li>)}
         </ol>
       );
@@ -728,7 +758,7 @@ function RichMarkdown({ content, emptyText }: { content: string; emptyText?: str
     if (line.startsWith(">")) {
       const quote = line.replace(/^>\s?/, "");
       nodes.push(
-      <blockquote key={`quote-${i}`} className="my-3 rounded-2xl border-l-4 border-primary/60 bg-primary/5 px-4 py-3 text-sm leading-7 text-gray-700 dark:text-gray-200">
+      <blockquote key={`quote-${i}`} className="my-3 rounded-2xl border-l-4 border-primary/60 bg-primary/5 px-4 py-3 text-sm leading-7 text-gray-700">
           {renderInlineMarkdown(quote, `quote-${i}`)}
         </blockquote>
       );
@@ -760,7 +790,8 @@ function CopyOutputButton({ text, copied, onCopy }: { text: string; copied: bool
   return (
     <button
       type="button"
-      className="inline-flex h-7 w-7 items-center justify-center rounded-lg border border-gray-200 bg-white/90 text-gray-500 shadow-sm transition hover:border-primary/40 hover:text-gray-900 dark:border-white/10 dark:bg-white/10 dark:text-gray-300 dark:hover:text-gray-100"
+      className="inline-flex h-7 w-7 items-center justify-center rounded-lg transition"
+      style={{ border: "1px solid var(--pico-premium-line)", background: "var(--pico-premium-panel)", color: "var(--pico-premium-muted)" }}
       onClick={onCopy}
       title={copied ? t("common.copied") : t("common.copyContent")}
       aria-label={copied ? t("common.copied") : t("common.copyContent")}
@@ -790,7 +821,7 @@ function InputToolbarMeta() {
   const { t } = useI18n();
   return (
     <div className="flex flex-col items-end justify-center gap-0.5 shrink-0 h-9">
-      <span className="text-[10px] leading-none text-gray-300 dark:text-gray-500 whitespace-nowrap">{t("workspace.shiftEnter")}</span>
+      <span className="text-[10px] leading-none text-gray-300 whitespace-nowrap">{t("workspace.shiftEnter")}</span>
     </div>
   );
 }
@@ -2282,23 +2313,26 @@ export function ModelWorkspace({
       role="dialog"
       aria-label={t("common.history")}
       data-starai-history
-      className="fixed z-[80] flex flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-2xl dark:border-white/10 dark:bg-gray-900"
+      className="fixed z-[80] flex flex-col overflow-hidden rounded-2xl"
       style={{
         left: historyPanelPosition.left,
         top: historyPanelPosition.top,
         width: historyPanelPosition.width,
         maxHeight: historyPanelPosition.maxHeight,
+        border: "1px solid var(--pico-premium-line)",
+        background: "var(--pico-premium-bg)",
       }}
     >
-      <div className="flex shrink-0 items-start justify-between gap-3 border-b border-gray-100 px-3.5 py-3 dark:border-white/10">
+      <div className="flex shrink-0 items-start justify-between gap-3 px-3.5 py-3" style={{ borderBottom: "1px solid var(--pico-premium-line)" }}>
         <div className="min-w-0">
-          <div className="truncate text-sm font-semibold text-gray-900 dark:text-gray-100">{t("common.history")}</div>
-          <div className="mt-0.5 truncate text-[11px] text-gray-400">{historyScopeLabel}</div>
+          <div className="truncate text-sm font-semibold" style={{ color: "var(--pico-premium-text)" }}>{t("common.history")}</div>
+          <div className="mt-0.5 truncate text-[11px]" style={{ color: "var(--pico-premium-muted)" }}>{historyScopeLabel}</div>
         </div>
         <button
           type="button"
           onClick={() => setHistoryOpen(false)}
-          className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-gray-400 transition hover:bg-gray-100 hover:text-gray-700 dark:hover:bg-white/10 dark:hover:text-gray-100"
+          className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg transition"
+          style={{ color: "var(--pico-premium-muted)" }}
           aria-label={t("common.close")}
         >
           <X size={15} />
@@ -2313,7 +2347,7 @@ export function ModelWorkspace({
         }}
       >
         {historyLoading ? (
-          <div className="flex items-center justify-center gap-2 px-3 py-8 text-xs text-gray-400" role="status">
+          <div className="flex items-center justify-center gap-2 px-3 py-8 text-xs" style={{ color: "var(--pico-premium-muted)" }} role="status">
             <History size={14} className="animate-pulse" />
             <span>{t("common.loading")}</span>
           </div>
@@ -2323,13 +2357,14 @@ export function ModelWorkspace({
             <button
               type="button"
               onClick={() => void loadHistory()}
-              className="mt-3 rounded-lg border border-gray-200 px-3 py-1.5 text-xs font-medium text-gray-600 transition hover:bg-gray-50 dark:border-white/10 dark:text-gray-300 dark:hover:bg-white/10"
+              className="mt-3 rounded-lg px-3 py-1.5 text-xs font-medium transition"
+              style={{ border: "1px solid var(--pico-premium-line)", color: "var(--pico-premium-muted)" }}
             >
               重试
             </button>
           </div>
         ) : historyItems.length === 0 ? (
-          <div className="px-3 py-8 text-center text-xs text-gray-400">{UI_TEXT.historyEmpty}</div>
+          <div className="px-3 py-8 text-center text-xs" style={{ color: "var(--pico-premium-muted)" }}>{UI_TEXT.historyEmpty}</div>
         ) : (
           <>
           {historyItems.map((item) => {
@@ -2344,14 +2379,17 @@ export function ModelWorkspace({
                   setHistoryOpen(false);
                   void (item.kind === "chat" ? loadConversation(item.id) : loadTaskHistory(item.id));
                 }}
-                className="group flex w-full min-w-0 items-start gap-2.5 rounded-xl px-2.5 py-2.5 text-left transition hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary/40 dark:hover:bg-white/5"
+                className="group flex w-full min-w-0 items-start gap-2.5 rounded-xl px-2.5 py-2.5 text-left transition focus:outline-none"
+                style={{ background: "transparent" }}
+                onMouseEnter={(e) => { e.currentTarget.style.background = "rgb(0 0 0 / 0.03)"; }}
+                onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; }}
               >
-                <span className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-gray-100 text-gray-500 dark:bg-white/10 dark:text-gray-300">
+                <span className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-lg" style={{ background: "var(--pico-premium-panel-strong)", color: "var(--pico-premium-muted)" }}>
                   <ItemIcon size={14} />
                 </span>
                 <span className="min-w-0 flex-1">
-                  <span className="block truncate text-sm text-gray-800 dark:text-gray-100">{item.title || item.id}</span>
-                  <span className="mt-0.5 flex min-w-0 items-center justify-between gap-2 text-[10px] text-gray-400">
+                  <span className="block truncate text-sm" style={{ color: "var(--pico-premium-text)" }}>{item.title || item.id}</span>
+                  <span className="mt-0.5 flex min-w-0 items-center justify-between gap-2 text-[10px]" style={{ color: "var(--pico-premium-muted)" }}>
                     <span className="truncate">{itemTypeLabel} · {new Date(item.updated_at).toLocaleString()}</span>
                     {item.status ? <span className="shrink-0">{statusLabel(item.status)}</span> : null}
                   </span>
@@ -2360,7 +2398,7 @@ export function ModelWorkspace({
             );
           })}
           {historyLoadingMore ? (
-            <div className="flex items-center justify-center gap-2 px-3 py-3 text-xs text-gray-400" role="status">
+            <div className="flex items-center justify-center gap-2 px-3 py-3 text-xs" style={{ color: "var(--pico-premium-muted)" }} role="status">
               <History size={13} className="animate-pulse" />
               <span>{t("common.loading")}</span>
             </div>
@@ -2371,7 +2409,8 @@ export function ModelWorkspace({
               <button
                 type="button"
                 onClick={() => void loadMoreHistory()}
-                className="mt-2 rounded-lg border border-gray-200 px-3 py-1.5 text-xs font-medium text-gray-600 transition hover:bg-gray-50 dark:border-white/10 dark:text-gray-300 dark:hover:bg-white/10"
+                className="mt-2 rounded-lg px-3 py-1.5 text-xs font-medium transition"
+                style={{ border: "1px solid var(--pico-premium-line)", color: "var(--pico-premium-muted)" }}
               >
                 重试加载
               </button>
@@ -2392,11 +2431,12 @@ export function ModelWorkspace({
       )}
     >
       {onOpenModelPicker && (
-        <div className="pico-mobile-studio-bar lg:hidden flex items-center gap-2 px-3 py-2 bg-white/70 border-b border-white/60 shrink-0 dark:bg-white/[0.04] dark:border-white/10">
+        <div className="pico-mobile-studio-bar lg:hidden flex items-center gap-2 px-3 py-2 shrink-0" style={{ background: "var(--pico-premium-panel)", borderBottom: "1px solid var(--pico-premium-line)" }}>
           <button
             type="button"
             onClick={() => onOpenModelPicker()}
-            className="w-9 h-9 rounded-xl bg-gray-50 flex items-center justify-center text-gray-600 shrink-0 dark:bg-white/10 dark:text-gray-200"
+            className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0"
+            style={{ border: "1px solid var(--pico-premium-line)", color: "var(--pico-premium-muted)" }}
             aria-label="Open model picker"
           >
             <ChevronDown size={16} className="rotate-90" />
@@ -2405,20 +2445,21 @@ export function ModelWorkspace({
             <button
               type="button"
               onClick={onOpenNav}
-              className="w-9 h-9 rounded-xl bg-gray-50 flex items-center justify-center text-gray-600 shrink-0 dark:bg-white/10 dark:text-gray-200"
+              className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0"
+              style={{ border: "1px solid var(--pico-premium-line)", color: "var(--pico-premium-muted)" }}
               aria-label="Open menu"
             >
               <Menu size={18} />
             </button>
           )}
-          <div className="flex-1 min-w-0 font-semibold text-sm text-gray-900 truncate dark:text-gray-100">{modelName}</div>
-          <Link href="/app/wallet" className="text-xs text-primary font-medium shrink-0 tabular-nums">
+          <div className="flex-1 min-w-0 font-semibold text-sm truncate" style={{ color: "var(--pico-premium-text)" }}>{modelName}</div>
+          <Link href="/app/wallet" className="text-xs font-medium shrink-0 tabular-nums" style={{ color: "var(--pico-premium-blue)" }}>
             {menuWallet?.compute_balance?.toFixed(0) ?? "0"}
           </Link>
         </div>
       )}
       {/* Top action bar */}
-      <div className="pico-hidden-studio-toolbar pico-pixel-topbar flex items-center justify-between gap-2 px-3 sm:px-5 py-1.5 sm:py-3 max-lg:border-b max-lg:border-white/60 shrink-0 flex-wrap bg-white/35 dark:bg-white/[0.02] dark:border-white/10">
+      <div className="pico-hidden-studio-toolbar pico-pixel-topbar flex items-center justify-between gap-2 px-3 sm:px-5 py-1.5 sm:py-3 shrink-0 flex-wrap max-lg:border-b" style={{ borderColor: "var(--pico-premium-line)" }}>
         <div className="flex items-center gap-2 sm:gap-3 min-w-0">
           {onOpenModelPicker && (
             <div className="pico-studio-mode-switcher flex items-center gap-1.5 overflow-x-auto">
@@ -2438,7 +2479,8 @@ export function ModelWorkspace({
         <div className="relative" data-starai-notif>
           <button
             onClick={openNotif}
-            className="relative w-9 h-9 rounded-xl bg-white border border-gray-100 flex items-center justify-center text-gray-500 shadow-sm hover:border-gray-200 dark:bg-white/5 dark:border-white/10 dark:text-gray-300 dark:hover:border-white/20"
+            className="relative w-9 h-9 rounded-xl flex items-center justify-center"
+            style={{ background: "var(--pico-premium-panel)", border: "1px solid var(--pico-premium-line)", color: "var(--pico-premium-muted)" }}
             aria-label={unread > 0 ? `${unread} ${t("notifications.title")}` : t("notifications.title")}
           >
             <Bell size={18} />
@@ -2447,28 +2489,28 @@ export function ModelWorkspace({
             )}
           </button>
           {notifOpen && (
-            <div className="fixed sm:absolute left-4 right-4 sm:left-auto sm:right-0 sm:mt-2 sm:w-[320px] top-16 sm:top-auto soft-card z-30 max-h-[60vh] overflow-hidden flex flex-col min-w-0">
-              <div className="flex items-center justify-between px-3 py-2 shrink-0 border-b border-gray-50 dark:border-white/10">
-                <span className="text-sm font-semibold text-gray-900 dark:text-gray-100 truncate">
+            <div className="fixed sm:absolute left-4 right-4 sm:left-auto sm:right-0 sm:mt-2 sm:w-[320px] top-16 sm:top-auto z-30 max-h-[60vh] overflow-hidden flex flex-col min-w-0 rounded-2xl" style={{ background: "var(--pico-premium-panel)", border: "1px solid var(--pico-premium-line)" }}>
+              <div className="flex items-center justify-between px-3 py-2 shrink-0 border-b" style={{ borderColor: "var(--pico-premium-line)" }}>
+                <span className="text-sm font-semibold truncate" style={{ color: "var(--pico-premium-text)" }}>
                   {t("notifications.title")}{unread > 0 ? ` (${unread})` : ""}
                 </span>
                 {notifItems.some((n) => !n.is_read) && (
-                  <button onClick={markAllRead} className="text-[11px] text-primary hover:underline shrink-0 ml-2">
+                  <button onClick={markAllRead} className="text-[11px] hover:underline shrink-0 ml-2" style={{ color: "var(--pico-premium-blue)" }}>
                     {t("notifications.markAll")}
                   </button>
                 )}
               </div>
               <div className="overflow-y-auto overflow-x-hidden p-2 min-h-0 flex-1">
                 {notifNeedLogin ? (
-                  <div className="text-center text-xs text-gray-500 py-6 px-3 break-words">
+                  <div className="text-center text-xs py-6 px-3 break-words" style={{ color: "var(--pico-premium-muted)" }}>
                     {t("notifications.loginHint")}
                   </div>
                 ) : notifLoading ? (
-                  <div className="text-center text-xs text-gray-400 py-6">{t("common.loading")}</div>
+                  <div className="text-center text-xs py-6" style={{ color: "var(--pico-premium-muted)" }}>{t("common.loading")}</div>
                 ) : notifItems.length === 0 ? (
-                  <div className="text-center text-xs text-gray-400 py-6 px-3 break-words">
+                  <div className="text-center text-xs py-6 px-3 break-words" style={{ color: "var(--pico-premium-muted)" }}>
                     {t("notifications.empty")}
-                    <div className="mt-1 text-[11px] text-gray-300">
+                    <div className="mt-1 text-[11px]" style={{ color: "var(--pico-premium-muted)" }}>
                       {t("notifications.emptyDesc")}
                     </div>
                   </div>
@@ -2478,18 +2520,19 @@ export function ModelWorkspace({
                       key={n.id}
                       type="button"
                       onClick={() => markNotifRead(n.id)}
-                      className={`w-full max-w-full text-left px-3 py-2 rounded-xl transition-colors hover:bg-gray-50 overflow-hidden dark:hover:bg-white/5 ${n.is_read ? "" : "bg-primary/5"}`}
+                      className="w-full max-w-full text-left px-3 py-2 rounded-xl transition-colors overflow-hidden"
+                      style={{ background: n.is_read ? "transparent" : "rgb(37 99 235 / 0.05)" }}
                     >
                       <div className="flex items-start gap-2 min-w-0">
                         {!n.is_read && (
                           <span className="mt-1.5 w-1.5 h-1.5 shrink-0 rounded-full bg-red-500" />
                         )}
                         <div className="min-w-0 flex-1 overflow-hidden">
-                          <div className="text-sm text-gray-800 dark:text-gray-100 break-words [overflow-wrap:anywhere]">{notificationTitle(t, n.title, n.type)}</div>
-                          <div className="text-[12px] text-gray-500 dark:text-gray-400 mt-0.5 leading-relaxed break-words whitespace-pre-wrap [overflow-wrap:anywhere]">
+                          <div className="text-sm break-words [overflow-wrap:anywhere]" style={{ color: "var(--pico-premium-text)" }}>{notificationTitle(t, n.title, n.type)}</div>
+                          <div className="text-[12px] mt-0.5 leading-relaxed break-words whitespace-pre-wrap [overflow-wrap:anywhere]" style={{ color: "var(--pico-premium-muted)" }}>
                             {n.content}
                           </div>
-                          <div className="text-[10px] text-gray-400 mt-1">
+                          <div className="text-[10px] mt-1" style={{ color: "var(--pico-premium-muted)" }}>
                             {new Date(n.created_at).toLocaleString()}
                           </div>
                         </div>
@@ -2512,10 +2555,8 @@ export function ModelWorkspace({
           <div className="flex min-h-full flex-col">
             <div className="my-auto w-full py-3 max-lg:py-0">
               {/* Hero banner */}
-              <div className={clsx("pico-pixel-hero pico-universal-welcome soft-card relative w-full max-w-[980px] mx-auto p-5 sm:p-7 text-center mb-3 max-lg:mb-3", (isImage || isVideo) && "tech-card")}>
-                <PixelPet kind="cat" size={76} className="pico-hero-pet pico-hero-pet-cat" />
-                <PixelPet kind="bunny" size={62} className="pico-hero-pet pico-hero-pet-bunny" />
-                <div className="tech-icon w-10 h-10 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl bg-white border border-gray-100 flex items-center justify-center text-xl sm:text-2xl mx-auto mb-3 sm:mb-4 overflow-hidden shadow-sm dark:bg-white/10 dark:border-white/10">
+              <div className="pico-pixel-hero pico-universal-welcome relative w-full max-w-[980px] mx-auto p-5 sm:p-7 text-center mb-3 max-lg:mb-3 rounded-2xl" style={{ background: "var(--pico-premium-panel-strong)", border: "1px solid var(--pico-premium-line)" }}>
+                <div className="tech-icon w-10 h-10 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl flex items-center justify-center text-xl sm:text-2xl mx-auto mb-3 sm:mb-4 overflow-hidden" style={{ background: "var(--pico-premium-panel)", border: "1px solid var(--pico-premium-line)" }}>
                   {model.icon_url ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img src={model.icon_url} alt="" className="w-full h-full object-cover" />
@@ -2523,8 +2564,8 @@ export function ModelWorkspace({
                     <ModelCategoryIcon category={model.category} className="h-5 w-5 sm:h-7 sm:w-7" />
                   )}
                 </div>
-                <h1 className={clsx("text-base sm:text-xl font-bold text-gray-900 mb-1 sm:mb-1.5 dark:text-gray-100", (isImage || isVideo) && "tech-title")}>{modelName}</h1>
-                <p className="text-gray-500 text-[12px] sm:text-[13px] max-w-md mx-auto leading-relaxed line-clamp-3 sm:line-clamp-none">
+                <h1 className="text-base sm:text-xl font-bold mb-1 sm:mb-1.5" style={{ color: "var(--pico-premium-text)" }}>{modelName}</h1>
+                <p className="text-[12px] sm:text-[13px] max-w-md mx-auto leading-relaxed line-clamp-3 sm:line-clamp-none" style={{ color: "var(--pico-premium-muted)" }}>
                   {modelDescription}
                 </p>
                 {model.tags?.length > 0 && (
@@ -2532,7 +2573,7 @@ export function ModelWorkspace({
                     {model.tags.slice(0, 6).map((tagText) => {
                       const label = publicText(td(`model.${model.code}.tag.${tagText}`, tagText), "");
                       return label ? (
-                        <span key={tagText} className="px-1.5 sm:px-2 py-0.5 rounded-full bg-gray-100 text-gray-500 text-[10px] sm:text-xs dark:bg-white/10 dark:text-gray-300">
+                        <span key={tagText} className="px-1.5 sm:px-2 py-0.5 rounded-full text-[10px] sm:text-xs" style={{ background: "var(--pico-premium-panel)", border: "1px solid var(--pico-premium-line)", color: "var(--pico-premium-muted)" }}>
                           {label}
                         </span>
                       ) : null;
@@ -2573,7 +2614,7 @@ export function ModelWorkspace({
                     // a channel.
                     const bg = "bg-sunk text-ink-mid";
                     return (
-                      <div key={f.key} className="soft-card p-3 sm:p-4 flex gap-2.5 sm:gap-3 items-start">
+                      <div key={f.key} className="p-3 sm:p-4 flex gap-2.5 sm:gap-3 items-start rounded-2xl" style={{ background: "var(--pico-premium-panel)", border: "1px solid var(--pico-premium-line)" }}>
                         <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl flex items-center justify-center text-base sm:text-lg shrink-0 ${bg} overflow-hidden`}>
                           {f.icon_url ? (
                             // eslint-disable-next-line @next/next/no-img-element
@@ -2583,8 +2624,8 @@ export function ModelWorkspace({
                           )}
                         </div>
                         <div>
-                          <h3 className="font-semibold text-sm text-gray-900 dark:text-gray-100">{title}</h3>
-                          {description && <p className="text-xs text-gray-500 mt-1 leading-relaxed dark:text-gray-400">{description}</p>}
+                          <h3 className="font-semibold text-sm" style={{ color: "var(--pico-premium-text)" }}>{title}</h3>
+                          {description && <p className="text-xs mt-1 leading-relaxed" style={{ color: "var(--pico-premium-muted)" }}>{description}</p>}
                         </div>
                       </div>
                     );
@@ -2596,12 +2637,12 @@ export function ModelWorkspace({
         ) : isChat ? (
           <div className="max-w-[980px] mx-auto space-y-4 py-4">
             {mmMode ? (
-              <div className="soft-card p-4">
+              <div className="rounded-2xl p-4" style={{ background: "var(--pico-premium-panel)", border: "1px solid var(--pico-premium-line)" }}>
                 {messages
                   .filter((msg) => msg.role === "user")
                   .map((msg, i) => (
                     <div key={`mm-user-${i}`} className="mb-4 flex justify-end">
-                      <div className="max-w-[85%] rounded-2xl px-4 py-3 text-sm leading-relaxed bg-primary text-dark whitespace-pre-wrap">
+                      <div className="max-w-[85%] rounded-lg px-4 py-3 text-sm leading-relaxed whitespace-pre-wrap" style={{ border: "1px solid var(--pico-premium-line)", background: "var(--pico-premium-panel)", color: "var(--pico-premium-text)" }}>
                         {msg.content}
                         <div className="mt-2 flex justify-end">
                           <CopyOutputButton
@@ -2617,29 +2658,31 @@ export function ModelWorkspace({
                   <div className="flex items-center gap-2">
                     <button
                       onClick={() => setMmActiveTab("answer")}
-                      className={`h-8 px-3 rounded-xl text-sm border ${
-                        mmActiveTab === "answer" ? "bg-primary/15 border-primary/30 text-gray-900 dark:text-gray-100" : "bg-white border-gray-200 text-gray-600 dark:bg-white/5 dark:border-white/10 dark:text-gray-300"
-                      }`}
+                      className="h-8 px-3 rounded-xl text-sm border"
+                      style={mmActiveTab === "answer"
+                        ? { borderColor: "var(--pico-ch-chat)", color: "var(--pico-premium-text)", background: "rgb(37 99 235 / 0.06)" }
+                        : { borderColor: "var(--pico-premium-line)", color: "var(--pico-premium-muted)", background: "var(--pico-premium-panel)" }}
                     >
                       {t("channel.answer")}
                     </button>
                     <button
                       onClick={() => setMmActiveTab("summary")}
-                      className={`h-8 px-3 rounded-xl text-sm border ${
-                        mmActiveTab === "summary" ? "bg-primary/15 border-primary/30 text-gray-900 dark:text-gray-100" : "bg-white border-gray-200 text-gray-600 dark:bg-white/5 dark:border-white/10 dark:text-gray-300"
-                      }`}
+                      className="h-8 px-3 rounded-xl text-sm border"
+                      style={mmActiveTab === "summary"
+                        ? { borderColor: "var(--pico-ch-chat)", color: "var(--pico-premium-text)", background: "rgb(37 99 235 / 0.06)" }
+                        : { borderColor: "var(--pico-premium-line)", color: "var(--pico-premium-muted)", background: "var(--pico-premium-panel)" }}
                     >
                       {t("channel.summary")}
                     </button>
                   </div>
                   <div className="flex items-center -space-x-2">
                     {mmResults.slice(0, 8).map((r) => (
-                      <div key={r.model_code} className="w-8 h-8 rounded-xl bg-white border border-gray-100 overflow-hidden flex items-center justify-center shadow-sm">
+                      <div key={r.model_code} className="w-8 h-8 rounded-xl overflow-hidden flex items-center justify-center" style={{ background: "var(--pico-premium-panel)", border: "1px solid var(--pico-premium-line)" }}>
                         {r.icon_url ? (
                           // eslint-disable-next-line @next/next/no-img-element
                           <img src={r.icon_url} alt="" className="w-full h-full object-cover" />
                         ) : (
-                          <span className="text-xs text-gray-400">AI</span>
+                          <span className="text-xs" style={{ color: "var(--pico-premium-muted)" }}>AI</span>
                         )}
                       </div>
                     ))}
@@ -2647,7 +2690,7 @@ export function ModelWorkspace({
                 </div>
 
                 {mmActiveTab === "summary" ? (
-                  <div className="mt-3 rounded-2xl bg-white border border-gray-100 px-4 py-4">
+                  <div className="mt-3 rounded-2xl px-4 py-4" style={{ background: "var(--pico-premium-panel)", border: "1px solid var(--pico-premium-line)" }}>
                     <RichMarkdown content={mmSummary} emptyText={streaming ? UI_TEXT.summaryGenerating : UI_TEXT.noSummary} />
                     <div className="mt-2 flex items-center justify-end">
                       <CopyOutputButton
@@ -2660,22 +2703,22 @@ export function ModelWorkspace({
                 ) : (
                   <div className="mt-3 space-y-3">
                     {mmResults.length === 0 ? (
-                      <div className="text-sm text-gray-500 px-2 py-6 text-center">{UI_TEXT.waitingModel}</div>
+                      <div className="text-sm px-2 py-6 text-center" style={{ color: "var(--pico-premium-muted)" }}>{UI_TEXT.waitingModel}</div>
                     ) : (
                       mmResults.map((r) => (
-                        <div key={r.model_code} className="bg-white border border-gray-100 rounded-2xl p-4">
+                        <div key={r.model_code} className="rounded-2xl p-4" style={{ background: "var(--pico-premium-panel)", border: "1px solid var(--pico-premium-line)" }}>
                           <div className="flex items-center gap-3 mb-2">
-                            <div className="w-9 h-9 rounded-xl bg-gray-50 border border-gray-200 overflow-hidden flex items-center justify-center">
+                            <div className="w-9 h-9 rounded-xl overflow-hidden flex items-center justify-center" style={{ background: "var(--pico-premium-panel-strong)", border: "1px solid var(--pico-premium-line)" }}>
                               {r.icon_url ? (
                                 // eslint-disable-next-line @next/next/no-img-element
                                 <img src={r.icon_url} alt="" className="w-full h-full object-cover" />
                               ) : (
-                                <span className="text-xs text-gray-400">AI</span>
+                                <span className="text-xs" style={{ color: "var(--pico-premium-muted)" }}>AI</span>
                               )}
                             </div>
                             <div className="min-w-0">
-                              <div className="text-sm font-semibold text-gray-900 truncate">{publicText(r.display_name, "未命名模型")}</div>
-                              <div className="text-[11px] text-gray-400 truncate">{publicText(r.model_code, "模型编码不可用")}</div>
+                              <div className="text-sm font-semibold truncate" style={{ color: "var(--pico-premium-text)" }}>{publicText(r.display_name, "未命名模型")}</div>
+                              <div className="text-[11px] truncate" style={{ color: "var(--pico-premium-muted)" }}>{publicText(r.model_code, "模型编码不可用")}</div>
                             </div>
                           </div>
                           {r.error ? (
@@ -2701,11 +2744,17 @@ export function ModelWorkspace({
             ) : (
               <>
                 {messages.map((msg, i) => (
-                  <div key={i} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
+                  <div key={i} className={`flex items-start gap-2.5 ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
+                    {msg.role !== "user" && (
+                      <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-[11px] font-semibold text-white" style={{ background: "var(--pico-ch-chat)" }}>
+                        AI
+                      </div>
+                    )}
                     <div
-                      className={`max-w-[80%] rounded-2xl px-4 py-3 text-sm leading-relaxed ${
-                        msg.role === "user" ? "bg-primary text-dark whitespace-pre-wrap" : "soft-card text-gray-800"
-                      }`}
+                      className="max-w-[80%] rounded-lg px-4 py-3 text-sm leading-relaxed"
+                      style={msg.role === "user"
+                        ? { border: "1px solid var(--pico-premium-line)", background: "var(--pico-premium-panel)", color: "var(--pico-premium-text)", whiteSpace: "pre-wrap" }
+                        : { border: "1px solid var(--pico-premium-line)", background: "var(--pico-premium-panel-strong)", color: "var(--pico-premium-text)" }}
                     >
                       {msg.role === "user" ? (
                         <>
@@ -2731,6 +2780,11 @@ export function ModelWorkspace({
                         </>
                       )}
                     </div>
+                    {msg.role === "user" && (
+                      <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-[11px] font-semibold" style={{ background: "var(--pico-premium-line)", color: "var(--pico-premium-text)" }}>
+                        U
+                      </div>
+                    )}
                   </div>
                 ))}
                 {chatError && (
@@ -2745,16 +2799,16 @@ export function ModelWorkspace({
         ) : (
           <div className="max-w-[980px] mx-auto py-4">
             {taskStatus && (
-              <div className="soft-card p-5 mb-4 text-sm">
+              <div className="rounded-2xl p-5 mb-4 text-sm" style={{ background: "var(--pico-premium-panel)", border: "1px solid var(--pico-premium-line)" }}>
                 <div className="flex items-center justify-between gap-3">
                   <div className="min-w-0 flex-1">
-                    <span className="text-gray-500">{UI_TEXT.taskStatus}:</span>
-                    <span className={`ml-1 font-medium ${isFailedStatus(taskStatus) ? "text-red-500 dark:text-red-300" : ""}`}>{statusLabel(taskStatus)}</span>
+                    <span style={{ color: "var(--pico-premium-muted)" }}>{UI_TEXT.taskStatus}:</span>
+                    <span className={`ml-1 font-medium ${isFailedStatus(taskStatus) ? "text-red-500" : ""}`} style={isFailedStatus(taskStatus) ? undefined : { color: "var(--pico-premium-text)" }}>{statusLabel(taskStatus)}</span>
                     {isFailedStatus(taskStatus) && taskError ? (
-                      <span className="ml-2 break-words text-red-500 dark:text-red-300">{taskError}</span>
+                      <span className="ml-2 break-words text-red-500">{taskError}</span>
                     ) : null}
                   </div>
-                  <div className="flex items-center gap-2 text-xs text-gray-400">
+                  <div className="flex items-center gap-2 text-xs" style={{ color: "var(--pico-premium-muted)" }}>
                     {isSucceededStatus(taskStatus) && isImage && taskImages.length > 0 && (
                       <span>{taskImages.length} {UI_TEXT.imageUnit}</span>
                     )}
@@ -2767,10 +2821,10 @@ export function ModelWorkspace({
                   </div>
                 </div>
                 {!isSucceededStatus(taskStatus) && !isFailedStatus(taskStatus) && (
-                  <div className="mt-4 h-2 overflow-hidden rounded-full bg-gray-100">
+                  <div className="mt-4 h-2 overflow-hidden rounded-full" style={{ background: "var(--pico-premium-panel-strong)" }}>
                     <div
-                      className="h-full rounded-full bg-secondary transition-all duration-500"
-                      style={{ width: `${Math.min(100, Math.max(4, taskProgress))}%` }}
+                      className="h-full rounded-full transition-all duration-500"
+                      style={{ width: `${Math.min(100, Math.max(4, taskProgress))}%`, background: isVideo ? "var(--pico-ch-video)" : isAudio ? "var(--pico-ch-audio)" : "var(--pico-ch-image)" }}
                     />
                   </div>
                 )}
@@ -2789,7 +2843,7 @@ export function ModelWorkspace({
               <ModelMediaPendingGrid type="image" count={imageCount} />
             )}
             {isImage && isSucceededStatus(taskStatus) && taskImages.length === 0 && (
-              <div className="soft-card p-5 text-sm text-amber-700 bg-amber-50 border border-amber-100">
+              <div className="rounded-2xl p-5 text-sm text-amber-700 bg-amber-50 border border-amber-100">
                 {UI_TEXT.noImageResult}
               </div>
             )}
@@ -2800,14 +2854,14 @@ export function ModelWorkspace({
       {/* Input section */}
       <div className="pico-universal-composer flex flex-col shrink-0 px-3 sm:px-5 pt-2 max-lg:pt-2 pb-4 sm:pb-6 max-lg:pb-4">
         <div className="pico-workspace-actions relative z-30 mx-auto mb-2.5 w-full max-w-[1080px]">
-          <div className="flex min-w-0 items-center justify-between gap-3 rounded-2xl border border-gray-200/80 bg-white/70 px-3 py-2 shadow-sm dark:border-white/10 dark:bg-white/[0.04]">
+          <div className="flex min-w-0 items-center justify-between gap-3 rounded-2xl px-3 py-2" style={{ border: "1px solid var(--pico-premium-line)", background: "var(--pico-premium-panel)" }}>
             <div className="flex min-w-0 items-center gap-2">
-              <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
+              <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg" style={{ background: "rgb(37 99 235 / 0.10)", color: "var(--pico-premium-blue)" }}>
                 {isChat ? <MessageCircle size={15} /> : isVideo ? <Video size={15} /> : isAudio ? <Mic size={15} /> : <ImageIcon size={15} />}
               </span>
               <div className="min-w-0">
-                <div className="truncate text-xs font-semibold text-gray-800 dark:text-gray-100">{modelCategoryLabel}</div>
-                <div className="hidden max-w-[260px] truncate text-[10px] text-gray-400 sm:block">{modelName}</div>
+                <div className="truncate text-xs font-semibold" style={{ color: "var(--pico-premium-text)" }}>{modelCategoryLabel}</div>
+                <div className="hidden max-w-[260px] truncate text-[10px] sm:block" style={{ color: "var(--pico-premium-muted)" }}>{modelName}</div>
               </div>
             </div>
             <div ref={historyAnchorRef} className="relative flex shrink-0 items-center gap-1.5" data-starai-history>
@@ -2815,7 +2869,8 @@ export function ModelWorkspace({
                 type="button"
                 onClick={resetWorkspace}
                 disabled={streaming}
-                className="inline-flex h-8 items-center gap-1.5 rounded-lg bg-primary px-2.5 text-xs font-semibold text-dark shadow-sm transition hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-50"
+                className="inline-flex h-8 items-center gap-1.5 rounded-lg px-2.5 text-xs font-semibold transition disabled:cursor-not-allowed disabled:opacity-50"
+                style={{ background: "#18181b", color: "#fff" }}
                 aria-label={newWorkspaceLabel}
                 title={streaming ? "请等待当前对话完成" : newWorkspaceLabel}
               >
@@ -2827,7 +2882,8 @@ export function ModelWorkspace({
                 onClick={openHistory}
                 aria-expanded={historyOpen}
                 aria-haspopup="dialog"
-                className="inline-flex h-8 items-center gap-1.5 rounded-lg border border-gray-200 bg-white px-2.5 text-xs font-medium text-gray-600 shadow-sm transition hover:border-gray-300 hover:bg-gray-50 dark:border-white/10 dark:bg-white/5 dark:text-gray-300 dark:hover:border-white/20 dark:hover:bg-white/10"
+                className="inline-flex h-8 items-center gap-1.5 rounded-lg px-2.5 text-xs font-medium transition"
+                style={{ border: "1px solid var(--pico-premium-line-strong)", background: "var(--pico-premium-panel)", color: "var(--pico-premium-muted)" }}
                 aria-label={t("common.history")}
               >
                 <History size={14} />
@@ -2839,15 +2895,12 @@ export function ModelWorkspace({
           </div>
         </div>
         <div className="pico-cream-composer-wrap w-full max-w-[980px] mx-auto">
-          <PixelPet kind="cat" size={62} className="pico-composer-pet pico-composer-pet-cat" />
-          <PixelPet kind="bunny" size={54} className="pico-composer-pet pico-composer-pet-bunny" />
-          <PixelPet kind="bear" size={48} className="pico-composer-pet pico-composer-pet-bear" />
-          <div className="pico-composer-meta flex items-center justify-between text-xs text-gray-400 mb-2 px-1">
+          <div className="pico-composer-meta flex items-center justify-between text-xs mb-2 px-1" style={{ color: "var(--pico-premium-muted)" }}>
             <div className="flex items-center gap-1.5">
             <Plus size={12} />
             {t("workspace.quickStart")}
             </div>
-            <span className="text-[11px] text-gray-400">
+            <span className="text-[11px]" style={{ color: "var(--pico-premium-muted)" }}>
               {bottom.role_name ? `Role: ${bottom.role_name}` : ""}
             </span>
           </div>
@@ -2895,8 +2948,8 @@ export function ModelWorkspace({
                   <div className="pico-inline-model-menu" role="dialog" aria-label="切换模型或工作流">
                     <div className="pico-inline-model-menu-head">
                       <div>
-                        <div className="text-sm font-extrabold text-[#60453c]">创作控制台</div>
-                        <div className="text-[11px] text-[#a77b69]">不离开当前页面，直接切换能力</div>
+                        <div className="text-sm font-extrabold" style={{ color: "var(--pico-premium-text)" }}>创作控制台</div>
+                        <div className="text-[11px]" style={{ color: "var(--pico-premium-muted)" }}>不离开当前页面，直接切换能力</div>
                       </div>
                       <button type="button" className="pico-inline-menu-close" onClick={() => setModelMenuOpen(false)} aria-label="关闭">
                         <X size={15} />
@@ -2943,11 +2996,11 @@ export function ModelWorkspace({
                             </span>
                             <span className="min-w-0 flex-1 text-left">
                               <span className="block truncate text-sm font-bold">{publicText(td(`model.${item.code}.name`, item.display_name), "未命名模型")}</span>
-                              <span className="block truncate text-[11px] text-[#a77b69]">
+                              <span className="block truncate text-[11px]" style={{ color: "var(--pico-premium-muted)" }}>
                                 {!isModelCallable(item) ? modelPendingLabel(item) : publicText(td(`model.${item.code}.description`, item.description || "开始创作"), "开始创作")}
                               </span>
                             </span>
-                            {item.code === model.code && <Check size={16} className="text-[#d9828c] shrink-0" />}
+                            {item.code === model.code && <Check size={16} className="shrink-0" style={{ color: "var(--pico-premium-blue)" }} />}
                           </button>
                         )) : (
                           <div className="pico-inline-empty">这个分类暂时没有可用模型。</div>
@@ -2966,9 +3019,9 @@ export function ModelWorkspace({
                             <span className="pico-inline-model-icon">{workflow.icon || "✦"}</span>
                             <span className="min-w-0 flex-1 text-left">
                               <span className="block truncate text-sm font-bold">{publicText(td(`agent.${workflow.code}.name`, workflow.name), "未命名工作流")}</span>
-                              <span className="block truncate text-[11px] text-[#a77b69]">{publicText(td(`agent.${workflow.code}.description`, workflow.description || "按步骤完成创作"), "按步骤完成创作")}</span>
+                              <span className="block truncate text-[11px]" style={{ color: "var(--pico-premium-muted)" }}>{publicText(td(`agent.${workflow.code}.description`, workflow.description || "按步骤完成创作"), "按步骤完成创作")}</span>
                             </span>
-                            <ArrowUp size={15} className="rotate-90 text-[#d9828c] shrink-0" />
+                            <ArrowUp size={15} className="rotate-90 shrink-0" style={{ color: "var(--pico-premium-blue)" }} />
                           </button>
                         ))
                       )}
@@ -2978,7 +3031,7 @@ export function ModelWorkspace({
               </div>
             )}
             {isChat ? (
-              <div className="px-3 sm:px-4 py-2 border-b border-gray-50">
+              <div className="px-3 sm:px-4 py-2" style={{ borderBottom: "1px solid var(--pico-premium-line)" }}>
                 <div className="flex items-center gap-2 sm:gap-3">
                   <div className="flex-1 min-w-0 flex flex-wrap items-center gap-1.5 sm:gap-2">
                     <ChatTopTools value={bottom} onChange={setBottom} />
@@ -2988,7 +3041,7 @@ export function ModelWorkspace({
                 </div>
               </div>
             ) : (
-              <div className="px-3 sm:px-4 py-2.5 border-b border-gray-50 space-y-3">
+              <div className="px-3 sm:px-4 py-2.5 space-y-3" style={{ borderBottom: "1px solid var(--pico-premium-line)" }}>
                 {isImage ? (
                   <div className="flex flex-col gap-2.5">
                     <div className="flex items-center gap-2 sm:gap-3">
@@ -3009,7 +3062,7 @@ export function ModelWorkspace({
                     {maxRefImages > 0 ? (
                       <div className="scroll-x-only flex flex-nowrap items-center gap-2 w-full h-16">
                         {refImages.map((img, i) => (
-                          <div key={img.url} className="relative w-16 h-16 rounded-2xl overflow-hidden border-2 border-white shadow-lg bg-gray-100 shrink-0">
+                          <div key={img.url} className="relative w-16 h-16 rounded-2xl overflow-hidden shrink-0" style={{ border: "1px solid var(--pico-premium-line)", background: "var(--pico-premium-panel-strong)" }}>
                             {/* eslint-disable-next-line @next/next/no-img-element */}
                             <img src={img.url} alt={img.name} className="w-full h-full object-cover" />
                             <button
@@ -3023,9 +3076,9 @@ export function ModelWorkspace({
                           </div>
                         ))}
                         {refImages.length < maxRefImages && (
-                          <label className="relative w-20 h-16 rounded-2xl border border-dashed border-gray-200 bg-white shadow-sm flex flex-col items-center justify-center gap-1 cursor-pointer hover:border-primary/40 hover:bg-primary/5 transition shrink-0">
-                            <Plus size={18} className="text-gray-400" />
-                            <span className="text-[10px] text-gray-400 whitespace-nowrap">{t("common.reference")} {refImages.length}/{maxRefImages}</span>
+                          <label className="relative w-20 h-16 rounded-2xl border border-dashed flex flex-col items-center justify-center gap-1 cursor-pointer transition shrink-0" style={{ borderColor: "var(--pico-premium-line-strong)", background: "var(--pico-premium-panel)" }}>
+                            <Plus size={18} style={{ color: "var(--pico-premium-muted)" }} />
+                            <span className="text-[10px] whitespace-nowrap" style={{ color: "var(--pico-premium-muted)" }}>{t("common.reference")} {refImages.length}/{maxRefImages}</span>
                             <input
                               type="file"
                               accept="image/png,image/jpeg,image/webp,image/gif"
@@ -3151,7 +3204,7 @@ export function ModelWorkspace({
                     )}
                     <div className="flex items-center gap-2 flex-wrap">
                       {refImages.map((img, i) => (
-                        <div key={img.url} className="relative w-12 h-12 rounded-lg overflow-hidden border border-gray-200">
+                        <div key={img.url} className="relative w-12 h-12 rounded-lg overflow-hidden" style={{ border: "1px solid var(--pico-premium-line)" }}>
                           {/* eslint-disable-next-line @next/next/no-img-element */}
                           <img src={img.url} alt={img.name} className="w-full h-full object-cover" />
                           <button
@@ -3163,10 +3216,10 @@ export function ModelWorkspace({
                         </div>
                       ))}
                       {refImages.length < maxRefImages && (
-                        <label className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gray-50 text-gray-600 text-xs hover:bg-gray-100 transition cursor-pointer">
+                        <label className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs transition cursor-pointer" style={{ background: "var(--pico-premium-panel-strong)", color: "var(--pico-premium-muted)" }}>
                           <Upload size={14} />
                           {uploading ? "Uploading..." : "Upload"}
-                          <span className="text-gray-400">{refImages.length}/{maxRefImages}</span>
+                          <span style={{ color: "var(--pico-premium-muted)" }}>{refImages.length}/{maxRefImages}</span>
                           <input
                             type="file"
                             accept="image/png,image/jpeg,image/webp,image/gif"
@@ -3273,9 +3326,10 @@ export function ModelWorkspace({
             <div
               className={
                 isMultiCollab
-                  ? "flex flex-col gap-2 px-3 sm:px-4 py-2.5 border-t border-gray-50 sm:flex-row sm:items-center sm:justify-between"
-                  : "flex items-center justify-between gap-2 px-3 sm:px-4 py-2.5 border-t border-gray-50"
+                  ? "flex flex-col gap-2 px-3 sm:px-4 py-2.5 sm:flex-row sm:items-center sm:justify-between"
+                  : "flex items-center justify-between gap-2 px-3 sm:px-4 py-2.5"
               }
+              style={{ borderTop: "1px solid var(--pico-premium-line)" }}
             >
               <div
                 className={
@@ -3291,11 +3345,10 @@ export function ModelWorkspace({
                         type="button"
                         onClick={() => setDeepThink((enabled) => !enabled)}
                         aria-pressed={deepThink}
-                        className={`h-9 rounded-xl border px-3 text-sm ${
-                          deepThink
-                            ? "border-primary/30 bg-primary/10 text-primary"
-                            : "border-gray-200 bg-gray-50 text-gray-600 dark:border-white/10 dark:bg-white/5 dark:text-gray-300"
-                        }`}
+                        className="h-9 rounded-xl border px-3 text-sm"
+                        style={deepThink
+                          ? { borderColor: "var(--pico-premium-text)", color: "var(--pico-premium-text)", background: "var(--pico-premium-panel)" }
+                          : { borderColor: "var(--pico-premium-line)", color: "var(--pico-premium-muted)", background: "var(--pico-premium-panel-strong)" }}
                       >
                         {t("workspace.deepThink")}
                       </button>
@@ -3304,11 +3357,10 @@ export function ModelWorkspace({
                       <button
                         type="button"
                         onClick={() => setBottom({ ...bottom, web_search: !bottom.web_search })}
-                        className={`h-9 px-3 rounded-xl border text-sm ${
-                          bottom.web_search
-                            ? "bg-primary/10 border-primary/30 text-primary"
-                            : "bg-gray-50 border-gray-200 text-gray-600 dark:border-white/10 dark:bg-white/5 dark:text-gray-300"
-                        }`}
+                        className="h-9 px-3 rounded-xl border text-sm"
+                        style={bottom.web_search
+                          ? { borderColor: "var(--pico-premium-text)", color: "var(--pico-premium-text)", background: "var(--pico-premium-panel)" }
+                          : { borderColor: "var(--pico-premium-line)", color: "var(--pico-premium-muted)", background: "var(--pico-premium-panel-strong)" }}
                       >
                         Web search
                       </button>
@@ -3375,9 +3427,21 @@ export function ModelWorkspace({
                       : !prompt.trim())
                 }
                 title={modelPending ? MODEL_PENDING_MESSAGE : undefined}
-                className="w-9 h-9 rounded-full bg-secondary text-white flex items-center justify-center hover:bg-secondary/90 disabled:opacity-40 transition shadow-md shrink-0"
+                className="h-9 rounded-lg px-4 text-sm font-medium flex items-center justify-center gap-1.5 disabled:opacity-40 transition shrink-0 whitespace-nowrap"
+                style={{ background: "#18181b", color: "#fff" }}
               >
-                <ArrowUp size={18} />
+                {menuWallet && Number(menuWallet.compute_balance || 0) <= 0 ? (
+                  <>余额不足，去充值</>
+                ) : (
+                  <>
+                    <ArrowUp size={16} />
+                    生成
+                    {(() => {
+                      const cost = estimatedCostLabel(model);
+                      return cost ? <span style={{ opacity: 0.75 }}>· 预计 {cost}</span> : null;
+                    })()}
+                  </>
+                )}
               </button>
               </div>
             </div>
@@ -3387,13 +3451,13 @@ export function ModelWorkspace({
 
       {isMultiCollab && badgeOpen && (
             <div className="fixed inset-0 z-[70] flex items-center justify-center bg-black/45 p-4" onClick={() => setBadgeOpen(false)}>
-              <div role="dialog" aria-modal="true" className="flex max-h-[86vh] w-full max-w-2xl flex-col overflow-hidden rounded-2xl bg-white shadow-2xl dark:border dark:border-white/10 dark:bg-gray-900" onClick={(event) => event.stopPropagation()}>
-                <div className="flex items-start justify-between gap-4 border-b border-gray-100 px-5 py-4 dark:border-white/10">
+              <div role="dialog" aria-modal="true" className="flex max-h-[86vh] w-full max-w-2xl flex-col overflow-hidden rounded-2xl" style={{ background: "var(--pico-premium-bg)", border: "1px solid var(--pico-premium-line)" }} onClick={(event) => event.stopPropagation()}>
+                <div className="flex items-start justify-between gap-4 px-5 py-4" style={{ borderBottom: "1px solid var(--pico-premium-line)" }}>
                   <div>
-                    <div className="text-base font-bold text-gray-900 dark:text-gray-100">{t("channel.customizeModels")}</div>
-                    <div className="mt-1 text-xs text-gray-500 dark:text-gray-400">{t("channel.selectionDescription")}</div>
+                    <div className="text-base font-bold" style={{ color: "var(--pico-premium-text)" }}>{t("channel.customizeModels")}</div>
+                    <div className="mt-1 text-xs" style={{ color: "var(--pico-premium-muted)" }}>{t("channel.selectionDescription")}</div>
                   </div>
-                  <button type="button" className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-gray-200 bg-gray-50 text-gray-500 dark:border-white/10 dark:bg-white/5 dark:text-gray-300" onClick={() => setBadgeOpen(false)} aria-label={t("common.close")}>
+                  <button type="button" className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl" style={{ border: "1px solid var(--pico-premium-line)", background: "var(--pico-premium-panel-strong)", color: "var(--pico-premium-muted)" }} onClick={() => setBadgeOpen(false)} aria-label={t("common.close")}>
                     <X size={16} />
                   </button>
                 </div>
@@ -3403,28 +3467,42 @@ export function ModelWorkspace({
                     value={modelSearch}
                     onChange={(event) => setModelSearch(event.target.value)}
                     placeholder={t("channel.searchModels")}
-                    className="w-full rounded-xl border border-gray-200 bg-gray-50 px-3 py-2.5 text-sm outline-none focus:border-primary dark:border-white/10 dark:bg-white/5 dark:text-gray-100"
+                    className="w-full rounded-xl px-3 py-2.5 text-sm outline-none"
+                    style={{ border: "1px solid var(--pico-premium-line)", background: "var(--pico-premium-panel-strong)", color: "var(--pico-premium-text)" }}
                   />
 
                   <section>
                     <div className="mb-2 flex items-center justify-between gap-3">
                       <div>
-                        <div className="text-sm font-semibold text-gray-900 dark:text-gray-100">{t("channel.answerModels")}</div>
-                        <div className="mt-0.5 text-xs text-gray-400">{t("channel.answerSelectionHint")}</div>
+                        <div className="text-sm font-semibold" style={{ color: "var(--pico-premium-text)" }}>{t("channel.answerModels")}</div>
+                        <div className="mt-0.5 text-xs" style={{ color: "var(--pico-premium-muted)" }}>{t("channel.answerSelectionHint")}</div>
                       </div>
-                      <span className="rounded-full bg-primary/10 px-2 py-1 text-xs font-semibold text-primary">{draftAnswerCodes.length}/8</span>
+                      <span className="rounded-full px-2 py-1 text-xs font-semibold" style={{ background: "rgb(37 99 235 / 0.10)", color: "var(--pico-premium-blue)" }}>{draftAnswerCodes.length}/8</span>
                     </div>
                     <div className="grid gap-2 sm:grid-cols-2">
                       {filteredChatModels.map((item) => {
                         const checked = draftAnswerCodes.includes(item.code);
                         return (
-                          <button key={`answer-${item.code}`} type="button" onClick={() => toggleDraftAnswer(item.code)} className={`flex min-w-0 items-center gap-3 rounded-xl border p-3 text-left transition ${checked ? "border-primary bg-primary/10" : "border-gray-200 hover:border-primary/30 dark:border-white/10 dark:bg-white/5"}`}>
+                          <button
+                            key={`answer-${item.code}`}
+                            type="button"
+                            onClick={() => toggleDraftAnswer(item.code)}
+                            className="flex min-w-0 items-center gap-3 rounded-xl border p-3 text-left transition"
+                            style={checked
+                              ? { borderColor: "var(--pico-premium-text)", background: "rgb(0 0 0 / 0.04)" }
+                              : { borderColor: "var(--pico-premium-line)", background: "var(--pico-premium-panel)" }}
+                          >
                             <BadgeCircle badge={{ code: item.code, icon: item.icon_url, label: publicText(item.display_name, "未命名模型") }} size={34} />
                             <div className="min-w-0 flex-1">
-                              <div className="truncate text-sm font-semibold text-gray-900 dark:text-gray-100">{publicText(item.display_name, "未命名模型")}</div>
-                              <div className="truncate text-[11px] text-gray-400">{publicText(item.code, "模型编码不可用")}</div>
+                              <div className="truncate text-sm font-semibold" style={{ color: "var(--pico-premium-text)" }}>{publicText(item.display_name, "未命名模型")}</div>
+                              <div className="truncate text-[11px]" style={{ color: "var(--pico-premium-muted)" }}>{publicText(item.code, "模型编码不可用")}</div>
                             </div>
-                            <span className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-md border ${checked ? "border-primary bg-primary text-white" : "border-gray-300 dark:border-white/20"}`}>{checked ? <Check size={13} /> : null}</span>
+                            <span
+                              className="flex h-5 w-5 shrink-0 items-center justify-center rounded-md border"
+                              style={checked
+                                ? { borderColor: "var(--pico-premium-text)", background: "var(--pico-premium-text)", color: "#fff" }
+                                : { borderColor: "var(--pico-premium-line-strong)" }}
+                            >{checked ? <Check size={13} /> : null}</span>
                           </button>
                         );
                       })}
@@ -3433,33 +3511,44 @@ export function ModelWorkspace({
 
                   <section>
                     <div className="mb-2">
-                      <div className="text-sm font-semibold text-gray-900 dark:text-gray-100">{t("channel.summaryModels")}</div>
-                      <div className="mt-0.5 text-xs text-gray-400">{t("channel.summarySelectionHint")}</div>
+                      <div className="text-sm font-semibold" style={{ color: "var(--pico-premium-text)" }}>{t("channel.summaryModels")}</div>
+                      <div className="mt-0.5 text-xs" style={{ color: "var(--pico-premium-muted)" }}>{t("channel.summarySelectionHint")}</div>
                     </div>
                     <div className="grid gap-2 sm:grid-cols-2">
                       {filteredChatModels.map((item) => {
                         const checked = draftSummaryCode === item.code;
                         return (
-                          <button key={`summary-${item.code}`} type="button" onClick={() => { setDraftSummaryCode(item.code); setModelSelectionError(""); }} className={`flex min-w-0 items-center gap-3 rounded-xl border p-3 text-left transition ${checked ? "border-secondary bg-secondary/10" : "border-gray-200 hover:border-secondary/30 dark:border-white/10 dark:bg-white/5"}`}>
+                          <button
+                            key={`summary-${item.code}`}
+                            type="button"
+                            onClick={() => { setDraftSummaryCode(item.code); setModelSelectionError(""); }}
+                            className="flex min-w-0 items-center gap-3 rounded-xl border p-3 text-left transition"
+                            style={checked
+                              ? { borderColor: "var(--pico-premium-text)", background: "rgb(0 0 0 / 0.04)" }
+                              : { borderColor: "var(--pico-premium-line)", background: "var(--pico-premium-panel)" }}
+                          >
                             <BadgeCircle badge={{ code: item.code, icon: item.icon_url, label: publicText(item.display_name, "未命名模型") }} size={34} />
                             <div className="min-w-0 flex-1">
-                              <div className="truncate text-sm font-semibold text-gray-900 dark:text-gray-100">{publicText(item.display_name, "未命名模型")}</div>
-                              <div className="truncate text-[11px] text-gray-400">{publicText(item.code, "模型编码不可用")}</div>
+                              <div className="truncate text-sm font-semibold" style={{ color: "var(--pico-premium-text)" }}>{publicText(item.display_name, "未命名模型")}</div>
+                              <div className="truncate text-[11px]" style={{ color: "var(--pico-premium-muted)" }}>{publicText(item.code, "模型编码不可用")}</div>
                             </div>
-                            <span className={`h-5 w-5 shrink-0 rounded-full border-[5px] ${checked ? "border-secondary bg-white" : "border-gray-300 bg-transparent dark:border-white/20"}`} />
+                            <span
+                              className="h-5 w-5 shrink-0 rounded-full border-[5px]"
+                              style={checked ? { borderColor: "var(--pico-premium-text)", background: "#fff" } : { borderColor: "var(--pico-premium-line-strong)", background: "transparent" }}
+                            />
                           </button>
                         );
                       })}
                     </div>
                   </section>
 
-                  {filteredChatModels.length === 0 && <div className="rounded-xl border border-dashed border-gray-200 py-8 text-center text-sm text-gray-400 dark:border-white/10">{t("channel.unconfigured")}</div>}
-                  {modelSelectionError && <div className="rounded-xl bg-red-50 px-3 py-2 text-sm text-red-600 dark:bg-red-500/10 dark:text-red-300">{modelSelectionError}</div>}
+                  {filteredChatModels.length === 0 && <div className="rounded-xl border border-dashed py-8 text-center text-sm" style={{ borderColor: "var(--pico-premium-line)", color: "var(--pico-premium-muted)" }}>{t("channel.unconfigured")}</div>}
+                  {modelSelectionError && <div className="rounded-xl bg-red-50 px-3 py-2 text-sm text-red-600">{modelSelectionError}</div>}
                 </div>
 
-                <div className="flex items-center justify-end gap-2 border-t border-gray-100 px-5 py-4 dark:border-white/10">
-                  <button type="button" onClick={() => setBadgeOpen(false)} className="rounded-xl border border-gray-200 px-4 py-2 text-sm text-gray-600 dark:border-white/10 dark:text-gray-300">{t("common.cancel")}</button>
-                  <button type="button" onClick={applyModelSelection} disabled={draftAnswerCodes.length < 2 || !draftSummaryCode} className="rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-dark disabled:cursor-not-allowed disabled:opacity-40">{t("channel.useCombination")}</button>
+                <div className="flex items-center justify-end gap-2 px-5 py-4" style={{ borderTop: "1px solid var(--pico-premium-line)" }}>
+                  <button type="button" onClick={() => setBadgeOpen(false)} className="rounded-xl px-4 py-2 text-sm" style={{ border: "1px solid var(--pico-premium-line)", color: "var(--pico-premium-muted)" }}>{t("common.cancel")}</button>
+                  <button type="button" onClick={applyModelSelection} disabled={draftAnswerCodes.length < 2 || !draftSummaryCode} className="rounded-xl px-4 py-2 text-sm font-semibold disabled:cursor-not-allowed disabled:opacity-40" style={{ background: "#18181b", color: "#fff" }}>{t("channel.useCombination")}</button>
                 </div>
               </div>
             </div>
