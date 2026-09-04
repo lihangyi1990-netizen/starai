@@ -223,8 +223,13 @@ func TestApiKeyCatalogModelSellableForMode(t *testing.T) {
 		"billing_type":        "per_request",
 		"unit_price":          1.0,
 	}
-	if apiKeyCatalogModelSellableForMode(map[string]interface{}{"catalog_source": "manual"}, published, true) {
-		t.Fatal("strict Sub2API mode must exclude manual catalog rows")
+	if !apiKeyCatalogModelSellableForMode(map[string]interface{}{"catalog_source": "manual"}, published, true) {
+		t.Fatal("strict Sub2API mode must still admit a published manual catalog row")
+	}
+	if apiKeyCatalogModelSellableForMode(map[string]interface{}{"catalog_source": "manual"}, map[string]interface{}{
+		"pico_pricing_status": "pending", "billing_type": "per_request", "unit_price": 1.0,
+	}, true) {
+		t.Fatal("strict Sub2API mode must exclude an unpublished manual catalog row")
 	}
 	if apiKeyCatalogModelSellableForMode(map[string]interface{}{"catalog_source": "sub2api", "catalog_status": "unavailable"}, published, true) {
 		t.Fatal("strict Sub2API mode must exclude unavailable rows")
