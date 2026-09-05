@@ -62,11 +62,16 @@ func (s *ModelService) listApiKeyProducts(ctx context.Context, catalogSync bool)
 	if catalogSync {
 		// Keep this predicate aligned with ListGatewayCatalog. In sync mode an
 		// old manually seeded row must never create a customer-facing product,
-		// even if an administrator left its legacy is_enabled flag on.
+		// even if an administrator left its legacy is_enabled flag on. A manual
+		// row is admitted only once it's enabled and published, matching
+		// gatewayCatalogManualRowSQL.
 		where += `
-			AND new_api_extra_params->>'catalog_source'='sub2api'
-			AND new_api_extra_params->>'catalog_status'='active'
-			AND price_rule->>'pico_pricing_status'='published'`
+			AND (
+				(new_api_extra_params->>'catalog_source'='sub2api'
+					AND new_api_extra_params->>'catalog_status'='active'
+					AND price_rule->>'pico_pricing_status'='published')
+				OR ` + gatewayCatalogManualRowSQL + `
+			)`
 	}
 	rows, err := s.db.Query(ctx, `
 		SELECT code, display_name, category, price_rule, new_api_extra_params
@@ -474,11 +479,13 @@ func apiKeyCatalogModelSellable(extra, price map[string]interface{}) bool {
 // apiKeyCatalogModelSellableForMode mirrors the SQL source filter in the scan
 // loop. The duplicate check is intentional: it protects against a future
 // query change (or a database view) reintroducing a manual row into strict
-// Sub2API mode.
+// Sub2API mode. A manual row is still admitted here once it's enabled and
+// published, mirroring gatewayCatalogManualRowSQL.
 func apiKeyCatalogModelSellableForMode(extra, price map[string]interface{}, catalogSync bool) bool {
 	if catalogSync {
-		if !strings.EqualFold(strings.TrimSpace(stringValue(extra["catalog_source"])), "sub2api") {
-			return false
+		source := strings.ToLower(strings.TrimSpace(stringValue(extra["catalog_source"])))
+		if source != "sub2api" {
+			return picoCatalogPricePublished(price)
 		}
 		if !strings.EqualFold(strings.TrimSpace(stringValue(extra["catalog_status"])), "active") {
 			return false

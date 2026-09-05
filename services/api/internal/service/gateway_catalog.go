@@ -442,10 +442,21 @@ func (s *ModelService) ListGatewayCatalogForDisplay(ctx context.Context, categor
 	return s.listGatewayCatalog(ctx, category, true)
 }
 
+// gatewayCatalogManualRowSQL admits a manually-created (non-Sub2API) model
+// into the catalog-sync display/callable lists once an operator has enabled
+// it and published a PICO retail price. Catalog sync only ever discovers
+// models visible to the one configured NEW_API_TOKEN/gateway credential, so
+// a model added for a second upstream group/key never gets catalog_source
+// set and would otherwise never appear here, no matter how it's priced.
+const gatewayCatalogManualRowSQL = `(COALESCE(new_api_extra_params->>'catalog_source','') <> 'sub2api'
+	AND is_enabled=true AND price_rule->>'pico_pricing_status'='published')`
+
 func (s *ModelService) listGatewayCatalog(ctx context.Context, category string, includePending bool) ([]ModelDTO, error) {
 	q := `SELECT id, code, display_name, category, icon_url, description, tags, runtime_rule, input_schema, default_params, price_rule, is_enabled, sort_order, new_api_extra_params
-		FROM models WHERE new_api_extra_params->>'catalog_source' = 'sub2api'
-		  AND new_api_extra_params->>'catalog_status' = 'active'`
+		FROM models WHERE (
+			(new_api_extra_params->>'catalog_source' = 'sub2api' AND new_api_extra_params->>'catalog_status' = 'active')
+			OR ` + gatewayCatalogManualRowSQL + `
+		)`
 	if !includePending {
 		q += ` AND is_enabled=true AND price_rule->>'pico_pricing_status'='published'`
 	}
@@ -477,14 +488,18 @@ func (s *ModelService) ListGatewayCatalogCategories(ctx context.Context) ([]map[
 	SELECT category FROM (
 		SELECT DISTINCT category
 		FROM models
-		WHERE new_api_extra_params->>'catalog_source' = 'sub2api'
-		  AND new_api_extra_params->>'catalog_status' = 'active'
+		WHERE (
+			(new_api_extra_params->>'catalog_source' = 'sub2api' AND new_api_extra_params->>'catalog_status' = 'active')
+			OR `+gatewayCatalogManualRowSQL+`
+		)
 		UNION
 		SELECT 'audio'
 		WHERE EXISTS (
 			SELECT 1 FROM models
-			WHERE new_api_extra_params->>'catalog_source' = 'sub2api'
-			  AND new_api_extra_params->>'catalog_status' = 'active'
+			WHERE (
+				(new_api_extra_params->>'catalog_source' = 'sub2api' AND new_api_extra_params->>'catalog_status' = 'active')
+				OR `+gatewayCatalogManualRowSQL+`
+			)
 			  AND `+publicAudioCapabilitySQL+`
 		)
 	) AS model_categories
