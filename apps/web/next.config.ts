@@ -40,19 +40,12 @@ const nextConfig: NextConfig = {
     ],
   },
   async rewrites() {
-    const apiBaseURL = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080").replace(/\/+$/, "");
-    // Production uses the same-domain reverse proxy for /v1. In local mode,
-    // make the address shown in PICO (`localhost:3000/v1`) work the same way.
-    if (!/^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/i.test(apiBaseURL)) return [];
+    // /api/* is handled by src/app/api/[...slug]/route.ts which overrides
+    // Origin/Referer to bypass production CORS. Only rewrite /v1* here.
+    const apiBaseURL = (process.env.API_URL || process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080").replace(/\/+$/, "");
+    if (!apiBaseURL) return [];
     return [
-      // Keep browser API calls same-origin in local development. This avoids
-      // cross-port/CORS failures in embedded browsers while preserving the
-      // existing `/api/*` contract used by the client.
-      { source: "/api/:path*", destination: `${apiBaseURL}/api/:path*` },
       { source: "/v1/:path*", destination: `${apiBaseURL}/v1/:path*` },
-      // Gemini-compatible clients use the native `/v1beta` surface. Without
-      // this rule the address shown in API management is handled by Next's
-      // page router and returns a misleading 404 in local deployments.
       { source: "/v1beta/:path*", destination: `${apiBaseURL}/v1beta/:path*` },
     ];
   },

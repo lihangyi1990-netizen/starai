@@ -495,7 +495,7 @@ export function AppShell({ children, selectedModelCode, selectedAgentCode }: App
           <Workflow size={19} /><span>{t("category.workflow")}</span>
         </button>
         <button type="button" className={navClass(isWorkbench && section === "gallery")} onClick={() => openStudio("gallery")}>
-          <LibraryBig size={19} /><span>{t("nav.models")}</span>
+          <LibraryBig size={19} /><span>{t("nav.gallery")}</span>
         </button>
         <span className="pico-premium-rail-divider" />
         <Link href="/app/api-docs" className={navClass(pathname.startsWith("/app/api-docs"))}>
@@ -515,7 +515,7 @@ export function AppShell({ children, selectedModelCode, selectedAgentCode }: App
     <nav className="pico-premium-mobile-dock" aria-label={t("nav.pageNav")}>
       <button type="button" className={navClass(isWorkbench && section === "models")} onClick={() => openStudio("models")}><Sparkles size={18} /><span>{t("nav.short.workspace")}</span></button>
       <button type="button" className={navClass(isWorkbench && section === "agents")} onClick={() => openStudio("agents")}><Workflow size={18} /><span>{t("category.workflow")}</span></button>
-      <button type="button" className={navClass(isWorkbench && section === "gallery")} onClick={() => openStudio("gallery")}><LibraryBig size={18} /><span>{t("nav.models")}</span></button>
+      <button type="button" className={navClass(isWorkbench && section === "gallery")} onClick={() => openStudio("gallery")}><LibraryBig size={18} /><span>{t("nav.gallery")}</span></button>
       <Link href="/app/settings" className={navClass(pathname.startsWith("/app/settings") || pathname.startsWith("/app/wallet") || pathname.startsWith("/app/api-docs"))}><Settings size={18} /><span>{t("nav.short.settings")}</span></Link>
     </nav>
   );

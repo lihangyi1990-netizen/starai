@@ -861,6 +861,10 @@ export function ModelWorkspace({
 }: Props) {
   const { t, td, ts } = useI18n();
   const [prompt, setPrompt] = useState(initialPrompt || "");
+  const [onboardingDismissed, setOnboardingDismissed] = useState(() => {
+    if (typeof window === "undefined") return true;
+    return localStorage.getItem("pico.onboardingDismissed") === "1";
+  });
   const [messages, setMessages] = useState<Message[]>([]);
   const [streaming, setStreaming] = useState(false);
   const [chatError, setChatError] = useState("");
@@ -959,6 +963,9 @@ export function ModelWorkspace({
   const clearUnread = useNotificationStore((s) => s.clearUnread);
   const [notifLoading, setNotifLoading] = useState(false);
   const [notifNeedLogin, setNotifNeedLogin] = useState(false);
+  const [homeCards, setHomeCards] = useState<
+    { key: string; title: string; description?: string; icon_url?: string; icon_emoji?: string; theme: string }[]
+  >([]);
   const [channelPresets, setChannelPresets] = useState<ChannelPreset[]>([]);
   const [chatModels, setChatModels] = useState<ChatModelOption[]>([]);
   const [selectedAnswerCodes, setSelectedAnswerCodes] = useState<string[]>([]);
@@ -1367,16 +1374,15 @@ export function ModelWorkspace({
 
     try {
       if (isChat) {
-        const items = await api<{ public_id: string; title?: string | null; updated_at: string }[]>(
-          `/api/chat/conversations?model_code=${encodeURIComponent(model.code)}&page=1&page_size=${historyPageSize}`
+        // Load all chat conversations, not filtered by current model
+        const items = await api<{ public_id: string; title?: string | null; updated_at: string; model_code?: string }[]>(
+          `/api/chat/conversations?page=1&page_size=${historyPageSize}`
         );
         if (requestId !== historyRequestRef.current) return;
         setHistoryItems(mapChatHistory(items || []));
         setHistoryHasMore((items || []).length >= historyPageSize);
       } else {
-        // Keep the active media type in the list. Loading another media type
-        // into this workspace would leave a result that the current renderer
-        // cannot display (for example, a video selected in image mode).
+        // Load all tasks of current media type, not filtered by current model
         const taskType = isVideo ? "video" : isAudio ? "audio" : "image";
         const res = await api<{
           items: Array<{
@@ -1386,9 +1392,10 @@ export function ModelWorkspace({
             input?: Record<string, unknown>;
             created_at: string;
             finished_at?: string;
+            model_code?: string;
           }>;
           total?: number;
-        }>(`/api/tasks?model_code=${encodeURIComponent(model.code)}&type=${taskType}&page=1&page_size=${historyPageSize}`);
+        }>(`/api/tasks?type=${taskType}&page=1&page_size=${historyPageSize}`);
         if (requestId !== historyRequestRef.current) return;
         setHistoryItems(mapTaskHistory(res.items || [], taskType));
         setHistoryHasMore((res.items || []).length >= historyPageSize && 1 * historyPageSize < Number(res.total || 0));
@@ -1469,13 +1476,13 @@ export function ModelWorkspace({
     const rect = anchor.getBoundingClientRect();
     const viewportPadding = 12;
     const gap = 8;
-    const panelWidth = Math.min(380, Math.max(240, window.innerWidth - viewportPadding * 2));
-    const maxPanelHeight = 538;
+    const panelWidth = Math.min(560, Math.max(380, window.innerWidth - viewportPadding * 2));
+    const maxPanelHeight = Math.min(860, Math.round(window.innerHeight * 0.82));
     const availableAbove = Math.max(0, rect.top - viewportPadding - gap);
     const availableBelow = Math.max(0, window.innerHeight - rect.bottom - viewportPadding - gap);
     const placeBelow = availableBelow >= 220 || availableBelow >= availableAbove;
     const available = placeBelow ? availableBelow : availableAbove;
-    const panelHeight = Math.min(maxPanelHeight, Math.max(140, available));
+    const panelHeight = Math.min(maxPanelHeight, Math.max(240, available));
     const desiredTop = placeBelow ? rect.bottom + gap : rect.top - gap - panelHeight;
     const top = Math.max(viewportPadding, Math.min(desiredTop, window.innerHeight - viewportPadding - panelHeight));
     const left = Math.max(
@@ -1487,7 +1494,7 @@ export function ModelWorkspace({
       top,
       width: panelWidth,
       maxHeight: panelHeight,
-      listMaxHeight: Math.max(80, panelHeight - 60),
+      listMaxHeight: Math.max(180, panelHeight - 64),
     });
   }, [historyOpen]);
 
@@ -2326,7 +2333,18 @@ export function ModelWorkspace({
 
   const isEmptyStudio = messages.length === 0 && !taskOutput && !taskStatus;
   const newWorkspaceLabel = isChat ? ts("新对话") : ts("新项目");
-  const historyScopeLabel = isChat ? ts("当前模型对话") : `${modelCategoryLabel} ${ts("生成记录")}`;
+  const historyScopeLabel = isChat ? ts("所有对话记录") : `${modelCategoryLabel} ${ts("生成记录")}`;
+
+  // Group history items by type for better organization
+  const groupedHistoryItems = useMemo(() => {
+    const groups: Record<string, typeof historyItems> = {};
+    historyItems.forEach((item) => {
+      const type = item.kind === "chat" ? "chat" : item.mediaType ?? "other";
+      if (!groups[type]) groups[type] = [];
+      groups[type].push(item);
+    });
+    return groups;
+  }, [historyItems]);
 
   const historyPanel = historyOpen && historyPanelPosition && typeof document !== "undefined" ? createPortal(
     <div
@@ -2340,7 +2358,8 @@ export function ModelWorkspace({
         width: historyPanelPosition.width,
         maxHeight: historyPanelPosition.maxHeight,
         border: "1px solid var(--pico-premium-line)",
-        background: "var(--pico-premium-bg)",
+        background: "#ffffff",
+        boxShadow: "0 24px 70px rgb(0 0 0 / 0.15)",
       }}
     >
       <div className="flex shrink-0 items-start justify-between gap-3 px-3.5 py-3" style={{ borderBottom: "1px solid var(--pico-premium-line)" }}>
@@ -2387,34 +2406,44 @@ export function ModelWorkspace({
           <div className="px-3 py-8 text-center text-xs" style={{ color: "var(--pico-premium-muted)" }}>{UI_TEXT.historyEmpty}</div>
         ) : (
           <>
-          {historyItems.map((item) => {
-            const mediaType = item.mediaType;
-            const ItemIcon = item.kind === "chat" ? MessageCircle : mediaType === "video" ? Video : mediaType === "audio" ? Mic : ImageIcon;
-            const itemTypeLabel = item.kind === "chat" ? t("nav.chat") : mediaType === "video" ? t("nav.video") : mediaType === "audio" ? t("nav.audio") : t("nav.image");
+          {Object.entries(groupedHistoryItems).map(([type, items]) => {
+            const typeLabel = type === "chat" ? t("mode.chat") : type === "video" ? t("mode.video") : type === "audio" ? t("mode.audio") : t("mode.image");
             return (
-              <button
-                key={`${item.kind}-${item.id}`}
-                type="button"
-                onClick={() => {
-                  setHistoryOpen(false);
-                  void (item.kind === "chat" ? loadConversation(item.id) : loadTaskHistory(item.id));
-                }}
-                className="group flex w-full min-w-0 items-start gap-2.5 rounded-xl px-2.5 py-2.5 text-left transition focus:outline-none"
-                style={{ background: "transparent" }}
-                onMouseEnter={(e) => { e.currentTarget.style.background = "rgb(0 0 0 / 0.03)"; }}
-                onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; }}
-              >
-                <span className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-lg" style={{ background: "var(--pico-premium-panel-strong)", color: "var(--pico-premium-muted)" }}>
-                  <ItemIcon size={14} />
-                </span>
-                <span className="min-w-0 flex-1">
-                  <span className="block truncate text-sm" style={{ color: "var(--pico-premium-text)" }}>{item.title || item.id}</span>
-                  <span className="mt-0.5 flex min-w-0 items-center justify-between gap-2 text-[10px]" style={{ color: "var(--pico-premium-muted)" }}>
-                    <span className="truncate">{itemTypeLabel} · {new Date(item.updated_at).toLocaleString()}</span>
-                    {item.status ? <span className="shrink-0">{statusLabel(item.status)}</span> : null}
-                  </span>
-                </span>
-              </button>
+              <div key={type} className="mb-2">
+                <div className="sticky top-0 z-10 flex items-center gap-2 px-2.5 py-1.5 text-[11px] font-semibold" style={{ background: "#ffffff", color: "var(--pico-premium-muted)", borderBottom: "1px solid var(--pico-premium-line)" }}>
+                  <span>{typeLabel}</span>
+                  <span className="text-[10px] font-normal opacity-60">({items.length})</span>
+                </div>
+                {items.map((item) => {
+                  const mediaType = item.mediaType;
+                  const ItemIcon = item.kind === "chat" ? MessageCircle : mediaType === "video" ? Video : mediaType === "audio" ? Mic : ImageIcon;
+                  return (
+                    <button
+                      key={`${item.kind}-${item.id}`}
+                      type="button"
+                      onClick={() => {
+                        setHistoryOpen(false);
+                        void (item.kind === "chat" ? loadConversation(item.id) : loadTaskHistory(item.id));
+                      }}
+                      className="group flex w-full min-w-0 items-start gap-2.5 rounded-xl px-2.5 py-2.5 text-left transition focus:outline-none"
+                      style={{ background: "transparent" }}
+                      onMouseEnter={(e) => { e.currentTarget.style.background = "rgb(0 0 0 / 0.03)"; }}
+                      onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; }}
+                    >
+                      <span className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-lg" style={{ background: "var(--pico-premium-panel-strong)", color: "var(--pico-premium-muted)" }}>
+                        <ItemIcon size={14} />
+                      </span>
+                      <span className="min-w-0 flex-1">
+                        <span className="block truncate text-sm" style={{ color: "var(--pico-premium-text)" }}>{item.title || item.id}</span>
+                        <span className="mt-0.5 flex min-w-0 items-center justify-between gap-2 text-[10px]" style={{ color: "var(--pico-premium-muted)" }}>
+                          <span className="truncate">{new Date(item.updated_at).toLocaleString()}</span>
+                          {item.status ? <span className="shrink-0">{statusLabel(item.status)}</span> : null}
+                        </span>
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
             );
           })}
           {historyLoadingMore ? (
@@ -2571,7 +2600,110 @@ export function ModelWorkspace({
 
       {/* Scrollable main */}
       <div className={`flex-1 px-3 sm:px-5 w-full ${hasConversation ? "overflow-y-auto pb-5 sm:pb-6" : "overflow-y-auto max-lg:overflow-y-auto pb-2 sm:pb-3"} min-h-0`}>
-        {isEmptyStudio ? null : isChat ? (
+        {isEmptyStudio ? (
+          <div className="flex min-h-full flex-col">
+            <div className="my-auto w-full py-3 max-lg:py-0">
+              {(isImage || isVideo) && (
+                <div className="mx-auto mb-3 flex w-full max-w-[980px] justify-center max-lg:mb-3">
+                  <div className="input-status-line">
+                    <span className="typing-status-text">
+                      {isVideo ? t("workspace.waitVideoInput") : t("workspace.waitImageInput")}
+                    </span>
+                    <span className="input-status-hint">
+                      {t("workspace.submitHint")}
+                    </span>
+                  </div>
+                </div>
+              )}
+
+              {/* Feature grid (multi-collab only) */}
+              {isMultiCollab && (
+                  <div className="pico-studio-feature-grid grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3 w-full max-w-[980px] mx-auto max-lg:mb-1">
+                  {(homeCards.length ? homeCards : []).map((f) => {
+                    const title = td(`homeCard.${f.key}.title`, f.title);
+                    const description = td(`homeCard.${f.key}.description`, f.description || "");
+                    // `f.theme` used to map to one of five hues (amber/purple/blue/pink/
+                    // green). Colour in this UI means "which channel" and nothing else,
+                    // so a per-card hue chosen in the admin panel competed with that
+                    // signal instead of adding to it - the cards are already told apart
+                    // by their icon and title. Existing `theme` values are ignored rather
+                    // than erroring, so no data change is needed; to bring the hues back,
+                    // restore the ternary and accept that a colour no longer identifies
+                    // a channel.
+                    const bg = "bg-sunk text-ink-mid";
+                    return (
+                      <div key={f.key} className="p-3 sm:p-4 flex gap-2.5 sm:gap-3 items-start rounded-2xl" style={{ background: "var(--pico-premium-panel)", border: "1px solid var(--pico-premium-line)" }}>
+                        <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl flex items-center justify-center text-base sm:text-lg shrink-0 ${bg} overflow-hidden`}>
+                          {f.icon_url ? (
+                            // eslint-disable-next-line @next/next/no-img-element
+                            <img src={f.icon_url} alt="" className="w-full h-full object-cover" />
+                          ) : (
+                            f.icon_emoji || "AI"
+                          )}
+                        </div>
+                        <div>
+                          <h3 className="font-semibold text-sm" style={{ color: "var(--pico-premium-text)" }}>{title}</h3>
+                          {description && <p className="text-xs mt-1 leading-relaxed" style={{ color: "var(--pico-premium-muted)" }}>{description}</p>}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+
+              {/* Example prompt cards */}
+              {!hasConversation && (
+                <>
+                  {/* Onboarding hint (dismissible) */}
+                  {!onboardingDismissed && (
+                    <div className="mx-auto mb-3 w-full max-w-[980px]">
+                      <div className="flex items-center gap-2 rounded-xl px-3 py-2 sm:px-4 sm:py-2.5" style={{ background: "var(--pico-premium-panel)", border: "1px solid var(--pico-premium-line)" }}>
+                        <div className="flex flex-1 flex-wrap items-center gap-x-3 gap-y-1 text-xs sm:text-sm" style={{ color: "var(--pico-premium-muted)" }}>
+                          <span className="flex items-center gap-1"><span className="inline-flex h-4 w-4 items-center justify-center rounded-full text-[10px] font-bold" style={{ background: "var(--pico-ch-chat)", color: "#fff" }}>1</span>{t("workspace.onboarding.1")}</span>
+                          <span className="flex items-center gap-1"><span className="inline-flex h-4 w-4 items-center justify-center rounded-full text-[10px] font-bold" style={{ background: "var(--pico-ch-image)", color: "#fff" }}>2</span>{t("workspace.onboarding.2")}</span>
+                          <span className="flex items-center gap-1"><span className="inline-flex h-4 w-4 items-center justify-center rounded-full text-[10px] font-bold" style={{ background: "var(--pico-ch-video)", color: "#fff" }}>3</span>{t("workspace.onboarding.3")}</span>
+                          <span className="flex items-center gap-1"><span className="inline-flex h-4 w-4 items-center justify-center rounded-full text-[10px] font-bold" style={{ background: "var(--pico-ch-audio)", color: "#fff" }}>4</span>{t("workspace.onboarding.4")}</span>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setOnboardingDismissed(true);
+                            localStorage.setItem("pico.onboardingDismissed", "1");
+                          }}
+                          className="shrink-0 rounded-lg px-2 py-1 text-xs font-medium transition-colors hover:opacity-80"
+                          style={{ background: "var(--pico-premium-panel-strong)", color: "var(--pico-premium-muted)", border: "1px solid var(--pico-premium-line)" }}
+                        >
+                          {t("workspace.onboarding.dismiss")}
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                <div className="mx-auto mt-4 w-full max-w-[980px]">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
+                    {(isChat || isImage || isVideo || isAudio) && (() => {
+                      const modeKey = isChat ? "chat" : isImage ? "image" : isVideo ? "video" : "audio";
+                      const examples = [1, 2, 3, 4].map((n) => t(`workspace.example.${modeKey}.${n}`)).filter((s) => s && !s.startsWith("workspace.example."));
+                      return examples.map((text, idx) => (
+                        <button
+                          key={idx}
+                          type="button"
+                          onClick={() => setPrompt(text)}
+                          className="group text-left px-3 sm:px-4 py-2.5 sm:py-3 rounded-xl transition-all hover:scale-[1.01]"
+                          style={{ background: "var(--pico-premium-panel)", border: "1px solid var(--pico-premium-line)" }}
+                        >
+                          <span className="text-xs sm:text-sm leading-relaxed" style={{ color: "var(--pico-premium-muted)" }}>
+                            {text}
+                          </span>
+                        </button>
+                      ));
+                    })()}
+                  </div>
+                </div>
+                </>
+              )}
+            </div>
+          </div>
+        ) : isChat ? (
           <div className="max-w-[980px] mx-auto space-y-4 py-4">
             {mmMode ? (
               <div className="rounded-2xl p-4" style={{ background: "var(--pico-premium-panel)", border: "1px solid var(--pico-premium-line)" }}>
@@ -2818,60 +2950,6 @@ export function ModelWorkspace({
             </button>
           </div>
         )}
-        <div className="pico-workspace-actions relative z-30 mx-auto mb-2.5 w-full max-w-[1080px]">
-          <div className="flex min-w-0 items-center justify-between gap-3 rounded-2xl px-3 py-2" style={{ border: "1px solid var(--pico-premium-line)", background: "var(--pico-premium-panel)" }}>
-            <div className="flex min-w-0 items-center gap-2">
-              <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg" style={{ background: "rgb(37 99 235 / 0.10)", color: "var(--pico-premium-blue)" }}>
-                {isChat ? <MessageCircle size={15} /> : isVideo ? <Video size={15} /> : isAudio ? <Mic size={15} /> : <ImageIcon size={15} />}
-              </span>
-              <div className="min-w-0">
-                <div className="truncate text-xs font-semibold" style={{ color: "var(--pico-premium-text)" }}>{modelCategoryLabel}</div>
-                <div className="hidden max-w-[260px] truncate text-[10px] sm:block" style={{ color: "var(--pico-premium-muted)" }}>
-                  {modelName}
-                  {estimatedCostLabel(model) ? <span style={{ opacity: 0.75 }}> · {estimatedCostLabel(model)}</span> : null}
-                </div>
-              </div>
-            </div>
-            <div ref={historyAnchorRef} className="relative flex shrink-0 items-center gap-1.5" data-starai-history>
-              {onSelectModel && (
-                <button
-                  type="button"
-                  onClick={() => openInlineModelMenu(activeCreationMode)}
-                  className="inline-flex h-8 items-center gap-1.5 rounded-lg px-2.5 text-xs font-medium transition"
-                  style={{ border: "1px solid var(--pico-premium-line-strong)", background: "var(--pico-premium-panel)", color: "var(--pico-premium-muted)" }}
-                >
-                  换模型
-                </button>
-              )}
-              <button
-                type="button"
-                onClick={resetWorkspace}
-                disabled={streaming}
-                className="inline-flex h-8 items-center gap-1.5 rounded-lg px-2.5 text-xs font-semibold transition disabled:cursor-not-allowed disabled:opacity-50"
-                style={{ background: "#18181b", color: "#fff" }}
-                aria-label={newWorkspaceLabel}
-                title={streaming ? "请等待当前对话完成" : newWorkspaceLabel}
-              >
-                <Plus size={14} />
-                <span>{newWorkspaceLabel}</span>
-              </button>
-              <button
-                type="button"
-                onClick={openHistory}
-                aria-expanded={historyOpen}
-                aria-haspopup="dialog"
-                className="inline-flex h-8 items-center gap-1.5 rounded-lg px-2.5 text-xs font-medium transition"
-                style={{ border: "1px solid var(--pico-premium-line-strong)", background: "var(--pico-premium-panel)", color: "var(--pico-premium-muted)" }}
-                aria-label={t("common.history")}
-              >
-                <History size={14} />
-                <span>{t("common.history")}</span>
-                <ChevronDown size={13} className={clsx("transition-transform", historyOpen && "rotate-180")} />
-              </button>
-              {historyPanel}
-            </div>
-          </div>
-        </div>
         <div className="pico-cream-composer-wrap w-full max-w-[980px] mx-auto">
           <div className="pico-composer-meta flex items-center justify-between text-xs mb-2 px-1" style={{ color: "var(--pico-premium-muted)" }}>
             <div className="flex items-center gap-1.5">
@@ -2922,86 +3000,76 @@ export function ModelWorkspace({
                     <Settings2 size={15} />
                   </button>
                 )}
+                <div ref={historyAnchorRef} className="relative ml-auto flex shrink-0 items-center gap-1.5" data-starai-history>
+                  {hasConversation && (
+                    <button
+                      type="button"
+                      onClick={resetWorkspace}
+                      disabled={streaming}
+                      className="inline-flex h-7 items-center gap-1 rounded-md px-2 text-xs font-semibold transition disabled:cursor-not-allowed disabled:opacity-50"
+                      style={{ background: "#18181b", color: "#fff" }}
+                      aria-label={newWorkspaceLabel}
+                      title={streaming ? "请等待当前对话完成" : newWorkspaceLabel}
+                    >
+                      <Plus size={13} />
+                      <span>{newWorkspaceLabel}</span>
+                    </button>
+                  )}
+                  <button
+                    type="button"
+                    onClick={openHistory}
+                    aria-expanded={historyOpen}
+                    aria-haspopup="dialog"
+                    className="inline-flex h-7 items-center gap-1 rounded-md px-2 text-xs font-medium transition"
+                    style={{ border: "1px solid var(--pico-premium-line-strong)", background: "var(--pico-premium-panel)", color: "var(--pico-premium-muted)" }}
+                    aria-label={t("common.history")}
+                  >
+                    <History size={13} />
+                    <span>{t("common.history")}</span>
+                    <ChevronDown size={12} className={clsx("transition-transform", historyOpen && "rotate-180")} />
+                  </button>
+                  {historyPanel}
+                </div>
                 {modelMenuOpen && (
-                  <div className="pico-inline-model-menu" role="dialog" aria-label="切换模型或工作流">
+                  <div className="pico-inline-model-menu" role="dialog" aria-label="切换模型">
                     <div className="pico-inline-model-menu-head">
                       <div>
-                        <div className="text-sm font-extrabold" style={{ color: "var(--pico-premium-text)" }}>创作控制台</div>
-                        <div className="text-[11px]" style={{ color: "var(--pico-premium-muted)" }}>不离开当前页面，直接切换能力</div>
+                        <div className="text-sm font-extrabold" style={{ color: "var(--pico-premium-text)" }}>切换模型</div>
+                        <div className="text-[11px]" style={{ color: "var(--pico-premium-muted)" }}>当前模式：{modelCategoryLabel}</div>
                       </div>
                       <button type="button" className="pico-inline-menu-close" onClick={() => setModelMenuOpen(false)} aria-label="关闭">
                         <X size={15} />
                       </button>
                     </div>
-                    <div className="pico-inline-menu-tabs">
-                      <button type="button" onClick={() => { setModelMenuTab("models"); setModelMenuCategory("chat"); }} className={clsx(modelMenuTab === "models" && modelMenuCategory === "chat" && "is-active")}>
-                        <MessageCircle size={14} /> 对话
-                      </button>
-                      <button type="button" onClick={() => { setModelMenuTab("models"); setModelMenuCategory("image"); }} className={clsx(modelMenuTab === "models" && modelMenuCategory === "image" && "is-active")}>
-                        <ImageIcon size={14} /> 生图
-                      </button>
-                      <button type="button" onClick={() => { setModelMenuTab("models"); setModelMenuCategory("video"); }} className={clsx(modelMenuTab === "models" && modelMenuCategory === "video" && "is-active")}>
-                        <Video size={14} /> 视频
-                      </button>
-                      <button type="button" onClick={() => { setModelMenuTab("models"); setModelMenuCategory("audio"); }} className={clsx(modelMenuTab === "models" && modelMenuCategory === "audio" && "is-active")}>
-                        <Mic size={14} /> 音频
-                      </button>
-                      {workflows.length > 0 && onSelectWorkflow && (
-                        <button type="button" onClick={() => setModelMenuTab("workflows")} className={clsx(modelMenuTab === "workflows" && "is-active")}>
-                          <Settings2 size={14} /> 工作流
-                        </button>
-                      )}
-                    </div>
                     <div className="pico-inline-model-list">
-                      {modelMenuTab === "models" ? (
-                        inlineModels.length > 0 ? inlineModels.map((item) => (
-                          <button
-                            type="button"
-                            key={item.code}
-                            onClick={() => {
-                              onSelectModel(item.code);
-                              setModelMenuOpen(false);
-                            }}
-                            className={clsx("pico-inline-model-option", item.code === model.code && "is-active")}
-                          >
-                            <span className="pico-inline-model-icon">
-                              {item.icon_url ? (
-                                // eslint-disable-next-line @next/next/no-img-element
-                                <img src={item.icon_url} alt="" />
-                              ) : (
-                                <ModelCategoryIcon category={item.category} />
-                              )}
+                      {inlineModels.length > 0 ? inlineModels.map((item) => (
+                        <button
+                          type="button"
+                          key={item.code}
+                          onClick={() => {
+                            onSelectModel(item.code);
+                            setModelMenuOpen(false);
+                          }}
+                          className={clsx("pico-inline-model-option", item.code === model.code && "is-active")}
+                        >
+                          <span className="pico-inline-model-icon">
+                            {item.icon_url ? (
+                              // eslint-disable-next-line @next/next/no-img-element
+                              <img src={item.icon_url} alt="" />
+                            ) : (
+                              <ModelCategoryIcon category={item.category} />
+                            )}
+                          </span>
+                          <span className="min-w-0 flex-1 text-left">
+                            <span className="block truncate text-sm font-bold">{publicText(td(`model.${item.code}.name`, item.display_name), "未命名模型")}</span>
+                            <span className="block truncate text-[11px]" style={{ color: "var(--pico-premium-muted)" }}>
+                              {!isModelCallable(item) ? modelPendingLabel(item) : publicText(td(`model.${item.code}.description`, item.description || "开始创作"), "开始创作")}
                             </span>
-                            <span className="min-w-0 flex-1 text-left">
-                              <span className="block truncate text-sm font-bold">{publicText(td(`model.${item.code}.name`, item.display_name), "未命名模型")}</span>
-                              <span className="block truncate text-[11px]" style={{ color: "var(--pico-premium-muted)" }}>
-                                {!isModelCallable(item) ? modelPendingLabel(item) : publicText(td(`model.${item.code}.description`, item.description || "开始创作"), "开始创作")}
-                              </span>
-                            </span>
-                            {item.code === model.code && <Check size={16} className="shrink-0" style={{ color: "var(--pico-premium-blue)" }} />}
-                          </button>
-                        )) : (
-                          <div className="pico-inline-empty">这个分类暂时没有可用模型。</div>
-                        )
-                      ) : (
-                        workflows.map((workflow) => (
-                          <button
-                            type="button"
-                            key={workflow.code}
-                            onClick={() => {
-                              onSelectWorkflow?.(workflow.code);
-                              setModelMenuOpen(false);
-                            }}
-                            className="pico-inline-model-option"
-                          >
-                            <span className="pico-inline-model-icon">{workflow.icon || "✦"}</span>
-                            <span className="min-w-0 flex-1 text-left">
-                              <span className="block truncate text-sm font-bold">{publicText(td(`agent.${workflow.code}.name`, workflow.name), "未命名工作流")}</span>
-                              <span className="block truncate text-[11px]" style={{ color: "var(--pico-premium-muted)" }}>{publicText(td(`agent.${workflow.code}.description`, workflow.description || "按步骤完成创作"), "按步骤完成创作")}</span>
-                            </span>
-                            <ArrowUp size={15} className="rotate-90 shrink-0" style={{ color: "var(--pico-premium-blue)" }} />
-                          </button>
-                        ))
+                          </span>
+                          {item.code === model.code && <Check size={16} className="shrink-0" style={{ color: "var(--pico-premium-blue)" }} />}
+                        </button>
+                      )) : (
+                        <div className="pico-inline-empty">当前模式暂时没有可用模型。</div>
                       )}
                     </div>
                   </div>
@@ -3033,30 +3101,25 @@ export function ModelWorkspace({
                           onReferenceImagesChange={setRefImages}
                           maxReferenceImages={maxRefImages}
                         />
-                        <SchemaForm schema={workbenchInputSchema} values={params} onChange={setParams} placement="top" />
-                      </div>
-                      <InputToolbarMeta />
-                    </div>
-                    {maxRefImages > 0 ? (
-                      <div className="scroll-x-only flex flex-nowrap items-center gap-2 w-full h-16">
-                        {refImages.map((img, i) => (
-                          <div key={img.url} className="relative w-16 h-16 rounded-2xl overflow-hidden shrink-0" style={{ border: "1px solid var(--pico-premium-line)", background: "var(--pico-premium-panel-strong)" }}>
+                        {maxRefImages > 0 && refImages.map((img, i) => (
+                          <div key={img.url} className="group/ref relative flex h-9 items-center gap-1.5 rounded-xl border border-gray-200 bg-white pl-0.5 pr-2 shadow-sm shrink-0">
                             {/* eslint-disable-next-line @next/next/no-img-element */}
-                            <img src={img.url} alt={img.name} className="w-full h-full object-cover" />
+                            <img src={img.url} alt={img.name} className="w-7 h-7 rounded-lg object-cover shrink-0" />
+                            <span className="text-[11px] text-gray-500 truncate max-w-[80px]">{img.name || t("common.reference")}</span>
                             <button
                               type="button"
                               onClick={() => setRefImages((prev) => prev.filter((_, idx) => idx !== i))}
-                              className="absolute right-0.5 top-0.5 w-5 h-5 rounded-full bg-black/70 text-white flex items-center justify-center"
+                              className="ml-0.5 w-4 h-4 rounded-full bg-gray-200 text-gray-500 flex items-center justify-center opacity-0 group-hover/ref:opacity-100 transition shrink-0"
                               title="Remove reference"
                             >
-                              <X size={12} />
+                              <X size={10} />
                             </button>
                           </div>
                         ))}
-                        {refImages.length < maxRefImages && (
-                          <label className="relative w-20 h-16 rounded-2xl border border-dashed flex flex-col items-center justify-center gap-1 cursor-pointer transition shrink-0" style={{ borderColor: "var(--pico-premium-line-strong)", background: "var(--pico-premium-panel)" }}>
-                            <Plus size={18} style={{ color: "var(--pico-premium-muted)" }} />
-                            <span className="text-[10px] whitespace-nowrap" style={{ color: "var(--pico-premium-muted)" }}>{t("common.reference")} {refImages.length}/{maxRefImages}</span>
+                        {maxRefImages > 0 && refImages.length < maxRefImages && (
+                          <label className="relative flex h-9 items-center gap-1 rounded-xl border border-dashed border-gray-200 bg-white px-2 cursor-pointer transition shrink-0 hover:border-primary/40 hover:bg-primary/5">
+                            <Plus size={14} className="text-gray-400" />
+                            <span className="text-[11px] whitespace-nowrap text-gray-400">{t("common.reference")} {refImages.length}/{maxRefImages}</span>
                             <input
                               type="file"
                               accept="image/png,image/jpeg,image/webp,image/gif"
@@ -3070,90 +3133,98 @@ export function ModelWorkspace({
                             />
                           </label>
                         )}
+                        <SchemaForm schema={workbenchInputSchema} values={params} onChange={setParams} placement="top" />
                       </div>
-                    ) : (
-                      <div className="h-9 px-3 rounded-xl bg-gray-50 border border-gray-100 text-xs text-gray-400 flex items-center">
-                        {t("model.referenceUnsupported")}
-                      </div>
-                    )}
+                      <InputToolbarMeta />
+                    </div>
                   </div>
                 ) : isVideo ? (
-                  <div className="flex flex-col gap-2.5">
-                    <div className="flex items-center gap-2 sm:gap-3">
-                      <div className="flex flex-1 min-w-0 flex-wrap items-center gap-1.5 sm:gap-2">
-                        {isFramePairUpload ? (
-                          <>
-                            <ChatTopTools
-                              value={bottom}
-                              onChange={setBottom}
-                              showUpload={false}
-                              showRole={false}
-                              referencePickMode
-                              referenceImages={veoFirstFrameAssets}
-                              onReferenceImagesChange={(images) =>
-                                setVideoMedia((prev) => ({ ...prev, first_frame: images[0] || null }))
-                              }
-                              maxReferenceImages={1}
-                              assetLibraryLabel={`${t("video.firstFrame")} · ${t("asset.library")}`}
-                            />
-                            <ChatTopTools
-                              value={bottom}
-                              onChange={setBottom}
-                              showUpload={false}
-                              showRole={isVeoFramePair}
-                              referencePickMode
-                              referenceImages={veoLastFrameAssets}
-                              onReferenceImagesChange={(images) =>
-                                setVideoMedia((prev) => ({ ...prev, last_frame: images[0] || null }))
-                              }
-                              maxReferenceImages={1}
-                              assetLibraryLabel={`${t("video.lastFrame")} · ${t("asset.library")}`}
-                            />
-                            {!isVeoFramePair && maxVideoAssetRefs > 0 ? (
-                              <ChatTopTools
-                                value={bottom}
-                                onChange={setBottom}
-                                showUpload={false}
-                                referencePickMode
-                                referenceImages={videoMedia.reference_images}
-                                onReferenceImagesChange={(images) =>
-                                  setVideoMedia((prev) => ({ ...prev, reference_images: images }))
-                                }
-                                maxReferenceImages={maxVideoAssetRefs}
-                                assetLibraryLabel={`${t("video.referenceImage")} · ${t("asset.library")}`}
-                              />
-                            ) : null}
-                          </>
-                        ) : (
+                  <div className="flex items-center gap-2 sm:gap-3">
+                    <div className="flex flex-1 min-w-0 flex-wrap items-center gap-1.5 sm:gap-2">
+                      {isFramePairUpload ? (
+                        <>
                           <ChatTopTools
                             value={bottom}
                             onChange={setBottom}
                             showUpload={false}
+                            showRole={false}
                             referencePickMode
-                            referenceImages={videoMedia.reference_images}
-                            onReferenceImagesChange={(imgs) =>
-                              setVideoMedia((prev) => ({ ...prev, reference_images: imgs }))
+                            referenceImages={veoFirstFrameAssets}
+                            onReferenceImagesChange={(images) =>
+                              setVideoMedia((prev) => ({ ...prev, first_frame: images[0] || null }))
                             }
-                            maxReferenceImages={maxVideoAssetRefs}
+                            maxReferenceImages={1}
+                            assetLibraryLabel={`${t("video.firstFrame")} · ${t("asset.library")}`}
                           />
-                        )}
-                        <VideoTopControls
-                          schema={workbenchInputSchema}
-                          values={params}
-                          onChange={setParams}
-                          videoConfig={videoConfig}
+                          <ChatTopTools
+                            value={bottom}
+                            onChange={setBottom}
+                            showUpload={false}
+                            showRole={isVeoFramePair}
+                            referencePickMode
+                            referenceImages={veoLastFrameAssets}
+                            onReferenceImagesChange={(images) =>
+                              setVideoMedia((prev) => ({ ...prev, last_frame: images[0] || null }))
+                            }
+                            maxReferenceImages={1}
+                            assetLibraryLabel={`${t("video.lastFrame")} · ${t("asset.library")}`}
+                          />
+                          {!isVeoFramePair && maxVideoAssetRefs > 0 ? (
+                            <ChatTopTools
+                              value={bottom}
+                              onChange={setBottom}
+                              showUpload={false}
+                              referencePickMode
+                              referenceImages={videoMedia.reference_images}
+                              onReferenceImagesChange={(images) =>
+                                setVideoMedia((prev) => ({ ...prev, reference_images: images }))
+                              }
+                              maxReferenceImages={maxVideoAssetRefs}
+                              assetLibraryLabel={`${t("video.referenceImage")} · ${t("asset.library")}`}
+                            />
+                          ) : null}
+                        </>
+                      ) : (
+                        <ChatTopTools
+                          value={bottom}
+                          onChange={setBottom}
+                          showUpload={false}
+                          referencePickMode
+                          referenceImages={videoMedia.reference_images}
+                          onReferenceImagesChange={(imgs) =>
+                            setVideoMedia((prev) => ({ ...prev, reference_images: imgs }))
+                          }
+                          maxReferenceImages={maxVideoAssetRefs}
                         />
-                      </div>
-                      <InputToolbarMeta />
-                    </div>
-                    {!isEnhancedVideoMaterial && (
-                      <VideoUploadArea
-                        config={videoUploadConfig}
-                        media={videoMedia}
-                        onChange={setVideoMedia}
-                        mode={videoMaterialMode}
+                      )}
+                      {!isEnhancedVideoMaterial && (
+                        <VideoUploadArea
+                          config={videoUploadConfig}
+                          media={videoMedia}
+                          onChange={setVideoMedia}
+                          mode={videoMaterialMode}
+                        />
+                      )}
+                      {isEnhancedVideoMaterial && videoMaterialMode !== "text" && videoMaterialMode !== "draft_task" && (
+                        <VideoUploadArea
+                          config={videoUploadConfig}
+                          media={videoMedia}
+                          onChange={setVideoMedia}
+                          mode={videoMaterialMode}
+                          portraitAssetId={String(params.portrait_asset_id || "")}
+                          portraitAssetType={params.portrait_asset_type === "video" ? "video" : "image"}
+                          onPortraitAssetIdChange={(value) => setParams({ ...params, portrait_asset_id: value })}
+                          onPortraitAssetTypeChange={(value) => setParams({ ...params, portrait_asset_type: value })}
+                        />
+                      )}
+                      <VideoTopControls
+                        schema={workbenchInputSchema}
+                        values={params}
+                        onChange={setParams}
+                        videoConfig={videoConfig}
                       />
-                    )}
+                    </div>
+                    <InputToolbarMeta />
                   </div>
                 ) : isAudio ? (
                   <div className="flex items-center gap-2 sm:gap-3">
@@ -3182,22 +3253,23 @@ export function ModelWorkspace({
                     )}
                     <div className="flex items-center gap-2 flex-wrap">
                       {refImages.map((img, i) => (
-                        <div key={img.url} className="relative w-12 h-12 rounded-lg overflow-hidden" style={{ border: "1px solid var(--pico-premium-line)" }}>
+                        <div key={img.url} className="group/ref relative flex h-9 items-center gap-1.5 rounded-xl border border-gray-200 bg-white pl-0.5 pr-2 shadow-sm shrink-0">
                           {/* eslint-disable-next-line @next/next/no-img-element */}
-                          <img src={img.url} alt={img.name} className="w-full h-full object-cover" />
+                          <img src={img.url} alt={img.name} className="w-7 h-7 rounded-lg object-cover shrink-0" />
+                          <span className="text-[11px] text-gray-500 truncate max-w-[80px]">{img.name || t("common.reference")}</span>
                           <button
                             onClick={() => setRefImages((prev) => prev.filter((_, idx) => idx !== i))}
-                            className="absolute top-0 right-0 w-4 h-4 bg-black/60 text-white flex items-center justify-center rounded-bl"
+                            className="ml-0.5 w-4 h-4 rounded-full bg-gray-200 text-gray-500 flex items-center justify-center opacity-0 group-hover/ref:opacity-100 transition shrink-0"
                           >
                             <X size={10} />
                           </button>
                         </div>
                       ))}
                       {refImages.length < maxRefImages && (
-                        <label className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs transition cursor-pointer" style={{ background: "var(--pico-premium-panel-strong)", color: "var(--pico-premium-muted)" }}>
+                        <label className="flex items-center gap-1.5 h-9 px-2.5 rounded-xl border border-dashed border-gray-200 bg-white text-[11px] text-gray-400 transition cursor-pointer hover:border-primary/40 hover:bg-primary/5">
                           <Upload size={14} />
                           {uploading ? "Uploading..." : "Upload"}
-                          <span style={{ color: "var(--pico-premium-muted)" }}>{refImages.length}/{maxRefImages}</span>
+                          <span>{refImages.length}/{maxRefImages}</span>
                           <input
                             type="file"
                             accept="image/png,image/jpeg,image/webp,image/gif"
@@ -3227,42 +3299,15 @@ export function ModelWorkspace({
                   onDraftTaskIdChange={(value) => setParams({ ...params, draft_task_id: value })}
                 />
               </div>
-            ) : isEnhancedVideoMaterial && videoMaterialMode !== "text" ? (
-              <div className="flex flex-col md:flex-row md:items-stretch">
-                <div className="w-full min-w-0 px-3 py-3 sm:px-4 md:w-auto md:max-w-[62%] md:flex-none md:pr-1">
-                  <VideoUploadArea
-                    config={videoUploadConfig}
-                    media={videoMedia}
-                    onChange={setVideoMedia}
-                    mode={videoMaterialMode}
-                    portraitAssetId={String(params.portrait_asset_id || "")}
-                    portraitAssetType={params.portrait_asset_type === "video" ? "video" : "image"}
-                    onPortraitAssetIdChange={(value) => setParams({ ...params, portrait_asset_id: value })}
-                    onPortraitAssetTypeChange={(value) => setParams({ ...params, portrait_asset_type: value })}
-                  />
-                </div>
-                <textarea
-                  value={prompt}
-                  onChange={(e) => setPrompt(e.target.value)}
-                  placeholder={promptPlaceholder}
-                  rows={5}
-                  className="min-h-28 min-w-0 flex-1 resize-none bg-transparent px-4 py-3 text-sm placeholder:text-gray-400 focus:outline-none"
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter" && !e.shiftKey) {
-                      e.preventDefault();
-                      submit();
-                    }
-                  }}
-                />
-              </div>
             ) : isAudio && audioConfig.input_layout === "dual" ? (
               <div className="grid grid-cols-1 md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-gray-50">
                 <textarea
                   value={prompt}
                   onChange={(e) => setPrompt(e.target.value)}
                   placeholder={audioConfig.prompt_hint ? ts(audioConfig.prompt_hint) : t("workspace.placeholder.audio")}
-                  rows={5}
-                  className="w-full px-4 py-3 text-sm resize-none focus:outline-none bg-transparent placeholder:text-gray-400"
+                  rows={hasConversation ? 2 : 5}
+                  className="w-full px-4 py-2 text-sm resize-none focus:outline-none bg-transparent placeholder:text-gray-400"
+                  style={{ minHeight: hasConversation ? "3.5rem" : "7rem" }}
                   onKeyDown={(e) => {
                     if (e.key === "Enter" && !e.shiftKey) {
                       e.preventDefault();
@@ -3276,8 +3321,9 @@ export function ModelWorkspace({
                   placeholder={
                     audioConfig.secondary_prompt_hint ? ts(audioConfig.secondary_prompt_hint) : ts("请输入音乐描述...")
                   }
-                  rows={5}
-                  className="w-full px-4 py-3 text-sm resize-none focus:outline-none bg-transparent placeholder:text-gray-400"
+                  rows={hasConversation ? 2 : 5}
+                  className="w-full px-4 py-2 text-sm resize-none focus:outline-none bg-transparent placeholder:text-gray-400"
+                  style={{ minHeight: hasConversation ? "3.5rem" : "7rem" }}
                   onKeyDown={(e) => {
                     if (e.key === "Enter" && !e.shiftKey) {
                       e.preventDefault();
@@ -3291,8 +3337,9 @@ export function ModelWorkspace({
                 value={prompt}
                 onChange={(e) => setPrompt(e.target.value)}
                 placeholder={promptPlaceholder}
-                rows={isVideo || isAudio ? 4 : 3}
-                className="w-full px-4 py-3 text-sm resize-none focus:outline-none bg-transparent placeholder:text-gray-400"
+                rows={hasConversation ? 2 : isVideo || isAudio ? 4 : 3}
+                className="w-full px-4 py-2 text-sm resize-none focus:outline-none bg-transparent placeholder:text-gray-400"
+                style={{ minHeight: hasConversation ? "3.5rem" : undefined }}
                 onKeyDown={(e) => {
                   if (e.key === "Enter" && !e.shiftKey) {
                     e.preventDefault();

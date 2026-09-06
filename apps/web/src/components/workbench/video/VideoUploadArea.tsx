@@ -43,14 +43,10 @@ function EmptyUploadBox({
 }) {
   return (
     <label
-      className={`relative flex shrink-0 cursor-pointer flex-col items-center justify-center border border-dashed border-gray-200 bg-white shadow-sm transition hover:border-primary/40 hover:bg-primary/5 dark:border-white/10 dark:bg-white/5 dark:hover:bg-primary/10 ${
-        compact ? "h-14 w-16 gap-0.5 rounded-xl" : "h-16 w-20 gap-1 rounded-2xl"
-      } ${
-        tilt ? "max-lg:rotate-0 lg:rotate-[-8deg]" : ""
-      }`}
+      className={`relative flex shrink-0 cursor-pointer items-center justify-center gap-1 rounded-xl border border-dashed border-gray-200 bg-white text-gray-400 shadow-sm transition hover:border-primary/40 hover:bg-primary/5 h-9 px-2.5`}
     >
-      <Plus size={18} className="text-gray-400 dark:text-gray-300" />
-      <span className="text-[10px] text-gray-400 dark:text-gray-300 text-center leading-tight px-1">{label}</span>
+      <Plus size={14} />
+      <span className="text-[11px] text-center leading-tight whitespace-nowrap">{label}</span>
       <input
         type="file"
         accept={accept}
@@ -107,27 +103,20 @@ function FilledImageCard({
 }) {
   const { t } = useI18n();
   return (
-    <div className={`group/img relative shrink-0 overflow-hidden border-2 border-white bg-gray-100 shadow-lg ${compact ? "h-14 w-14 rounded-xl" : "h-16 w-16 rounded-2xl"}`}>
+    <div className={`group/img relative flex h-9 shrink-0 items-center gap-1 overflow-hidden rounded-xl border border-gray-200 bg-white pl-0.5 pr-2 shadow-sm`}>
       {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src={image.url} alt={publicText(image.name, "参考图片")} className="w-full h-full object-cover" />
-      {badge ? (
-        <span className="pointer-events-none absolute left-1 top-1 px-1.5 py-0.5 rounded-md bg-black/55 text-white text-[10px]">
-          {badge}
-        </span>
-      ) : null}
+      <img src={image.url} alt={publicText(image.name, "参考图片")} className="w-7 h-7 rounded-lg object-cover shrink-0" />
+      <span className="text-[11px] text-gray-500 truncate max-w-[80px]">{badge || publicText(image.name, "参考图片")}</span>
       {onRemove && (
         <button
           type="button"
           onClick={onRemove}
-          className="absolute right-0.5 top-0.5 w-5 h-5 rounded-full bg-black/70 text-white flex items-center justify-center opacity-0 group-hover/img:opacity-100 transition"
+          className="ml-0.5 w-4 h-4 rounded-full bg-gray-200 text-gray-500 flex items-center justify-center opacity-0 group-hover/img:opacity-100 transition shrink-0"
           title={t("common.remove")}
         >
-          <X size={12} />
+          <X size={10} />
         </button>
       )}
-      <div className="pointer-events-none absolute inset-x-0 bottom-0 bg-black/70 px-1.5 py-1 text-[10px] text-white opacity-0 group-hover/img:opacity-100 transition whitespace-nowrap truncate">
-        {publicText(image.name, "参考图片")}
-      </div>
     </div>
   );
 }
@@ -185,7 +174,7 @@ function ReferenceImageStack({
   }
 
   return (
-    <div className={compact ? "flex min-h-14 max-w-full flex-wrap items-center gap-1.5" : "scroll-x-only flex h-16 w-full shrink-0 flex-nowrap items-center gap-2"}>
+    <div className="flex flex-wrap items-center gap-1.5">
       {images.map((img, i) => (
         <FilledImageCard key={img.url} image={img} compact={compact} onRemove={() => onRemove(i)} />
       ))}

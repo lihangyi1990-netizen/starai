@@ -47,31 +47,6 @@ body {
   color: rgb(31 41 55);
 }
 
-.dark .infinite-canvas-flow select {
-  color-scheme: dark;
-  background-color: rgb(31 41 55);
-  color: rgb(243 244 246);
-}
-
-.dark .infinite-canvas-flow select option,
-.dark .infinite-canvas-flow select optgroup {
-  background-color: rgb(17 24 39);
-  color: rgb(243 244 246);
-}
-
-.dark .infinite-canvas-flow select option:disabled {
-  color: rgb(107 114 128);
-}
-
-.dark .infinite-canvas-flow .react-flow__attribution {
-  background: rgb(17 24 39 / 0.75);
-  color: rgb(156 163 175);
-}
-
-.dark body {
-  @apply bg-gray-950 text-gray-100;
-  scrollbar-color: rgb(75 85 99) rgb(17 24 39);
-}
 
 @layer components {
   .soft-card {
@@ -256,15 +231,6 @@ body {
       linear-gradient(135deg, rgb(242 245 249), rgb(247 249 252) 46%, rgb(237 242 248));
     background-size: 56px 56px, 56px 56px, auto, auto, auto;
   }
-  .dark .workspace-surface {
-    background:
-      linear-gradient(rgb(79 124 255 / 0.045) 1px, transparent 1px),
-      linear-gradient(90deg, rgb(18 214 163 / 0.024) 1px, transparent 1px),
-      radial-gradient(circle at 18% 10%, rgb(18 214 163 / 0.04), transparent 24%),
-      radial-gradient(circle at 84% 16%, rgb(79 124 255 / 0.055), transparent 28%),
-      linear-gradient(135deg, #080d14, #0c1320 48%, #090f18);
-    background-size: 58px 58px, 58px 58px, auto, auto, auto;
-  }
   .model-workspace.workspace-surface {
     background:
       linear-gradient(rgba(15, 23, 42, 0.08) 1px, transparent 1px),
@@ -272,15 +238,6 @@ body {
       radial-gradient(circle at 70% 10%, rgba(34, 211, 238, 0.22), transparent 28%),
       radial-gradient(circle at 12% 84%, rgba(20, 184, 166, 0.16), transparent 22%),
       #eaf7fb;
-    background-size: 40px 40px, 40px 40px, auto, auto, auto;
-  }
-  .dark .model-workspace.workspace-surface {
-    background:
-      linear-gradient(rgba(34, 211, 238, 0.08) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(34, 211, 238, 0.08) 1px, transparent 1px),
-      radial-gradient(circle at 76% 10%, rgba(20, 184, 166, 0.2), transparent 28%),
-      radial-gradient(circle at 14% 82%, rgba(6, 182, 212, 0.12), transparent 22%),
-      #05080f;
     background-size: 40px 40px, 40px 40px, auto, auto, auto;
   }
   .model-workspace .soft-card,
@@ -298,11 +255,6 @@ body {
     transform: translateY(-2px);
     border-color: rgb(34 211 238 / 0.32);
     box-shadow: 0 18px 40px rgb(15 23 42 / 0.1);
-  }
-  .dark .model-workspace .soft-card:hover,
-  .dark .model-workspace .tech-card:hover {
-    border-color: rgb(34 211 238 / 0.24);
-    box-shadow: 0 18px 44px rgb(0 0 0 / 0.28);
   }
   @media (max-width: 640px) {
     .model-workspace .soft-card,
@@ -420,57 +372,6 @@ body {
   }
 }
 
-.dark *::-webkit-scrollbar-thumb {
-  background: rgb(75 85 99);
-  border: 2px solid rgb(17 24 39);
-  background-clip: content-box;
-}
-
-.dark *::-webkit-scrollbar-track {
-  background: rgb(17 24 39);
-}
-
-.dark .bg-white {
-  background-color: rgb(17 24 39 / var(--tw-bg-opacity, 1));
-}
-
-.dark .bg-gray-50,
-.dark .bg-gray-100 {
-  background-color: rgb(31 41 55 / var(--tw-bg-opacity, 1));
-}
-
-.dark .border-white,
-.dark .border-white\/60,
-.dark .border-white\/80,
-.dark .border-gray-50,
-.dark .border-gray-100,
-.dark .border-gray-200 {
-  border-color: rgb(255 255 255 / 0.1);
-}
-
-.dark .text-gray-900,
-.dark .text-gray-800 {
-  color: rgb(243 244 246 / var(--tw-text-opacity, 1));
-}
-
-.dark .text-gray-700,
-.dark .text-gray-600 {
-  color: rgb(209 213 219 / var(--tw-text-opacity, 1));
-}
-
-.dark .text-gray-500 {
-  color: rgb(156 163 175 / var(--tw-text-opacity, 1));
-}
-
-.dark .shadow-sm,
-.dark .shadow-md,
-.dark .shadow-lg,
-.dark .shadow-xl,
-.dark .shadow-2xl {
-  --tw-shadow: 0 0 #0000;
-  --tw-shadow-colored: 0 0 #0000;
-}
-
 .agent-showcase {
   display: grid;
   grid-template-columns: minmax(0, 640px);
@@ -559,7 +460,6 @@ body {
   }
 }
  .hero-tag { border: 1px solid rgb(229 231 235); border-radius: 999px; background: rgb(255 255 255 / .7); padding: .3rem .7rem; color: rgb(107 114 128); font-size: .7rem; }
-.dark .hero-tag { border-color: rgb(255 255 255 / .1); background: rgb(255 255 255 / .05); color: rgb(203 213 225); }
 
 /* PICO's customer workspace intentionally stays playful in either system theme.
    This keeps the visual identity consistent instead of inheriting the upstream
@@ -580,23 +480,6 @@ body {
   gap: 0.35rem;
   opacity: 0.8;
   pointer-events: none;
-}
-
-/* Secondary pages reuse the same pixel material: wallets, works, settings,
-   pricing and API docs become part of one product instead of old dashboards. */
-.pico-pixel-shell .page-container {
-  position: relative;
-  border-radius: 1.5rem;
-}
-
-@media (max-width: 1023px) {
-
-  .pico-subpage-pets {
-    right: 0.75rem;
-    bottom: 0.75rem;
-    transform: scale(0.78);
-    transform-origin: bottom right;
-  }
 }
 
 /* Public pages and account entry points share the same PICO world. */
@@ -673,27 +556,6 @@ body {
   }
 }
 
-/* PICO cream pet studio ---------------------------------------------------
-   This layer deliberately targets only the unified three-mode workbench.
-   Colors and layout are kept here so the product page can be tuned without
-   touching model execution, uploads, billing, or task polling logic. */
-.pico-pixel-shell:has(.pico-studio-simple) {
-  color: #60453c !important;
-  background:
-    radial-gradient(circle at 12% 12%, rgb(255 205 168 / 0.58), transparent 24%),
-    radial-gradient(circle at 86% 82%, rgb(192 237 214 / 0.64), transparent 28%),
-    #fff1da !important;
-}
-
-/* PICO Pixel Arcade: a bolder, game-like layer over the pixel system. */
-.pico-pixel-shell {
-  color: #f8f5ff !important;
-  background:
-    radial-gradient(circle at 92% 8%, rgb(120 80 255 / 0.42), transparent 24%),
-    radial-gradient(circle at 8% 92%, rgb(255 104 156 / 0.28), transparent 26%),
-    #12182f !important;
-}
-
 .pico-landing {
   color: #f6f1ff !important;
   background: #11152f !important;
@@ -734,8 +596,7 @@ body {
 /* PICO Jumpbook -----------------------------------------------------------
    A notebook-and-marker layer inspired by bouncy hand-drawn platform games.
    It is visual only: the unified model and workflow switcher remains intact. */
-.pico-landing,
-.pico-pixel-shell:has(.pico-studio-simple) {
+.pico-landing {
   --doodle-ink: #2d2c29;
   --doodle-paper: #fffdeb;
   --doodle-line: #bce5ef;
@@ -743,25 +604,6 @@ body {
   --doodle-green-dark: #78b53a;
   --doodle-blue: #86dcf5;
   --doodle-pink: #ffb5c4;
-  font-family: "Comic Sans MS", "Chalkboard SE", "Marker Felt", ui-rounded, sans-serif !important;
-}
-
-/* The home is a large creation desk, not a separate model catalogue. */
-.pico-pixel-shell:has(.pico-studio-empty) .pico-studio-empty .pico-universal-composer {
-  padding: clamp(26px, 5vh, 72px) clamp(18px, 5vw, 80px) clamp(42px, 8vh, 104px) !important;
-}
-
-/* Model Plaza replaces the old inspiration gallery: browse information here,
-   then return straight to the creator instead of opening another page. */
-.pico-pixel-shell:has(.pico-model-plaza) {
-  --doodle-ink: #2d2c29;
-  --doodle-paper: #fffdeb;
-  --doodle-line: #bce5ef;
-  --doodle-pink: #ffb5c4;
-  --doodle-green: #b9ed46;
-  --doodle-blue: #86dcf5;
-  color: var(--doodle-ink) !important;
-  background: var(--doodle-paper) !important;
   font-family: "Comic Sans MS", "Chalkboard SE", "Marker Felt", ui-rounded, sans-serif !important;
 }
 
@@ -1051,16 +893,6 @@ body {
 	.pico-api-new-key > button { width: 100%; }
 	.pico-api-scope-toggle,
 	.pico-api-model-picker { grid-template-columns: 1fr; }
-}
-
-/* Workflows remain a workspace, but share the creator's paper and controls. */
-.pico-pixel-shell:has(.pico-workflow-main) {
-  --doodle-ink: #2d2c29;
-  --doodle-paper: #fffdeb;
-  --doodle-line: #bce5ef;
-  --doodle-pink: #ff8fa1;
-  --doodle-green: #7de3a4;
-  --doodle-blue: #a5e5ff;
 }
 
 /* PICO Signature — restrained, glassy and product-led.
@@ -1432,8 +1264,10 @@ body:has(.pico-premium-shell) {
 
 /* Primary buttons: Style A fills them with ink, not the legacy mint. White
    text needs a filled dark surface, and `bg-primary` (#12D6A3) is not one. */
+/* Use [class~=] (whitespace-separated word match) instead of [class*=] (substring)
+   so hover:bg-primary/5 doesn't get caught by the "bg-primary" match. */
 .pico-premium-shell .bg-primary,
-.pico-premium-shell [class*="bg-primary"] { background: #18181b !important; color: #fff !important; }
+.pico-premium-shell [class~="bg-primary"] { background: #18181b !important; color: #fff !important; }
 
 .pico-premium-shell .pico-model-plaza { color: var(--pico-premium-text) !important; }
 .pico-premium-shell .pico-model-plaza-inner { max-width: 1320px !important; padding: 34px 38px 52px !important; }
@@ -2451,13 +2285,13 @@ body:has(.pico-premium-shell) {
 }
 
 .pico-premium-shell .pico-composer-input textarea {
-  min-height: 180px !important;
+  min-height: 120px;
 }
 
 @media (max-width: 1023px) {
 
   .pico-premium-shell .pico-composer-input textarea {
-    min-height: 150px !important;
+    min-height: 100px;
   }
 }
 

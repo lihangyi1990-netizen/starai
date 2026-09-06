@@ -85,31 +85,31 @@ export function isStandaloneAudioModel(model?: Partial<AudioCapabilityModel> | n
 
 export const CATEGORIES = [
   { code: "all", label: "\u5168\u90e8", labelKey: "nav.all" },
-  { code: "chat", label: "\u804a\u5929", labelKey: "nav.chat" },
-  { code: "image", label: "\u56fe\u7247", labelKey: "nav.image" },
-  { code: "video", label: "\u89c6\u9891", labelKey: "nav.video" },
-  { code: "audio", label: "\u97f3\u9891", labelKey: "nav.audio" },
+  { code: "chat", label: "\u5bf9\u8bdd", labelKey: "mode.chat" },
+  { code: "image", label: "\u751f\u56fe", labelKey: "mode.image" },
+  { code: "video", label: "\u89c6\u9891", labelKey: "mode.video" },
+  { code: "audio", label: "\u97f3\u9891", labelKey: "mode.audio" },
 ] as const;
 
 export const CATEGORY_TAG: Record<string, { label: string; labelKey: string; className: string }> = {
-  chat: { label: "\u804a\u5929", labelKey: "nav.chat", className: "bg-blue-50 text-blue-600" },
+  chat: { label: "\u5bf9\u8bdd", labelKey: "mode.chat", className: "bg-blue-50 text-blue-600" },
   multi_collab: { label: "\u591a\u6a21\u578b", labelKey: "category.multiCollab", className: "bg-slate-100 text-slate-600" },
-  image: { label: "\u56fe\u7247", labelKey: "nav.image", className: "bg-emerald-50 text-emerald-600" },
-  video: { label: "\u89c6\u9891", labelKey: "nav.video", className: "bg-purple-50 text-purple-600" },
-  audio: { label: "\u97f3\u9891", labelKey: "nav.audio", className: "bg-orange-50 text-orange-600" },
+  image: { label: "\u751f\u56fe", labelKey: "mode.image", className: "bg-emerald-50 text-emerald-600" },
+  video: { label: "\u89c6\u9891", labelKey: "mode.video", className: "bg-purple-50 text-purple-600" },
+  audio: { label: "\u97f3\u9891", labelKey: "mode.audio", className: "bg-orange-50 text-orange-600" },
 };
 
 export const AGENT_CATEGORIES = [
   { code: "all", label: "\u5168\u90e8", labelKey: "nav.all" },
-  { code: "image", label: "\u56fe\u7247", labelKey: "nav.image" },
-  { code: "video", label: "\u89c6\u9891", labelKey: "nav.video" },
+  { code: "image", label: "\u751f\u56fe", labelKey: "mode.image" },
+  { code: "video", label: "\u89c6\u9891", labelKey: "mode.video" },
   { code: "tool", label: "\u5de5\u5177", labelKey: "category.tool" },
   { code: "api", label: "API", labelKey: "category.api" },
 ] as const;
 
 export const AGENT_CATEGORY_TAG: Record<string, { label: string; labelKey: string; className: string }> = {
-  image: { label: "\u56fe\u7247", labelKey: "nav.image", className: "bg-emerald-50 text-emerald-600" },
-  video: { label: "\u89c6\u9891", labelKey: "nav.video", className: "bg-purple-50 text-purple-600" },
+  image: { label: "\u751f\u56fe", labelKey: "mode.image", className: "bg-emerald-50 text-emerald-600" },
+  video: { label: "\u89c6\u9891", labelKey: "mode.video", className: "bg-purple-50 text-purple-600" },
   multi_collab: { label: "\u591a\u6a21\u578b", labelKey: "category.multiCollab", className: "bg-slate-100 text-slate-600" },
   api: { label: "API", labelKey: "category.api", className: "bg-slate-100 text-slate-600" },
   tool: { label: "\u5de5\u5177", labelKey: "category.tool", className: "bg-slate-100 text-slate-600" },
