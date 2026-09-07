@@ -1860,7 +1860,11 @@ body:has(.pico-premium-shell) {
    surface at every viewport width. */
 .pico-premium-shell .pico-inline-model-bar {
   position: relative;
-  z-index: 20;
+  /* This bar is the stacking context the picker paints inside, so it has to
+     outrank the message list above the composer (media cards use z-10/z-20)
+     now that the picker can open upwards. Still below modals (70+) and the
+     history portal (80). */
+  z-index: 60;
   display: flex;
   min-width: 0;
   min-height: 44px;
@@ -1924,13 +1928,9 @@ body:has(.pico-premium-shell) {
 }
 
 .pico-premium-shell .pico-inline-model-menu {
-  position: absolute;
-  top: calc(100% - 1px);
-  left: 10px;
+  position: fixed;
   z-index: 100;
   display: flex;
-  width: min(520px, calc(100vw - 42px));
-  max-height: min(62dvh, 520px);
   min-height: 0;
   flex-direction: column;
   overflow: hidden;
@@ -2108,23 +2108,9 @@ body:has(.pico-premium-shell) {
 }
 
 @media (max-width: 1023px) {
-  /* Fixed positioning escapes the scroll container, so a long catalog can
-     never be clipped by the composer or the viewport edge. Leave room for the
-     six-item bottom dock and the device safe area. */
-  .pico-premium-shell .pico-inline-model-menu {
-    position: fixed;
-    top: auto;
-    bottom: calc(76px + env(safe-area-inset-bottom));
-    left: 50%;
-    width: min(560px, calc(100vw - 24px));
-    max-height: min(70dvh, 560px);
-    transform: translateX(-50%);
-  }
-
-  .pico-premium-shell .pico-inline-model-list {
-    max-height: none;
-  }
-
+  /* Placement (left/top/width/max-height) is measured in JS against the
+     trigger and the mobile dock, so no positional overrides belong here — a
+     leftover `bottom` or `translateX(-50%)` would fight the inline styles. */
   .pico-premium-shell .pico-inline-model-bar {
     padding-inline: 8px;
   }
@@ -2141,11 +2127,6 @@ body:has(.pico-premium-shell) {
 }
 
 @media (max-width: 420px) {
-  .pico-premium-shell .pico-inline-model-menu {
-    width: calc(100vw - 16px);
-    bottom: calc(74px + env(safe-area-inset-bottom));
-  }
-
   .pico-premium-shell .pico-inline-menu-tabs {
     padding-inline: 7px;
   }
