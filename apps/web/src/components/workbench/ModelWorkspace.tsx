@@ -882,6 +882,14 @@ export function ModelWorkspace({
   const [modelMenuOpen, setModelMenuOpen] = useState(false);
   const [modelMenuCategory, setModelMenuCategory] = useState<"chat" | "image" | "video" | "audio">("chat");
   const [modelMenuTab, setModelMenuTab] = useState<"models" | "workflows">("models");
+  const modelMenuAnchorRef = useRef<HTMLButtonElement>(null);
+  const [modelMenuPosition, setModelMenuPosition] = useState<{
+    left: number;
+    top: number;
+    width: number;
+    maxHeight: number;
+    listMaxHeight: number;
+  } | null>(null);
   const [params, setParams] = useState<Record<string, unknown>>(() => ({
     ...(model.category === "video" || model.category === "audio"
       ? { ...(model.default_params || {}), ...schemaDefaultsFromFields(model.input_schema) }
@@ -1511,6 +1519,64 @@ export function ModelWorkspace({
       window.removeEventListener("scroll", updateHistoryPanelPosition, true);
     };
   }, [historyOpen, updateHistoryPanelPosition]);
+
+  // Same problem as the history panel: the model picker used to be an absolutely
+  // positioned child of the composer that always dropped downwards. An empty
+  // studio centres the composer so there was room, but as soon as a
+  // conversation exists the composer docks to the bottom of the viewport and
+  // only ~200px remain below the trigger, so the list was cut off by the window
+  // edge. Measure the trigger, flip above the composer when the space below is
+  // too short, and clamp the height to whatever the viewport actually offers.
+  const updateModelMenuPosition = useCallback(() => {
+    if (!modelMenuOpen || typeof window === "undefined") return;
+    const anchor = modelMenuAnchorRef.current;
+    if (!anchor) return;
+    const rect = anchor.getBoundingClientRect();
+    const viewportPadding = 12;
+    const gap = 8;
+    // The mobile dock is fixed to the bottom of the viewport, so treat its
+    // height as unusable space instead of hard-coding a breakpoint offset.
+    const dock = document.querySelector(".pico-premium-mobile-dock");
+    const dockRect = dock ? dock.getBoundingClientRect() : null;
+    const bottomInset = dockRect && dockRect.height > 0 ? dockRect.height : 0;
+    const panelWidth = Math.min(520, Math.max(260, window.innerWidth - viewportPadding * 2));
+    const maxPanelHeight = Math.min(520, Math.round(window.innerHeight * 0.72));
+    const availableAbove = Math.max(0, rect.top - viewportPadding - gap);
+    const availableBelow = Math.max(0, window.innerHeight - bottomInset - rect.bottom - viewportPadding - gap);
+    const placeBelow = availableBelow >= Math.min(maxPanelHeight, 320) || availableBelow >= availableAbove;
+    const available = placeBelow ? availableBelow : availableAbove;
+    const panelHeight = Math.max(180, Math.min(maxPanelHeight, available));
+    const desiredTop = placeBelow ? rect.bottom + gap : rect.top - gap - panelHeight;
+    const top = Math.max(
+      viewportPadding,
+      Math.min(desiredTop, window.innerHeight - bottomInset - viewportPadding - panelHeight)
+    );
+    const left = Math.max(
+      viewportPadding,
+      Math.min(rect.left, window.innerWidth - viewportPadding - panelWidth)
+    );
+    setModelMenuPosition({
+      left,
+      top,
+      width: panelWidth,
+      maxHeight: panelHeight,
+      listMaxHeight: Math.max(120, panelHeight - 62),
+    });
+  }, [modelMenuOpen]);
+
+  useLayoutEffect(() => {
+    if (!modelMenuOpen) {
+      setModelMenuPosition(null);
+      return;
+    }
+    updateModelMenuPosition();
+    window.addEventListener("resize", updateModelMenuPosition);
+    window.addEventListener("scroll", updateModelMenuPosition, true);
+    return () => {
+      window.removeEventListener("resize", updateModelMenuPosition);
+      window.removeEventListener("scroll", updateModelMenuPosition, true);
+    };
+  }, [modelMenuOpen, updateModelMenuPosition]);
 
   const resetWorkspace = useCallback(() => {
     // A reset starts a new client-side conversation/project. Existing server
@@ -2981,6 +3047,7 @@ export function ModelWorkspace({
               <div className="pico-inline-model-bar" data-pico-inline-picker>
                 <button
                   type="button"
+                  ref={modelMenuAnchorRef}
                   onClick={() => openInlineModelMenu(activeCreationMode)}
                   className="pico-current-model-button"
                   aria-expanded={modelMenuOpen}
@@ -3030,8 +3097,18 @@ export function ModelWorkspace({
                   </button>
                   {historyPanel}
                 </div>
-                {modelMenuOpen && (
-                  <div className="pico-inline-model-menu" role="dialog" aria-label="切换模型">
+                {modelMenuOpen && modelMenuPosition && (
+                  <div
+                    className="pico-inline-model-menu"
+                    role="dialog"
+                    aria-label="切换模型"
+                    style={{
+                      left: modelMenuPosition.left,
+                      top: modelMenuPosition.top,
+                      width: modelMenuPosition.width,
+                      maxHeight: modelMenuPosition.maxHeight,
+                    }}
+                  >
                     <div className="pico-inline-model-menu-head">
                       <div>
                         <div className="text-sm font-extrabold" style={{ color: "var(--pico-premium-text)" }}>切换模型</div>
@@ -3041,7 +3118,7 @@ export function ModelWorkspace({
                         <X size={15} />
                       </button>
                     </div>
-                    <div className="pico-inline-model-list">
+                    <div className="pico-inline-model-list" style={{ maxHeight: modelMenuPosition.listMaxHeight }}>
                       {inlineModels.length > 0 ? inlineModels.map((item) => (
                         <button
                           type="button"
