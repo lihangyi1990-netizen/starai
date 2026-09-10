@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
-import type { ReactNode } from "react";
+import type { ChangeEvent, KeyboardEvent as ReactKeyboardEvent, ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { clsx } from "clsx";
 import {
@@ -48,6 +48,7 @@ import { notificationTitle } from "@/lib/notificationText";
 import { CATEGORY_TAG, isStandaloneAudioModel } from "./categoryMeta";
 import { SchemaForm, schemaDefaults, schemaProperties } from "./SchemaForm";
 import { ChatTopTools, type BottomBarState } from "./BottomBar";
+import AssetMentionPopover, { type MentionAsset } from "./AssetMentionPopover";
 import { AudioOptionToolbar, AudioTopControls } from "./audio/AudioOptionToolbar";
 import { AudioUploadButton } from "./audio/AudioUploadButton";
 import { VideoUploadArea } from "./video/VideoUploadArea";
@@ -1124,6 +1125,123 @@ export function ModelWorkspace({
     : isAudio
     ? (audioConfig.prompt_hint ? ts(audioConfig.prompt_hint) : t("workspace.placeholder.audio"))
     : t("workspace.placeholder.image");
+
+  // ---- `@` asset-library mention ----------------------------------------
+  // The composer is a plain textarea, so a mention can only ever be plain
+  // text. Selecting an asset therefore does two things: it attaches the file
+  // to whatever slot this model actually reads, and it rewrites the typed
+  // `@…` into the same `@图片N` token the canvas already uses
+  // (InfiniteCanvasWorkspace.appendReferenceMention). Nothing parses that
+  // token server-side — it is natural language for the upstream model.
+  const promptRef = useRef<HTMLTextAreaElement | null>(null);
+  const [mention, setMention] = useState<{ start: number; query: string } | null>(null);
+  const [mentionIndex, setMentionIndex] = useState(0);
+  const [mentionItems, setMentionItems] = useState<MentionAsset[]>([]);
+  // Mirrors the condition that actually renders the reference-image picker in
+  // the video branch. On veo frame-pair models only first/last frame exist, so
+  // attaching to reference_images there would be a silent no-op — those fall
+  // back to asset_ids, which every submit path forwards.
+  const mentionUsesRefSlot = isVideo && !isVeoFramePair && maxVideoAssetRefs > 0;
+  const mentionKinds = useMemo(
+    () => (mentionUsesRefSlot ? ["image"] : undefined),
+    [mentionUsesRefSlot]
+  );
+
+  const closeMention = useCallback(() => {
+    setMention(null);
+    setMentionIndex(0);
+    setMentionItems([]);
+  }, []);
+
+  /** Re-evaluate the `@…` token that the caret currently sits inside. */
+  const syncMention = useCallback((text: string, caret: number) => {
+    const before = text.slice(0, caret);
+    const at = before.lastIndexOf("@");
+    if (at < 0) return closeMention();
+    // Only a word-boundary `@` opens the list, so "a@b.com" stays inert.
+    const prev = at > 0 ? before[at - 1] : "";
+    if (prev && !/\s/.test(prev)) return closeMention();
+    const query = before.slice(at + 1);
+    // A space ends the token.
+    if (/\s/.test(query)) return closeMention();
+    setMention((cur) => (cur && cur.start === at && cur.query === query ? cur : { start: at, query }));
+    setMentionIndex(0);
+  }, [closeMention]);
+
+  const onPromptChange = useCallback((e: ChangeEvent<HTMLTextAreaElement>) => {
+    const text = e.target.value;
+    setPrompt(text);
+    syncMention(text, e.target.selectionStart ?? text.length);
+  }, [syncMention]);
+
+  const selectMention = useCallback((asset: MentionAsset) => {
+    if (!mention) return;
+    const item = { url: asset.url, name: asset.name, public_id: asset.public_id };
+    let token = `@${asset.name}`;
+
+    if (mentionUsesRefSlot) {
+      const existing = videoMedia.reference_images;
+      const already = existing.findIndex((x) => x.url === item.url);
+      if (already >= 0) {
+        token = `@${t("canvas.kind.image")}${already + 1}`;
+      } else if (existing.length >= maxVideoAssetRefs) {
+        // Same idiom the upload area uses for this slot (VideoUploadArea.tsx:282).
+        alert(t("video.maxReferenceImages", { max: maxVideoAssetRefs }));
+        closeMention();
+        return;
+      } else {
+        const next = [...existing, item];
+        setVideoMedia((prev) => ({ ...prev, reference_images: next }));
+        token = `@${t("canvas.kind.image")}${next.length}`;
+      }
+    } else if (!bottom.asset_ids.includes(asset.public_id)) {
+      setBottom({ ...bottom, asset_ids: [...bottom.asset_ids, asset.public_id] });
+    }
+
+    const head = prompt.slice(0, mention.start);
+    const tail = prompt.slice(mention.start + 1 + mention.query.length);
+    const next = `${head}${token} ${tail}`;
+    setPrompt(next);
+    closeMention();
+    const caret = head.length + token.length + 1;
+    window.requestAnimationFrame(() => {
+      const node = promptRef.current;
+      if (!node) return;
+      node.focus();
+      node.setSelectionRange(caret, caret);
+    });
+  }, [mention, mentionUsesRefSlot, videoMedia.reference_images, maxVideoAssetRefs, bottom, prompt, t, closeMention]);
+
+  /** Runs before the composer's own Enter-to-submit handler. */
+  const onPromptKeyDown = useCallback((e: ReactKeyboardEvent<HTMLTextAreaElement>) => {
+    if (mention) {
+      if (e.key === "Escape") {
+        e.preventDefault();
+        closeMention();
+        return true;
+      }
+      if (mentionItems.length > 0) {
+        if (e.key === "ArrowDown") {
+          e.preventDefault();
+          setMentionIndex((i) => (i + 1) % mentionItems.length);
+          return true;
+        }
+        if (e.key === "ArrowUp") {
+          e.preventDefault();
+          setMentionIndex((i) => (i - 1 + mentionItems.length) % mentionItems.length);
+          return true;
+        }
+        // Enter must pick an asset here, never fire a paid generation.
+        if (e.key === "Enter" || e.key === "Tab") {
+          e.preventDefault();
+          selectMention(mentionItems[Math.min(mentionIndex, mentionItems.length - 1)]);
+          return true;
+        }
+      }
+    }
+    return false;
+  }, [mention, mentionItems, mentionIndex, selectMention, closeMention]);
+
   const referenceAssetIds = useMemo(
     () =>
       [
@@ -3042,7 +3160,7 @@ export function ModelWorkspace({
               )}
             </div>
           )}
-          <div className="soft-input pico-composer-input">
+          <div className="soft-input pico-composer-input relative">
             {onSelectModel && (
               <div className="pico-inline-model-bar" data-pico-inline-picker>
                 <button
@@ -3411,13 +3529,19 @@ export function ModelWorkspace({
               </div>
             ) : (
               <textarea
+                ref={promptRef}
                 value={prompt}
-                onChange={(e) => setPrompt(e.target.value)}
+                onChange={onPromptChange}
+                onClick={(e) => syncMention(prompt, e.currentTarget.selectionStart ?? prompt.length)}
+                onBlur={() => closeMention()}
                 placeholder={promptPlaceholder}
                 rows={hasConversation ? 2 : isVideo || isAudio ? 4 : 3}
                 className="w-full px-4 py-2 text-sm resize-none focus:outline-none bg-transparent placeholder:text-gray-400"
                 style={{ minHeight: hasConversation ? "3.5rem" : undefined }}
                 onKeyDown={(e) => {
+                  // The mention list owns Enter/arrows while it is open, so
+                  // picking an asset can never fire a paid generation.
+                  if (onPromptKeyDown(e)) return;
                   if (e.key === "Enter" && !e.shiftKey) {
                     e.preventDefault();
                     submit();
@@ -3425,6 +3549,16 @@ export function ModelWorkspace({
                 }}
               />
             )}
+            <AssetMentionPopover
+              open={!!mention}
+              query={mention?.query || ""}
+              kinds={mentionKinds}
+              activeIndex={mentionIndex}
+              onActiveIndexChange={setMentionIndex}
+              onItemsChange={setMentionItems}
+              onSelect={selectMention}
+              onClose={closeMention}
+            />
             <div
               className={
                 isMultiCollab
