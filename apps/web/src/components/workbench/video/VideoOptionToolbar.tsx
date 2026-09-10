@@ -39,6 +39,15 @@ function iconFor(name?: string): ReactNode {
   }
 }
 
+// Upstream protocols spell the same concept differently (`ratio` vs
+// `aspect_ratio`).  Alias them onto one i18n key instead of duplicating every
+// label and option string across the locale blocks.
+const FIELD_KEY_ALIAS: Record<string, string> = {
+  aspect_ratio: "ratio",
+};
+
+const i18nKeyFor = (key: string) => FIELD_KEY_ALIAS[key] || key;
+
 const FIELD_TITLE_KEY: Record<string, string> = {
   count: "imageToolbar.count",
   duration: "video.duration",
@@ -47,6 +56,7 @@ const FIELD_TITLE_KEY: Record<string, string> = {
   generate_audio: "video.generateAudio",
   ratio: "video.ratio",
   resolution: "video.resolution",
+  seed: "video.seed",
   size: "video.size",
   watermark: "video.watermark",
   aigc_watermark: "video.watermark",
@@ -62,6 +72,7 @@ const FIELD_DESC_KEY: Record<string, string> = {
   generate_audio: "video.generateAudioDesc",
   ratio: "video.ratioDesc",
   resolution: "video.resolutionDesc",
+  seed: "video.seedDesc",
   size: "video.sizeDesc",
   watermark: "video.watermarkDesc",
   aigc_watermark: "video.watermarkDesc",
@@ -77,19 +88,19 @@ function safeSchemaText(text: unknown, fallback: string) {
 }
 
 function fieldTitle(t: Translate, key: string, prop: SchemaFieldMeta) {
-  const i18nKey = FIELD_TITLE_KEY[key];
+  const i18nKey = FIELD_TITLE_KEY[i18nKeyFor(key)];
   return i18nKey ? t(i18nKey) : safeSchemaText(prop.title, key);
 }
 
 function fieldDesc(t: Translate, key: string, prop: SchemaFieldMeta) {
-  const i18nKey = FIELD_DESC_KEY[key];
+  const i18nKey = FIELD_DESC_KEY[i18nKeyFor(key)];
   const desc = (prop as SchemaFieldMeta & { description?: string }).description;
   return i18nKey ? t(i18nKey) : safeSchemaText(desc || prop.title, key);
 }
 
 function optionLabel(t: Translate, key: string, prop: SchemaFieldMeta, value: unknown) {
   const raw = String(value ?? "");
-  const lookup = `video.option.${key}.${raw}`;
+  const lookup = `video.option.${i18nKeyFor(key)}.${raw}`;
   const translated = t(lookup);
   if (translated !== lookup) return translated;
   return safeSchemaText(enumLabel(prop, value), raw);
@@ -178,6 +189,95 @@ function CountOptionMenu({
   );
 }
 
+// Free-form numeric field (currently `seed`).  Without this, x-widget-less
+// integer fields fell through to the generic MediaOptionMenu and rendered a
+// menu with zero options, since they have no `enum` -- a control the user
+// could open but never use.
+//
+// The default value gets its own menu entry rather than special-casing "-1
+// means random": whatever `video.option.<key>.<default>` translates to is the
+// label, so the sentinel stays declarative.
+function NumberInputMenu({
+  fieldKey,
+  prop,
+  value,
+  onChange,
+}: {
+  fieldKey: string;
+  prop: SchemaFieldMeta;
+  value: unknown;
+  onChange: (val: number) => void;
+}) {
+  const { t } = useI18n();
+  const fallback = Number(prop.default ?? 0);
+  const current = Number.isFinite(Number(value)) ? Number(value) : fallback;
+  const [draft, setDraft] = useState(String(current));
+  const min = prop.minimum;
+  const max = prop.maximum;
+  const hasDefault = prop.default !== undefined && Number(prop.default) !== current;
+
+  const clamp = (n: number) => {
+    let out = n;
+    if (typeof min === "number") out = Math.max(min, out);
+    if (typeof max === "number") out = Math.min(max, out);
+    return out;
+  };
+
+  return (
+    <MediaOptionMenu
+      icon={iconFor(prop["x-icon"])}
+      activeLabel={String(optionLabel(t, fieldKey, prop, current))}
+      title={fieldTitle(t, fieldKey, prop)}
+      subtitle={fieldDesc(t, fieldKey, prop)}
+      tone={prop["x-highlight"] ? "yellow" : "white"}
+      compactOnMobile
+    >
+      {(closeMenu) => (
+        <div className="space-y-2">
+          {hasDefault && (
+            <MediaMenuOption
+              selected={false}
+              onClick={() => {
+                const n = Number(prop.default);
+                onChange(n);
+                setDraft(String(n));
+                closeMenu();
+              }}
+            >
+              {optionLabel(t, fieldKey, prop, prop.default)}
+            </MediaMenuOption>
+          )}
+          <div className={hasDefault ? "mt-3 border-t border-gray-100 pt-3 dark:border-white/10" : undefined}>
+            <div className="flex items-center gap-3">
+              <input
+                value={draft}
+                type="number"
+                min={min}
+                max={max}
+                onChange={(e) => setDraft(e.target.value)}
+                className="h-10 flex-1 rounded-xl border border-gray-200 bg-white px-3 text-sm text-gray-900 focus:border-primary focus:outline-none dark:border-white/10 dark:bg-white/5 dark:text-gray-100 dark:[color-scheme:dark]"
+              />
+              <button
+                type="button"
+                className="h-10 rounded-xl border border-gray-900 bg-white px-4 text-sm font-semibold text-gray-900 dark:border-white/10 dark:bg-white/5 dark:text-gray-100"
+                onClick={() => {
+                  const parsed = parseInt(draft, 10);
+                  const n = clamp(Number.isNaN(parsed) ? fallback : parsed);
+                  onChange(n);
+                  setDraft(String(n));
+                  closeMenu();
+                }}
+              >
+                OK
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </MediaOptionMenu>
+  );
+}
+
 function renderFieldControl(
   key: string,
   prop: SchemaFieldMeta,
@@ -191,6 +291,10 @@ function renderFieldControl(
 
   if (key === "count" && widget === "option_menu") {
     return <CountOptionMenu prop={prop} value={value} videoConfig={videoConfig} countUnit={countUnit} onChange={(n) => onChange(key, n)} />;
+  }
+
+  if (widget === "number_input") {
+    return <NumberInputMenu fieldKey={key} prop={prop} value={value} onChange={(n) => onChange(key, n)} />;
   }
 
   if (widget === "boolean_toggle") {

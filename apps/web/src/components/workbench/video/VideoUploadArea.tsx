@@ -353,6 +353,16 @@ export function VideoUploadArea({
         </div>
       );
     }
+    // A configured max of 0 means the model has no such input at all (e.g.
+    // sd_2.0_mini_special takes no reference video).  Gate the whole group AND
+    // its separator arrow on that, or a model with no video support still shows
+    // a stray arrow pointing at nothing.  Already-attached items keep rendering
+    // even at max 0, so switching models can't leave files stuck in state with
+    // no way to remove them.
+    const videoMax = config.reference_videos?.max ?? 3;
+    const audioMax = config.reference_audios?.max ?? 3;
+    const showVideos = videoMax > 0 || media.reference_videos.length > 0;
+    const showAudios = audioMax > 0 || media.reference_audios.length > 0;
     return (
       <div className="flex min-h-14 w-fit max-w-full flex-wrap items-center gap-1.5">
         <ReferenceImageStack
@@ -363,54 +373,62 @@ export function VideoUploadArea({
           onRemove={removeRef}
           compact
         />
-        <ArrowRight size={13} className="shrink-0 text-gray-300" />
-        <div className="flex min-h-14 shrink-0 flex-wrap items-center gap-1.5">
-          {media.reference_videos.map((item, index) => (
-            <FilledFileCard
-              key={item.url}
-              item={item}
-              kind="video"
-              onRemove={() => onChange({ ...media, reference_videos: media.reference_videos.filter((_, i) => i !== index) })}
-            />
-          ))}
-          {media.reference_videos.length < (config.reference_videos?.max ?? 3) && (
-            <EmptyUploadBox
-              label={`${t("video.referenceVideo")} ${media.reference_videos.length}/${config.reference_videos?.max ?? 3}`}
-              compact
-              accept={VIDEO_ACCEPT}
-              uploading={uploading}
-              onUpload={(files) =>
-                uploadFiles(files, "video", media.reference_videos, config.reference_videos?.max ?? 3, (items) =>
-                  onChange({ ...media, reference_videos: items })
-                )
-              }
-            />
-          )}
-        </div>
-        <ArrowRight size={13} className="shrink-0 text-gray-300" />
-        <div className="flex min-h-14 shrink-0 flex-wrap items-center gap-1.5">
-          {media.reference_audios.map((item, index) => (
-            <FilledFileCard
-              key={item.url}
-              item={item}
-              kind="audio"
-              onRemove={() => onChange({ ...media, reference_audios: media.reference_audios.filter((_, i) => i !== index) })}
-            />
-          ))}
-          {media.reference_audios.length < (config.reference_audios?.max ?? 3) && (
-            <EmptyUploadBox
-              label={`${t("video.referenceAudio")} ${media.reference_audios.length}/${config.reference_audios?.max ?? 3}`}
-              compact
-              accept={AUDIO_ACCEPT}
-              uploading={uploading}
-              onUpload={(files) =>
-                uploadFiles(files, "audio", media.reference_audios, config.reference_audios?.max ?? 3, (items) =>
-                  onChange({ ...media, reference_audios: items })
-                )
-              }
-            />
-          )}
-        </div>
+        {showVideos && (
+          <>
+            <ArrowRight size={13} className="shrink-0 text-gray-300" />
+            <div className="flex min-h-14 shrink-0 flex-wrap items-center gap-1.5">
+              {media.reference_videos.map((item, index) => (
+                <FilledFileCard
+                  key={item.url}
+                  item={item}
+                  kind="video"
+                  onRemove={() => onChange({ ...media, reference_videos: media.reference_videos.filter((_, i) => i !== index) })}
+                />
+              ))}
+              {media.reference_videos.length < videoMax && (
+                <EmptyUploadBox
+                  label={`${t("video.referenceVideo")} ${media.reference_videos.length}/${videoMax}`}
+                  compact
+                  accept={VIDEO_ACCEPT}
+                  uploading={uploading}
+                  onUpload={(files) =>
+                    uploadFiles(files, "video", media.reference_videos, videoMax, (items) =>
+                      onChange({ ...media, reference_videos: items })
+                    )
+                  }
+                />
+              )}
+            </div>
+          </>
+        )}
+        {showAudios && (
+          <>
+            <ArrowRight size={13} className="shrink-0 text-gray-300" />
+            <div className="flex min-h-14 shrink-0 flex-wrap items-center gap-1.5">
+              {media.reference_audios.map((item, index) => (
+                <FilledFileCard
+                  key={item.url}
+                  item={item}
+                  kind="audio"
+                  onRemove={() => onChange({ ...media, reference_audios: media.reference_audios.filter((_, i) => i !== index) })}
+                />
+              ))}
+              {media.reference_audios.length < audioMax && (
+                <EmptyUploadBox
+                  label={`${t("video.referenceAudio")} ${media.reference_audios.length}/${audioMax}`}
+                  compact
+                  accept={AUDIO_ACCEPT}
+                  uploading={uploading}
+                  onUpload={(files) =>
+                    uploadFiles(files, "audio", media.reference_audios, audioMax, (items) =>
+                      onChange({ ...media, reference_audios: items })
+                    )
+                  }
+                />
+              )}
+            </div>
+          </>
+        )}
       </div>
     );
   }
