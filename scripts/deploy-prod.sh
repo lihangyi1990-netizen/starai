@@ -115,7 +115,13 @@ record_deploy_provenance() {
 
   if [ "$dirty_count" != "0" ]; then
     echo "Refusing to deploy: $dirty_count uncommitted change(s) in $ROOT_DIR." >&2
-    echo "Commit them on a branch and merge via pull request, or discard with 'git checkout -- <file>'." >&2
+    # Same diagnosis CI prints: does each dirty path already match the target
+    # commit (redundant, safe to discard) or hold content git has never seen?
+    if [ -f "$ROOT_DIR/scripts/preflight-clean-tree.sh" ]; then
+      DEPLOY_ROOT="$ROOT_DIR" bash "$ROOT_DIR/scripts/preflight-clean-tree.sh" origin/main >&2 || true
+    else
+      echo "Commit them on a branch and merge via pull request, or discard with 'git checkout -- <file>'." >&2
+    fi
     exit 1
   fi
   if [ "$upstream" != "on origin/main" ]; then
