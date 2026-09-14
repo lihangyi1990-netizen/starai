@@ -56,15 +56,15 @@ func (s *EmailOTPService) SendCode(ctx context.Context, email string) (*SendEmai
 		return nil, errors.New("邮箱格式不正确")
 	}
 	exists, err := s.emailExists(ctx, email)
-	if err != nil {
-		return nil, err
-	}
-	if exists {
-		return nil, errors.New("该邮箱已注册，请直接登录")
-	}
-	// Rate limit: 60s between sends per email.
+	cooldown := false
 	if v, ok := s.cache.GetTemp(ctx, "email_otp_cooldown:"+email); ok && v != "" {
-		return nil, errors.New("发送过于频繁，请稍后再试")
+		cooldown = true
+	}
+	// Pure policy call: lookup failure must not silently allow sending, an
+	// already-registered address never gets a code, and the per-address
+	// cooldown is checked last so it never masks the other rejections.
+	if err := evaluateRegisterSend(exists, err, cooldown); err != nil {
+		return nil, err
 	}
 	code := randomDigits(6)
 	if err := s.cache.SetTemp(ctx, "email_otp:register:"+email, code, 10*time.Minute); err != nil {
@@ -138,6 +138,23 @@ func (s *EmailOTPService) VerifyRegistrationCode(ctx context.Context, email, cod
 	stored, ok := s.cache.GetTemp(ctx, "email_otp:register:"+email)
 	if !ok || stored != code {
 		return ErrInvalidEmailCode
+	}
+	return nil
+}
+
+// evaluateRegisterSend is the pre-issue policy for a registration code.
+// exists/existsErr come from the auth_identities lookup; cooldownActive
+// reports whether the 60-second per-address cooldown is present. It is a pure
+// function so the rejection ordering can be table-tested without a database.
+func evaluateRegisterSend(exists bool, existsErr error, cooldownActive bool) error {
+	if existsErr != nil {
+		return existsErr
+	}
+	if exists {
+		return errors.New("该邮箱已注册，请直接登录")
+	}
+	if cooldownActive {
+		return errors.New("发送过于频繁，请稍后再试")
 	}
 	return nil
 }
