@@ -179,6 +179,7 @@ export function LoginModal({ open, onClose }: Props) {
   const sendRegisterCode = async () => {
     if (!email.trim()) return setError(t("login.enterEmail"));
     if (!agreed) return setError(t("login.agreeRequired"));
+    if (captchaEnabled && !captchaInput.trim()) return setError(t("login.enterCaptcha"));
     setLoading(true);
     setError("");
     try {

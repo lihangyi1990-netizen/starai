@@ -557,9 +557,15 @@ func (h *Handler) SendEmailCode(c *gin.Context) {
 		util.BadRequest(c, "参数错误")
 		return
 	}
+	// Registration code emails are an abuse vector, so the send-code route
+	// takes the same image-captcha gate as register and password-login.
+	if h.imageCaptchaEnabled(c.Request.Context()) && !h.captcha.Verify(c.Request.Context(), req.CaptchaID, req.CaptchaCode) {
+		util.Fail(c, 400, 400, "图形验证码错误或已过期")
+		return
+	}
 	// Codes are only issued for the registration flow (prove ownership, then
 	// set a password); login is password-only.
-	res, err := h.emailOTP.SendCode(c.Request.Context(), req.Email, req.CaptchaID, req.CaptchaCode, false)
+	res, err := h.emailOTP.SendCode(c.Request.Context(), req.Email)
 	if err != nil {
 		util.Fail(c, 400, 400, err.Error())
 		return

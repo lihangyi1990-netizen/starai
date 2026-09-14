@@ -32,14 +32,13 @@ type TempCache interface {
 }
 
 type EmailOTPService struct {
-	auth    *AuthService
-	captcha *CaptchaService
-	cache   TempCache
-	mailer  *mailer.Service
+	auth   *AuthService
+	cache  TempCache
+	mailer *mailer.Service
 }
 
-func NewEmailOTPService(auth *AuthService, captcha *CaptchaService, cacheClient TempCache, mailerSvc *mailer.Service) *EmailOTPService {
-	return &EmailOTPService{auth: auth, captcha: captcha, cache: cacheClient, mailer: mailerSvc}
+func NewEmailOTPService(auth *AuthService, cacheClient TempCache, mailerSvc *mailer.Service) *EmailOTPService {
+	return &EmailOTPService{auth: auth, cache: cacheClient, mailer: mailerSvc}
 }
 
 type SendEmailCodeResult struct {
@@ -51,13 +50,10 @@ type SendEmailCodeResult struct {
 // SendCode issues a registration code. Email codes only exist to prove
 // ownership of an address at signup — login itself is password-only — so an
 // already-registered address is rejected instead of being sent another code.
-func (s *EmailOTPService) SendCode(ctx context.Context, email, captchaID, captchaCode string, captchaRequired bool) (*SendEmailCodeResult, error) {
+func (s *EmailOTPService) SendCode(ctx context.Context, email string) (*SendEmailCodeResult, error) {
 	email = strings.TrimSpace(strings.ToLower(email))
 	if !emailRe.MatchString(email) {
 		return nil, errors.New("邮箱格式不正确")
-	}
-	if captchaRequired && !s.captcha.Verify(ctx, captchaID, captchaCode) {
-		return nil, errors.New("图形验证码错误或已过期")
 	}
 	exists, err := s.emailExists(ctx, email)
 	if err != nil {
@@ -143,8 +139,14 @@ func (s *EmailOTPService) VerifyRegistrationCode(ctx context.Context, email, cod
 	if !ok || stored != code {
 		return ErrInvalidEmailCode
 	}
-	s.cache.DelTemp(ctx, "email_otp:register:"+email)
 	return nil
+}
+
+// ConsumeRegistrationCode invalidates a registration code after the account
+// has been created. Register calls it only after the insert tx commits, so a
+// transient database failure never burns a code the user already received.
+func (s *EmailOTPService) ConsumeRegistrationCode(ctx context.Context, email string) {
+	s.cache.DelTemp(ctx, "email_otp:register:"+email)
 }
 
 func randomDigits(n int) string {

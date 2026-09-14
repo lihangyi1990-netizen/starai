@@ -184,6 +184,9 @@ func (s *AuthService) Register(ctx context.Context, email, password, nickname, r
 	if err = tx.Commit(ctx); err != nil {
 		return nil, err
 	}
+	// The code has done its job; consume it only now so a failed insert lets
+	// the user retry registration with the code they received.
+	otp.ConsumeRegistrationCode(ctx, email)
 	return s.issueToken(userID, publicID, nickname, nil, "normal", "普通会员", memberLevelID, referral, referrerID, nil, "zh-CN")
 }
 
