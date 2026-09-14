@@ -12,6 +12,7 @@ import (
 
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/starai/api/internal/billing"
 	"github.com/starai/api/internal/middleware"
@@ -36,9 +37,10 @@ const (
 	maxPasswordLen = 72
 )
 
-// validateEmailPassword guards the no-verification-code registration path.
-// Deliberately permissive on the address shape — this is a spam/typo guard, not
-// an RFC 5322 parser, and the address is never mailed during signup.
+// validateEmailPassword checks the email+password format on the code-required
+// registration path.  Deliberately permissive on the address shape — this is a
+// spam/typo guard, not an RFC 5322 parser, and the address is mailed only for
+// the ownership-verification code.
 func validateEmailPassword(email, password string) error {
 	if email == "" || len(email) > maxIdentifierLen {
 		return ErrInvalidEmail
@@ -109,7 +111,7 @@ type UserProfile struct {
 	Locale         string  `json:"locale"`
 }
 
-func (s *AuthService) Register(ctx context.Context, email, password, nickname, referralCode string) (*AuthResult, error) {
+func (s *AuthService) Register(ctx context.Context, email, password, nickname, referralCode, emailCode string, otp *EmailOTPService) (*AuthResult, error) {
 	email = normalizeEmail(email)
 	if err := validateEmailPassword(email, password); err != nil {
 		return nil, err
@@ -120,6 +122,14 @@ func (s *AuthService) Register(ctx context.Context, email, password, nickname, r
 		return nil, ErrUserExists
 	}
 	if !errors.Is(err, pgx.ErrNoRows) {
+		return nil, err
+	}
+	// Registration requires proving ownership of the email via a scene-scoped
+	// code; without a valid code we never create the (verified) identity.
+	if otp == nil {
+		return nil, errors.New("注册服务暂不可用")
+	}
+	if err := otp.VerifyRegistrationCode(ctx, email, emailCode); err != nil {
 		return nil, err
 	}
 
@@ -164,6 +174,10 @@ func (s *AuthService) Register(ctx context.Context, email, password, nickname, r
 		`INSERT INTO auth_identities (user_id, provider, identifier, credential_hash, verified) VALUES ($1,'email',$2,$3,true)`,
 		userID, email, string(hash))
 	if err != nil {
+		var pgErr *pgconn.PgError
+		if errors.As(err, &pgErr) && pgErr.Code == "23505" && pgErr.ConstraintName == "auth_identities_provider_identifier_key" {
+			return nil, ErrUserExists
+		}
 		return nil, err
 	}
 	_, err = tx.Exec(ctx, `INSERT INTO wallets (user_id) VALUES ($1)`, userID)
@@ -176,6 +190,9 @@ func (s *AuthService) Register(ctx context.Context, email, password, nickname, r
 	if err = tx.Commit(ctx); err != nil {
 		return nil, err
 	}
+	// The code has done its job; consume it only now so a failed insert lets
+	// the user retry registration with the code they received.
+	otp.ConsumeRegistrationCode(ctx, email)
 	return s.issueToken(userID, publicID, nickname, nil, "normal", "普通会员", memberLevelID, referral, referrerID, nil, "zh-CN")
 }
 

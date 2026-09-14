@@ -118,8 +118,9 @@ func (h *Handler) RegisterRoutes(r *gin.Engine) {
 		api.POST("/auth/register", middleware.RateLimit(h.cache, "register", 100, time.Minute, middleware.ClientIPIdentity), h.Register)
 		api.POST("/auth/login/password", middleware.RateLimit(h.cache, "login", 10, 5*time.Minute, middleware.ClientIPIdentity), h.LoginPassword)
 		api.GET("/auth/captcha", middleware.RateLimit(h.cache, "captcha", 30, time.Minute, middleware.ClientIPIdentity), h.GetCaptcha)
+		// Email codes exist solely to prove email ownership during password
+		// registration; login itself stays email+password.
 		api.POST("/auth/email/send-code", middleware.RateLimit(h.cache, "email-code", 10, time.Hour, middleware.ClientIPIdentity), h.SendEmailCode)
-		api.POST("/auth/email/verify", middleware.RateLimit(h.cache, "email-verify", 10, 5*time.Minute, middleware.ClientIPIdentity), h.VerifyEmailCode)
 		api.POST("/auth/logout", h.Logout)
 		api.GET("/auth/oauth/providers", h.OAuthProviders)
 		api.GET("/auth/oauth/:provider/url", h.OAuthURL)
@@ -170,7 +171,6 @@ func (h *Handler) RegisterRoutes(r *gin.Engine) {
 			auth.POST("/canvases/compose", h.CreateCanvasCompose)
 			auth.PATCH("/me/profile", h.UpdateProfile)
 			auth.POST("/me/change-password", h.ChangePassword)
-			auth.POST("/auth/set-password", h.SetInitialPassword)
 			auth.GET("/wallet", h.GetWallet)
 			auth.GET("/wallet/transactions", h.ListTransactions)
 			auth.GET("/wallet/usage", h.GetWalletUsage)
@@ -407,6 +407,7 @@ func (h *Handler) Register(c *gin.Context) {
 		Password     string `json:"password"`
 		Nickname     string `json:"nickname"`
 		ReferralCode string `json:"referral_code"`
+		EmailCode    string `json:"email_code"`
 		CaptchaID    string `json:"captcha_id"`
 		CaptchaCode  string `json:"captcha_code"`
 	}
@@ -420,13 +421,21 @@ func (h *Handler) Register(c *gin.Context) {
 		util.Fail(c, 400, 400, "图形验证码错误或已过期")
 		return
 	}
-	result, err := h.auth.Register(c.Request.Context(), req.Email, req.Password, req.Nickname, req.ReferralCode)
+	result, err := h.auth.Register(c.Request.Context(), req.Email, req.Password, req.Nickname, req.ReferralCode, req.EmailCode, h.emailOTP)
 	if err == service.ErrUserExists {
 		util.Fail(c, 409, 409, "用户已存在")
 		return
 	}
 	if err == service.ErrInvalidEmail {
 		util.BadRequest(c, "邮箱格式不正确")
+		return
+	}
+	if err == service.ErrEmailCodeTooManyAttempts {
+		util.BadRequest(c, "验证码错误次数过多，请重新获取验证码")
+		return
+	}
+	if err == service.ErrInvalidEmailCode {
+		util.BadRequest(c, "邮箱验证码错误或已过期")
 		return
 	}
 	if err == service.ErrWeakPassword {
@@ -552,46 +561,20 @@ func (h *Handler) SendEmailCode(c *gin.Context) {
 		util.BadRequest(c, "参数错误")
 		return
 	}
-	res, err := h.emailOTP.SendCode(c.Request.Context(), req.Email, req.CaptchaID, req.CaptchaCode, false)
+	// Registration code emails are an abuse vector, so the send-code route
+	// takes the same image-captcha gate as register and password-login.
+	if h.imageCaptchaEnabled(c.Request.Context()) && !h.captcha.Verify(c.Request.Context(), req.CaptchaID, req.CaptchaCode) {
+		util.Fail(c, 400, 400, "图形验证码错误或已过期")
+		return
+	}
+	// Codes are only issued for the registration flow (prove ownership, then
+	// set a password); login is password-only.
+	res, err := h.emailOTP.SendCode(c.Request.Context(), req.Email)
 	if err != nil {
 		util.Fail(c, 400, 400, err.Error())
 		return
 	}
 	util.OK(c, res)
-}
-
-func (h *Handler) VerifyEmailCode(c *gin.Context) {
-	var req struct {
-		Email        string `json:"email"`
-		Code         string `json:"code"`
-		ReferralCode string `json:"referral_code"`
-	}
-	if err := c.ShouldBindJSON(&req); err != nil {
-		util.BadRequest(c, "参数错误")
-		return
-	}
-	res, err := h.emailOTP.VerifyAndLogin(c.Request.Context(), req.Email, req.Code, req.ReferralCode)
-	if err != nil {
-		util.Fail(c, 400, 400, err.Error())
-		return
-	}
-	h.setSessionCookie(c, "starai_session", res.Token, 72*time.Hour)
-	util.OK(c, res)
-}
-
-func (h *Handler) SetInitialPassword(c *gin.Context) {
-	var req struct {
-		Password string `json:"password"`
-	}
-	if err := c.ShouldBindJSON(&req); err != nil {
-		util.BadRequest(c, "参数错误")
-		return
-	}
-	if err := h.auth.SetInitialPassword(c.Request.Context(), c.GetInt64("user_id"), req.Password); err != nil {
-		util.Fail(c, 400, 400, err.Error())
-		return
-	}
-	util.OK(c, nil)
 }
 
 func (h *Handler) Logout(c *gin.Context) {

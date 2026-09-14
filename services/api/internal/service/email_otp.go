@@ -10,27 +10,44 @@ import (
 	"math/big"
 	"os"
 	"regexp"
+	"strconv"
 	"strings"
 	"time"
 
 	"github.com/jackc/pgx/v5"
-	"github.com/starai/api/internal/cache"
 	"github.com/starai/api/internal/mailer"
-	"github.com/starai/api/internal/util"
-	"golang.org/x/crypto/bcrypt"
 )
 
 var emailRe = regexp.MustCompile(`^[^\s@]+@[^\s@]+\.[^\s@]+$`)
 
-type EmailOTPService struct {
-	auth    *AuthService
-	captcha *CaptchaService
-	cache   *cache.Client
-	mailer  *mailer.Service
+// ErrInvalidEmailCode marks a registration code that is missing, malformed,
+// expired or mismatched, so handlers can answer 400 instead of a 500.
+var ErrInvalidEmailCode = errors.New("邮箱验证码错误或已过期")
+
+// ErrEmailCodeTooManyAttempts marks a registration code invalidated by repeated
+// wrong guesses; the registrant must request a fresh one.
+var ErrEmailCodeTooManyAttempts = errors.New("验证码错误次数过多，请重新获取验证码")
+
+func registerCodeKey(email string) string     { return "email_otp:register:" + email }
+func registerFailsKey(email string) string    { return "email_otp:register:fails:" + email }
+func registerCooldownKey(email string) string { return "email_otp_cooldown:register:" + email }
+
+// TempCache is the subset of cache.Client the OTP service needs; keeping it as
+// an interface lets tests substitute an in-memory store.
+type TempCache interface {
+	SetTemp(ctx context.Context, key, value string, ttl time.Duration) error
+	GetTemp(ctx context.Context, key string) (string, bool)
+	DelTemp(ctx context.Context, key string)
 }
 
-func NewEmailOTPService(auth *AuthService, captcha *CaptchaService, cacheClient *cache.Client, mailerSvc *mailer.Service) *EmailOTPService {
-	return &EmailOTPService{auth: auth, captcha: captcha, cache: cacheClient, mailer: mailerSvc}
+type EmailOTPService struct {
+	auth   *AuthService
+	cache  TempCache
+	mailer *mailer.Service
+}
+
+func NewEmailOTPService(auth *AuthService, cacheClient TempCache, mailerSvc *mailer.Service) *EmailOTPService {
+	return &EmailOTPService{auth: auth, cache: cacheClient, mailer: mailerSvc}
 }
 
 type SendEmailCodeResult struct {
@@ -39,23 +56,30 @@ type SendEmailCodeResult struct {
 	Message   string `json:"message"`
 }
 
-func (s *EmailOTPService) SendCode(ctx context.Context, email, captchaID, captchaCode string, captchaRequired bool) (*SendEmailCodeResult, error) {
+// SendCode issues a registration code. Email codes only exist to prove
+// ownership of an address at signup — login itself is password-only — so an
+// already-registered address is rejected instead of being sent another code.
+func (s *EmailOTPService) SendCode(ctx context.Context, email string) (*SendEmailCodeResult, error) {
 	email = strings.TrimSpace(strings.ToLower(email))
 	if !emailRe.MatchString(email) {
 		return nil, errors.New("邮箱格式不正确")
 	}
-	if captchaRequired && !s.captcha.Verify(ctx, captchaID, captchaCode) {
-		return nil, errors.New("图形验证码错误或已过期")
+	exists, err := s.emailExists(ctx, email)
+	cooldown := false
+	if v, ok := s.cache.GetTemp(ctx, registerCooldownKey(email)); ok && v != "" {
+		cooldown = true
 	}
-	// Rate limit: 60s between sends per email.
-	if v, ok := s.cache.GetTemp(ctx, "email_otp_cooldown:"+email); ok && v != "" {
-		return nil, errors.New("发送过于频繁，请稍后再试")
-	}
-	code := randomDigits(6)
-	if err := s.cache.SetTemp(ctx, "email_otp:"+email, code, 10*time.Minute); err != nil {
+	// Pure policy call: lookup failure must not silently allow sending, an
+	// already-registered address never gets a code, and the per-address
+	// cooldown is checked last so it never masks the other rejections.
+	if err := evaluateRegisterSend(exists, err, cooldown); err != nil {
 		return nil, err
 	}
-	_ = s.cache.SetTemp(ctx, "email_otp_cooldown:"+email, "1", 60*time.Second)
+	code, err := s.issueRegistrationCode(ctx, email)
+	if err != nil {
+		return nil, err
+	}
+	_ = s.cache.SetTemp(ctx, registerCooldownKey(email), "1", 60*time.Second)
 
 	mailCfg := s.mailer.LoadConfig(ctx)
 	debug := s.mailer.IsDebugOTP(ctx) || os.Getenv("EMAIL_OTP_DEBUG") == "true" || os.Getenv("APP_ENV") == "development"
@@ -63,8 +87,8 @@ func (s *EmailOTPService) SendCode(ctx context.Context, email, captchaID, captch
 
 	if mailCfg.Enabled {
 		siteName := s.siteName(ctx)
-		subject := fmt.Sprintf("%s 登录验证码", siteName)
-		body := fmt.Sprintf("您好！\n\n您的登录验证码是：%s\n有效期 10 分钟，请勿泄露给他人。\n\n— %s", code, siteName)
+		subject := fmt.Sprintf("%s 注册验证码", siteName)
+		body := fmt.Sprintf("您好！\n\n您正在注册 %s，注册验证码是：%s\n有效期 10 分钟，请勿泄露给他人。如非本人操作请忽略此邮件。\n\n— %s", siteName, code, siteName)
 		if err := s.mailer.Send(ctx, mailCfg, email, subject, body); err != nil {
 			log.Printf("[email_otp] mail send failed provider=%s to=%s err=%v", mailCfg.Provider, email, err)
 			if !debug {
@@ -75,7 +99,7 @@ func (s *EmailOTPService) SendCode(ctx context.Context, email, captchaID, captch
 		return nil, errors.New("邮件服务未启用，请在后台「系统配置」中配置 SMTP 或 Resend，或开启「验证码调试模式」")
 	}
 
-	log.Printf("[email_otp] to=%s code=%s provider=%s enabled=%v debug=%v", email, code, mailCfg.Provider, mailCfg.Enabled, debug)
+	log.Printf("[email_otp] register to=%s code=%s provider=%s enabled=%v debug=%v", email, code, mailCfg.Provider, mailCfg.Enabled, debug)
 	if debug {
 		res.DebugCode = code
 		if !mailCfg.Enabled {
@@ -97,100 +121,96 @@ func (s *EmailOTPService) siteName(ctx context.Context) string {
 	return name
 }
 
-type EmailVerifyResult struct {
-	AuthResult
-	NeedsSetPassword bool `json:"needs_set_password"`
-	IsNewUser        bool `json:"is_new_user"`
+func (s *EmailOTPService) emailExists(ctx context.Context, email string) (bool, error) {
+	var exists int
+	err := s.auth.db.QueryRow(ctx,
+		`SELECT 1 FROM auth_identities WHERE provider='email' AND LOWER(identifier)=LOWER($1) LIMIT 1`,
+		email).Scan(&exists)
+	if errors.Is(err, pgx.ErrNoRows) {
+		return false, nil
+	}
+	if err != nil {
+		return false, err
+	}
+	return true, nil
 }
 
-func (s *EmailOTPService) VerifyAndLogin(ctx context.Context, email, code, referralCode string) (*EmailVerifyResult, error) {
+// VerifyRegistrationCode validates a registration code without issuing a
+// session or creating an account; the register path creates the account itself
+// only after this succeeds. Wrong guesses increment a per-email failure
+// counter; after five mismatches the code is invalidated and the caller must
+// request a fresh one.
+func (s *EmailOTPService) VerifyRegistrationCode(ctx context.Context, email, code string) error {
 	email = strings.TrimSpace(strings.ToLower(email))
 	code = strings.TrimSpace(code)
 	if !emailRe.MatchString(email) || len(code) != 6 {
-		return nil, errors.New("邮箱或验证码格式不正确")
+		return ErrInvalidEmailCode
 	}
-	stored, ok := s.cache.GetTemp(ctx, "email_otp:"+email)
-	if !ok || stored != code {
-		return nil, errors.New("验证码错误或已过期")
+	stored, ok := s.cache.GetTemp(ctx, registerCodeKey(email))
+	if !ok {
+		return ErrInvalidEmailCode
 	}
-	s.cache.DelTemp(ctx, "email_otp:"+email)
-
-	var userID int64
-	var publicID, nickname, level, memberLevel, userReferralCode, locale, status string
-	var memberLevelID int64
-	var referrerID *int64
-	var referrerPublic *string
-	var avatar *string
-	var hash *string
-	err := s.auth.db.QueryRow(ctx, `
-		SELECT u.id, u.public_id, u.nickname, u.avatar_url, u.user_level,
-		       COALESCE(ml.id,0), COALESCE(ml.name, u.user_level), u.referral_code, u.referrer_id, ru.public_id,
-		       u.locale, u.status, a.credential_hash
-		FROM auth_identities a JOIN users u ON u.id = a.user_id
-		LEFT JOIN member_levels ml ON ml.id = u.member_level_id
-		LEFT JOIN users ru ON ru.id = u.referrer_id
-		WHERE a.provider='email' AND a.identifier=$1`, email,
-	).Scan(&userID, &publicID, &nickname, &avatar, &level, &memberLevelID, &memberLevel, &userReferralCode, &referrerID, &referrerPublic, &locale, &status, &hash)
-	if err == nil {
-		if status != "active" {
-			return nil, errors.New("账号已被冻结或封禁")
+	if stored != code {
+		// Increment the failure counter.  On the fifth wrong guess, delete
+		// both the code and the counter so even the correct code is rejected
+		// until a fresh one is issued.
+		failsKey := registerFailsKey(email)
+		fails := 1
+		if raw, ok := s.cache.GetTemp(ctx, failsKey); ok {
+			if n, err := strconv.Atoi(raw); err == nil && n > 0 {
+				fails = n + 1
+			}
 		}
-		auth, err := s.auth.issueToken(userID, publicID, nickname, avatar, level, memberLevel, memberLevelID, userReferralCode, referrerID, referrerPublic, locale)
-		if err != nil {
-			return nil, err
+		if fails >= 5 {
+			s.cache.DelTemp(ctx, registerCodeKey(email))
+			s.cache.DelTemp(ctx, failsKey)
+			return ErrEmailCodeTooManyAttempts
 		}
-		needsPwd := hash == nil || *hash == ""
-		return &EmailVerifyResult{AuthResult: *auth, NeedsSetPassword: needsPwd, IsNewUser: false}, nil
+		_ = s.cache.SetTemp(ctx, failsKey, strconv.Itoa(fails), 10*time.Minute)
+		return ErrInvalidEmailCode
 	}
-	if !errors.Is(err, pgx.ErrNoRows) {
-		return nil, err
-	}
+	return nil
+}
 
-	// First-time email login = auto register with random nickname + avatar.
-	nickname, avatarURL := randomUserProfile()
-	publicID = util.NewPublicID("usr")
-	userReferralCode, err = s.auth.NewReferralCode(ctx)
-	if err != nil {
-		return nil, err
+// evaluateRegisterSend is the pre-issue policy for a registration code.
+// exists/existsErr come from the auth_identities lookup; cooldownActive
+// reports whether the 60-second per-address cooldown is present. It is a pure
+// function so the rejection ordering can be table-tested without a database.
+func evaluateRegisterSend(exists bool, existsErr error, cooldownActive bool) error {
+	if existsErr != nil {
+		return existsErr
 	}
-	referrerID, err = s.auth.ResolveReferrer(ctx, referralCode)
-	if err != nil {
-		return nil, err
+	if exists {
+		return errors.New("该邮箱已注册，请直接登录")
 	}
-	tx, err := s.auth.db.Begin(ctx)
-	if err != nil {
-		return nil, err
+	if cooldownActive {
+		return errors.New("发送过于频繁，请稍后再试")
 	}
-	defer tx.Rollback(ctx)
-	err = tx.QueryRow(ctx,
-		`INSERT INTO users (public_id, nickname, avatar_url, referral_code, referrer_id, member_level_id, user_level)
-		 VALUES ($1,$2,$3,$4,$5,(SELECT id FROM member_levels WHERE is_default=true LIMIT 1),'normal') RETURNING id, member_level_id`,
-		publicID, nickname, avatarURL, userReferralCode, referrerID,
-	).Scan(&userID, &memberLevelID)
-	if err != nil {
-		return nil, err
+	return nil
+}
+
+// ConsumeRegistrationCode invalidates a registration code after the account
+// has been created. Register calls it only after the insert tx commits, so a
+// transient database failure never burns a code the user already received.
+// Also clears the failure counter so a fresh registration for the same
+// address (should it ever be needed) starts clean.
+func (s *EmailOTPService) ConsumeRegistrationCode(ctx context.Context, email string) {
+	s.cache.DelTemp(ctx, registerCodeKey(email))
+	s.cache.DelTemp(ctx, registerFailsKey(email))
+}
+
+// issueRegistrationCode stores a freshly generated code and resets its attempt
+// counter. SendCode performs all the pre-issue checks (address, existence,
+// cooldown, mail) around it.
+func (s *EmailOTPService) issueRegistrationCode(ctx context.Context, email string) (string, error) {
+	code := randomDigits(6)
+	if err := s.cache.SetTemp(ctx, registerCodeKey(email), code, 10*time.Minute); err != nil {
+		return "", err
 	}
-	_, err = tx.Exec(ctx,
-		`INSERT INTO auth_identities (user_id, provider, identifier, verified) VALUES ($1,'email',$2,true)`,
-		userID, email)
-	if err != nil {
-		return nil, err
-	}
-	_, err = tx.Exec(ctx, `INSERT INTO wallets (user_id) VALUES ($1)`, userID)
-	if err != nil {
-		return nil, err
-	}
-	if err = s.auth.grantSignupBonusTx(ctx, tx, userID); err != nil {
-		return nil, err
-	}
-	if err = tx.Commit(ctx); err != nil {
-		return nil, err
-	}
-	auth, err := s.auth.issueToken(userID, publicID, nickname, &avatarURL, "normal", "普通会员", memberLevelID, userReferralCode, referrerID, nil, "zh-CN")
-	if err != nil {
-		return nil, err
-	}
-	return &EmailVerifyResult{AuthResult: *auth, NeedsSetPassword: true, IsNewUser: true}, nil
+	// A freshly issued code starts with a clean attempt budget, so a user who
+	// locked an earlier code with five wrong guesses is not stuck after resending.
+	s.cache.DelTemp(ctx, registerFailsKey(email))
+	return code, nil
 }
 
 func randomDigits(n int) string {
@@ -200,43 +220,4 @@ func randomDigits(n int) string {
 		b.WriteString(fmt.Sprintf("%d", d.Int64()))
 	}
 	return b.String()
-}
-
-var nickAdjs = []string{"星光", "晨曦", "云端", "灵感", "智慧", "幻想", "量子", "星云", "极光", "流星"}
-var nickNouns = []string{"旅人", "探索者", "创作者", "梦想家", "行者", "玩家", "访客", "旅者"}
-
-func randomUserProfile() (nickname, avatarURL string) {
-	a, _ := rand.Int(rand.Reader, big.NewInt(int64(len(nickAdjs))))
-	n, _ := rand.Int(rand.Reader, big.NewInt(int64(len(nickNouns))))
-	suffix, _ := rand.Int(rand.Reader, big.NewInt(10000))
-	seed, _ := rand.Int(rand.Reader, big.NewInt(1<<31))
-	nickname = fmt.Sprintf("%s%s%04d", nickAdjs[a.Int64()], nickNouns[n.Int64()], suffix.Int64())
-	avatarURL = fmt.Sprintf("https://api.dicebear.com/7.x/avataaars/svg?seed=%d", seed.Int64())
-	return nickname, avatarURL
-}
-
-// SetInitialPassword sets password for OTP-only accounts (no old password required).
-func (s *AuthService) SetInitialPassword(ctx context.Context, userID int64, password string) error {
-	if len(password) < 6 {
-		return errors.New("密码至少 6 位")
-	}
-	var hash *string
-	err := s.db.QueryRow(ctx,
-		`SELECT credential_hash FROM auth_identities WHERE user_id=$1 AND provider='email'`, userID,
-	).Scan(&hash)
-	if err != nil {
-		return errors.New("该账号未绑定邮箱")
-	}
-	if hash != nil && *hash != "" {
-		return errors.New("密码已设置，请使用修改密码功能")
-	}
-	newHash, err := bcrypt.GenerateFromPassword([]byte(password), 10)
-	if err != nil {
-		return err
-	}
-	h := string(newHash)
-	_, err = s.db.Exec(ctx,
-		`UPDATE auth_identities SET credential_hash=$1 WHERE user_id=$2 AND provider='email'`,
-		h, userID)
-	return err
 }

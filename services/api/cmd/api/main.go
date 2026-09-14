@@ -68,7 +68,7 @@ func main() {
 	oauthSvc := service.NewOAuthService(pool, billingSvc, authSvc, cacheClient)
 	captchaSvc := service.NewCaptchaService(cacheClient)
 	mailerSvc := mailer.New(pool)
-	emailOTPSvc := service.NewEmailOTPService(authSvc, captchaSvc, cacheClient, mailerSvc)
+	emailOTPSvc := service.NewEmailOTPService(authSvc, cacheClient, mailerSvc)
 
 	storageCfg := storage.LoadConfig(ctx, pool, storage.Config{
 		Provider:  "minio",

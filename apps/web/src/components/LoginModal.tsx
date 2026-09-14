@@ -16,7 +16,6 @@ interface Props {
   onClose: () => void;
 }
 
-type Tab = "email" | "account";
 type AccountMode = "login" | "register";
 type LegalDoc = "terms" | "privacy";
 
@@ -100,22 +99,19 @@ function LegalModal({
 }
 
 export function LoginModal({ open, onClose }: Props) {
-  const { site_name, image_captcha_enabled, email_otp_login_enabled, terms_title, terms_content, privacy_title, privacy_content } = useSiteBranding();
+  const { site_name, image_captcha_enabled, terms_title, terms_content, privacy_title, privacy_content } = useSiteBranding();
   const { t } = useI18n();
-  const [tab, setTab] = useState<Tab>("account");
   const [accountMode, setAccountMode] = useState<AccountMode>("login");
-  const [step, setStep] = useState<"form" | "set_password">("form");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPwd, setConfirmPwd] = useState("");
-  const [emailCode, setEmailCode] = useState("");
+  const [registerCode, setRegisterCode] = useState("");
   const [referralCode, setReferralCode] = useState("");
   const [captchaId, setCaptchaId] = useState("");
   const [captchaSvg, setCaptchaSvg] = useState("");
   const [captchaInput, setCaptchaInput] = useState("");
   const [agreed, setAgreed] = useState(false);
   const [countdown, setCountdown] = useState(0);
-  const [isNewUser, setIsNewUser] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [legalDoc, setLegalDoc] = useState<LegalDoc | null>(null);
@@ -127,13 +123,6 @@ export function LoginModal({ open, onClose }: Props) {
     rawImageCaptchaEnabled === 0 ||
     String(rawImageCaptchaEnabled).toLowerCase() === "false"
   );
-  // The email OTP tab depends on a working outbound mailer, so it is opt-in and
-  // defaults to hidden — the opposite of the captcha flag above.
-  const rawEmailOtpEnabled = email_otp_login_enabled as unknown;
-  const emailOtpEnabled =
-    rawEmailOtpEnabled === true ||
-    rawEmailOtpEnabled === 1 ||
-    String(rawEmailOtpEnabled).toLowerCase() === "true";
 
   const loadCaptcha = useCallback(async () => {
     try {
@@ -147,15 +136,13 @@ export function LoginModal({ open, onClose }: Props) {
   }, [t]);
 
   const resetForm = useCallback(() => {
-    setStep("form");
     setAccountMode("login");
     setPassword("");
     setConfirmPwd("");
-    setEmailCode("");
+    setRegisterCode("");
     setReferralCode("");
     setCaptchaInput("");
     setAgreed(false);
-    setIsNewUser(false);
     setError("");
     setCountdown(0);
   }, []);
@@ -168,19 +155,18 @@ export function LoginModal({ open, onClose }: Props) {
     resetForm();
     const fromURL = new URLSearchParams(window.location.search).get("referral_code") || "";
     setReferralCode(fromURL.replace(/\D/g, "").slice(0, 6));
-    setTab("account");
   }, [open, resetForm]);
 
   useEffect(() => {
     if (!open) return;
-    if (captchaEnabled && tab === "account") {
+    if (captchaEnabled) {
       loadCaptcha();
     } else {
       setCaptchaId("");
       setCaptchaSvg("");
       setCaptchaInput("");
     }
-  }, [open, captchaEnabled, loadCaptcha, tab]);
+  }, [open, captchaEnabled, loadCaptcha]);
 
   useEffect(() => {
     if (countdown <= 0) return;
@@ -188,9 +174,12 @@ export function LoginModal({ open, onClose }: Props) {
     return () => clearTimeout(timer);
   }, [countdown]);
 
-  const sendCode = async () => {
+  // Registration-only: the code proves the registrant owns the mailbox. The
+  // backend refuses to issue codes for addresses that already have an account.
+  const sendRegisterCode = async () => {
     if (!email.trim()) return setError(t("login.enterEmail"));
     if (!agreed) return setError(t("login.agreeRequired"));
+    if (captchaEnabled && !captchaInput.trim()) return setError(t("login.enterCaptcha"));
     setLoading(true);
     setError("");
     try {
@@ -200,37 +189,11 @@ export function LoginModal({ open, onClose }: Props) {
       });
       setCountdown(60);
       if (res.debug_code) {
-        setEmailCode(res.debug_code);
+        setRegisterCode(res.debug_code);
         setError(t("login.debugCode", { code: res.debug_code }));
       }
     } catch (err) {
       setError(publicError(err, t("login.sendFailed")));
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const verifyEmail = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!agreed) return setError(t("login.agreeRequired"));
-    setLoading(true);
-    setError("");
-    try {
-      const res = await api<{ token: string; user: User; needs_set_password?: boolean; is_new_user?: boolean }>("/api/auth/email/verify", {
-        method: "POST",
-        body: JSON.stringify({ email, code: emailCode, referral_code: referralCode.trim() }),
-      });
-      setAuth(res.token, res.user);
-      if (res.needs_set_password) {
-        setIsNewUser(!!res.is_new_user);
-        setStep("set_password");
-      } else {
-        if (res.is_new_user) window.localStorage.setItem(SKIP_FORCED_ANNOUNCEMENT_ONCE_KEY, "1");
-        onClose();
-        router.push("/app");
-      }
-    } catch (err) {
-      setError(publicError(err, t("login.verifyFailed")));
     } finally {
       setLoading(false);
     }
@@ -268,6 +231,7 @@ export function LoginModal({ open, onClose }: Props) {
     if (!agreed) return setError(t("login.agreeRequired"));
     if (password.length < 6) return setError(t("login.passwordMin"));
     if (password !== confirmPwd) return setError(t("login.passwordMismatch"));
+    if (registerCode.trim().length !== 6) return setError(t("login.registerCodeRequired"));
     if (captchaEnabled && !captchaInput.trim()) return setError(t("login.enterCaptcha"));
     setLoading(true);
     setError("");
@@ -277,38 +241,19 @@ export function LoginModal({ open, onClose }: Props) {
         body: JSON.stringify({
           email,
           password,
+          email_code: registerCode.trim(),
           referral_code: referralCode.trim(),
           captcha_id: captchaId,
           captcha_code: captchaInput,
         }),
       });
       setAuth(res.token, res.user);
-      // Freshly registered users should not be greeted by a forced announcement,
-      // matching what the email OTP path does for is_new_user.
       window.localStorage.setItem(SKIP_FORCED_ANNOUNCEMENT_ONCE_KEY, "1");
       onClose();
       router.push("/app");
     } catch (err) {
       setError(publicError(err, t("login.registerFailed")));
       if (captchaEnabled) loadCaptcha();
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const submitPassword = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (password.length < 6) return setError(t("login.passwordMin"));
-    if (password !== confirmPwd) return setError(t("login.passwordMismatch"));
-    setLoading(true);
-    setError("");
-    try {
-      await api("/api/auth/set-password", { method: "POST", body: JSON.stringify({ password }) });
-      if (isNewUser) window.localStorage.setItem(SKIP_FORCED_ANNOUNCEMENT_ONCE_KEY, "1");
-      onClose();
-      router.push("/app");
-    } catch (err) {
-      setError(publicError(err, t("login.setPasswordFailed")));
     } finally {
       setLoading(false);
     }
@@ -325,58 +270,55 @@ export function LoginModal({ open, onClose }: Props) {
         <Dialog.Content className={legalDoc ? LEGAL_MODAL_CLASS : LOGIN_MODAL_CLASS}>
           {legalDoc ? (
             <LegalModal doc={legalDoc} title={legalTitle} content={legalContent} onClose={() => setLegalDoc(null)} />
-          ) : step === "set_password" ? (
-            <>
-              <div className="pico-login-brand-strip"><span className="pico-login-brand-mark">{siteName.slice(0, 1).toUpperCase()}</span><span>{siteName}</span></div>
-              <Dialog.Title className="mb-1 text-xl font-bold">{t("login.setPassword")}</Dialog.Title>
-              <Dialog.Description className="mb-6 text-sm text-gray-500">
-                {isNewUser ? t("login.setPasswordDescNew") : t("login.setPasswordDesc")}
-              </Dialog.Description>
-              <form onSubmit={submitPassword} className="space-y-4">
-                <input type="password" placeholder={t("login.newPassword")} value={password} onChange={(e) => setPassword(e.target.value)} required className="w-full rounded-xl border border-gray-200 px-4 py-3 focus:border-primary focus:outline-none" />
-                <input type="password" placeholder={t("login.confirmPassword")} value={confirmPwd} onChange={(e) => setConfirmPwd(e.target.value)} required className="w-full rounded-xl border border-gray-200 px-4 py-3 focus:border-primary focus:outline-none" />
-                {error && <p className="text-sm text-danger">{error}</p>}
-                <button type="submit" disabled={loading} className="w-full rounded-xl bg-primary py-3 font-semibold text-dark transition hover:bg-primary/90 disabled:opacity-50">
-                  {loading ? t("common.saving") : t("login.finish")}
-                </button>
-                <button type="button" onClick={() => { onClose(); router.push("/app"); }} className="w-full py-2 text-sm text-gray-400 hover:text-gray-600">
-                  {t("login.later")}
-                </button>
-              </form>
-            </>
           ) : (
             <>
               <div className="pico-login-brand-strip"><span className="pico-login-brand-mark">{siteName.slice(0, 1).toUpperCase()}</span><span>{siteName}</span></div>
               <Dialog.Title className="mb-1 text-xl font-bold">{t("login.title", { site: siteName })}</Dialog.Title>
               <Dialog.Description className="mb-6 text-sm text-gray-500">
-                {emailOtpEnabled ? t("login.desc") : t("login.descAccountOnly")}
+                {t("login.descAccountOnly")}
               </Dialog.Description>
               <div className="pico-login-capabilities" aria-label="tuna 创作能力">
                 <span>对话</span><span>生图</span><span>视频</span><span>音频</span><span>工作流</span>
               </div>
-              {emailOtpEnabled && (
-                <div className="mb-6 flex gap-2">
+              <form onSubmit={accountMode === "register" ? accountRegister : accountLogin} className="space-y-4">
+                <div className="flex gap-2">
                   {[
-                    { key: "email" as const, label: t("login.emailTab") },
-                    { key: "account" as const, label: t("login.accountTab") },
+                    { key: "login" as const, label: t("login.loginTab") },
+                    { key: "register" as const, label: t("login.registerTab") },
                   ].map((item) => (
-                    <button key={item.key} type="button" onClick={() => { setTab(item.key); setError(""); if (captchaEnabled && item.key === "account") loadCaptcha(); }} className={`flex-1 rounded-lg py-2 text-sm font-medium transition ${tab === item.key ? "bg-primary text-dark" : "bg-gray-100 text-gray-600 hover:bg-gray-200"}`}>
+                    <button
+                      key={item.key}
+                      type="button"
+                      onClick={() => {
+                        setAccountMode(item.key);
+                        setError("");
+                        setPassword("");
+                        setConfirmPwd("");
+                        if (captchaEnabled) loadCaptcha();
+                      }}
+                      className={`flex-1 rounded-lg py-2 text-sm font-medium transition ${accountMode === item.key ? "bg-primary text-dark" : "bg-gray-100 text-gray-600 hover:bg-gray-200"}`}
+                    >
                       {item.label}
                     </button>
                   ))}
                 </div>
-              )}
-
-              {emailOtpEnabled && tab === "email" ? (
-                <form onSubmit={verifyEmail} className="space-y-4">
-                  <input type="email" placeholder={t("login.email")} value={email} onChange={(e) => setEmail(e.target.value)} required className="w-full rounded-xl border border-gray-200 px-4 py-3 focus:border-primary focus:outline-none" />
-                  <div className="flex gap-2">
-                    <input type="text" placeholder={t("login.emailCode")} value={emailCode} onChange={(e) => setEmailCode(e.target.value)} required maxLength={6} className="min-w-0 flex-1 rounded-xl border border-gray-200 px-4 py-3 focus:border-primary focus:outline-none" />
-                    <button type="button" disabled={loading || countdown > 0} onClick={sendCode} className="shrink-0 rounded-xl border border-gray-200 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 disabled:opacity-50">
-                      {countdown > 0 ? `${countdown}s` : t("login.getCode")}
-                    </button>
-                  </div>
-                  <input type="text" placeholder={t("login.referral")} value={referralCode} onChange={(e) => setReferralCode(e.target.value.replace(/\D/g, "").slice(0, 6))} maxLength={6} className="w-full rounded-xl border border-gray-200 px-4 py-3 focus:border-primary focus:outline-none" />
+                <input type="email" placeholder={t("login.email")} value={email} onChange={(e) => setEmail(e.target.value)} required className="w-full rounded-xl border border-gray-200 px-4 py-3 focus:border-primary focus:outline-none" />
+                <input type="password" placeholder={t("login.password")} value={password} onChange={(e) => setPassword(e.target.value)} required className="w-full rounded-xl border border-gray-200 px-4 py-3 focus:border-primary focus:outline-none" />
+                {accountMode === "register" && (
+                  <>
+                    <input type="password" placeholder={t("login.confirmPassword")} value={confirmPwd} onChange={(e) => setConfirmPwd(e.target.value)} required className="w-full rounded-xl border border-gray-200 px-4 py-3 focus:border-primary focus:outline-none" />
+                    <div className="flex gap-2">
+                      <input type="text" inputMode="numeric" autoComplete="one-time-code" placeholder={t("login.enterRegisterCode")} value={registerCode} onChange={(e) => setRegisterCode(e.target.value.replace(/\D/g, "").slice(0, 6))} required maxLength={6} className="min-w-0 flex-1 rounded-xl border border-gray-200 px-4 py-3 focus:border-primary focus:outline-none" />
+                      <button type="button" disabled={loading || countdown > 0} onClick={sendRegisterCode} className="shrink-0 rounded-xl border border-gray-200 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 disabled:opacity-50">
+                        {countdown > 0 ? `${countdown}s` : t("login.getCode")}
+                      </button>
+                    </div>
+                    <p className="-mt-2 text-[11px] text-gray-400">{t("login.registerCodeHint")}</p>
+                    <input type="text" placeholder={t("login.referral")} value={referralCode} onChange={(e) => setReferralCode(e.target.value.replace(/\D/g, "").slice(0, 6))} maxLength={6} className="w-full rounded-xl border border-gray-200 px-4 py-3 focus:border-primary focus:outline-none" />
+                  </>
+                )}
+                {captchaEnabled && <CaptchaRow captchaSvg={captchaSvg} captchaInput={captchaInput} onCaptchaInputChange={setCaptchaInput} onRefresh={loadCaptcha} />}
+                {accountMode === "register" && (
                   <label className="flex cursor-pointer select-none items-start gap-2 text-xs text-gray-500">
                     <input type="checkbox" checked={agreed} onChange={(e) => setAgreed(e.target.checked)} className="mt-0.5" />
                     <span>
@@ -386,64 +328,14 @@ export function LoginModal({ open, onClose }: Props) {
                       <button type="button" onClick={(e) => { e.preventDefault(); setLegalDoc("privacy"); }} className="mx-0.5 text-primary hover:underline">{t("login.privacy")}</button>
                     </span>
                   </label>
-                  {error && <p className="text-sm text-danger">{error}</p>}
-                  <button type="submit" disabled={loading || !agreed} className="w-full rounded-xl bg-primary py-3 font-semibold text-dark transition hover:bg-primary/90 disabled:opacity-50">
-                    {loading ? t("login.verifying") : t("login.submit")}
-                  </button>
-                  <p className="text-center text-[11px] text-gray-400">{t("login.firstHint")}</p>
-                </form>
-              ) : (
-                <form onSubmit={accountMode === "register" ? accountRegister : accountLogin} className="space-y-4">
-                  <div className="flex gap-2">
-                    {[
-                      { key: "login" as const, label: t("login.loginTab") },
-                      { key: "register" as const, label: t("login.registerTab") },
-                    ].map((item) => (
-                      <button
-                        key={item.key}
-                        type="button"
-                        onClick={() => {
-                          setAccountMode(item.key);
-                          setError("");
-                          setPassword("");
-                          setConfirmPwd("");
-                          if (captchaEnabled) loadCaptcha();
-                        }}
-                        className={`flex-1 rounded-lg py-2 text-sm font-medium transition ${accountMode === item.key ? "bg-primary text-dark" : "bg-gray-100 text-gray-600 hover:bg-gray-200"}`}
-                      >
-                        {item.label}
-                      </button>
-                    ))}
-                  </div>
-                  <input type="email" placeholder={t("login.email")} value={email} onChange={(e) => setEmail(e.target.value)} required className="w-full rounded-xl border border-gray-200 px-4 py-3 focus:border-primary focus:outline-none" />
-                  <input type="password" placeholder={t("login.password")} value={password} onChange={(e) => setPassword(e.target.value)} required className="w-full rounded-xl border border-gray-200 px-4 py-3 focus:border-primary focus:outline-none" />
-                  {accountMode === "register" && (
-                    <>
-                      <input type="password" placeholder={t("login.confirmPassword")} value={confirmPwd} onChange={(e) => setConfirmPwd(e.target.value)} required className="w-full rounded-xl border border-gray-200 px-4 py-3 focus:border-primary focus:outline-none" />
-                      <input type="text" placeholder={t("login.referral")} value={referralCode} onChange={(e) => setReferralCode(e.target.value.replace(/\D/g, "").slice(0, 6))} maxLength={6} className="w-full rounded-xl border border-gray-200 px-4 py-3 focus:border-primary focus:outline-none" />
-                    </>
-                  )}
-                  {captchaEnabled && <CaptchaRow captchaSvg={captchaSvg} captchaInput={captchaInput} onCaptchaInputChange={setCaptchaInput} onRefresh={loadCaptcha} />}
-                  {accountMode === "register" && (
-                    <label className="flex cursor-pointer select-none items-start gap-2 text-xs text-gray-500">
-                      <input type="checkbox" checked={agreed} onChange={(e) => setAgreed(e.target.checked)} className="mt-0.5" />
-                      <span>
-                        {t("login.agreePrefix")}
-                        <button type="button" onClick={(e) => { e.preventDefault(); setLegalDoc("terms"); }} className="mx-0.5 text-primary hover:underline">{t("login.terms")}</button>
-                        {t("login.and")}
-                        <button type="button" onClick={(e) => { e.preventDefault(); setLegalDoc("privacy"); }} className="mx-0.5 text-primary hover:underline">{t("login.privacy")}</button>
-                      </span>
-                    </label>
-                  )}
-                  {error && <p className="text-sm text-danger">{error}</p>}
-                  <button type="submit" disabled={loading || (accountMode === "register" && !agreed)} className="w-full rounded-xl bg-primary py-3 font-semibold text-dark transition hover:bg-primary/90 disabled:opacity-50">
-                    {loading
-                      ? accountMode === "register" ? t("login.registering") : t("login.loading")
-                      : accountMode === "register" ? t("login.register") : t("login.login")}
-                  </button>
-                </form>
-              )}
-
+                )}
+                {error && <p className="text-sm text-danger">{error}</p>}
+                <button type="submit" disabled={loading || (accountMode === "register" && !agreed)} className="w-full rounded-xl bg-primary py-3 font-semibold text-dark transition hover:bg-primary/90 disabled:opacity-50">
+                  {loading
+                    ? accountMode === "register" ? t("login.registering") : t("login.loading")
+                    : accountMode === "register" ? t("login.register") : t("login.login")}
+                </button>
+              </form>
             </>
           )}
         </Dialog.Content>
