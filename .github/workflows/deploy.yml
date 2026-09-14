@@ -4,6 +4,15 @@ name: deploy
 on:
   push:
     branches: [main]
+  # Manual scoped redeploy: used when the code is already on main but no
+  # deploy ran (e.g. a fixed CI-only merge, or a skipped/failed run). The
+  # services input selects what to build, so no diff detection is attempted.
+  workflow_dispatch:
+    inputs:
+      services:
+        description: "要构建的服务（空格分隔，可选：api worker web admin）"
+        required: true
+        default: "api web"
 
 # One deploy at a time, and never cancel one that is already running: this box
 # is 4C8G and deploy-prod.sh stops containers, builds, migrates and restarts.
@@ -37,6 +46,29 @@ jobs:
           AFTER: ${{ github.sha }}
         run: |
           set -euo pipefail
+
+          # Manual dispatch: no before/after diff exists, so build exactly the
+          # services chosen in the dispatch form (validated against the known
+          # set, de-duplicated).
+          if [ "$GITHUB_EVENT_NAME" = "workflow_dispatch" ]; then
+            requested="${{ inputs.services }}"
+            [ -n "$requested" ] || { echo "no services selected" >&2; exit 1; }
+            services=""
+            for svc in $requested; do
+              case "$svc" in
+                api|worker|web|admin) ;;
+                *) echo "unknown service: $svc" >&2; exit 1 ;;
+              esac
+              case " $services " in
+                *" $svc "*) ;;
+                *) services="$services $svc" ;;
+              esac
+            done
+            services="$(echo "$services" | sed 's/^ //')"
+            echo "manual dispatch; services to build: '$services'"
+            echo "services=$services" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
 
           # github.event.before is all zeros on the first push to a branch and
           # after a force push. No usable base means no safe way to narrow the
@@ -86,6 +118,11 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
+      # The preflight step pipes scripts/preflight-clean-tree.sh from THIS
+      # checkout into ssh; without a checkout that file does not exist on the
+      # runner (the changes job's checkout lives on a different runner).
+      - uses: actions/checkout@v4
+
       - name: Install sshpass
         run: sudo apt-get update -qq && sudo apt-get install -y -qq sshpass
 
