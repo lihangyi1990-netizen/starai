@@ -10,6 +10,7 @@ import (
 	"math/big"
 	"os"
 	"regexp"
+	"strconv"
 	"strings"
 	"time"
 
@@ -22,6 +23,14 @@ var emailRe = regexp.MustCompile(`^[^\s@]+@[^\s@]+\.[^\s@]+$`)
 // ErrInvalidEmailCode marks a registration code that is missing, malformed,
 // expired or mismatched, so handlers can answer 400 instead of a 500.
 var ErrInvalidEmailCode = errors.New("邮箱验证码错误或已过期")
+
+// ErrEmailCodeTooManyAttempts marks a registration code invalidated by repeated
+// wrong guesses; the registrant must request a fresh one.
+var ErrEmailCodeTooManyAttempts = errors.New("验证码错误次数过多，请重新获取验证码")
+
+func registerCodeKey(email string) string     { return "email_otp:register:" + email }
+func registerFailsKey(email string) string    { return "email_otp:register:fails:" + email }
+func registerCooldownKey(email string) string { return "email_otp_cooldown:register:" + email }
 
 // TempCache is the subset of cache.Client the OTP service needs; keeping it as
 // an interface lets tests substitute an in-memory store.
@@ -57,7 +66,7 @@ func (s *EmailOTPService) SendCode(ctx context.Context, email string) (*SendEmai
 	}
 	exists, err := s.emailExists(ctx, email)
 	cooldown := false
-	if v, ok := s.cache.GetTemp(ctx, "email_otp_cooldown:"+email); ok && v != "" {
+	if v, ok := s.cache.GetTemp(ctx, registerCooldownKey(email)); ok && v != "" {
 		cooldown = true
 	}
 	// Pure policy call: lookup failure must not silently allow sending, an
@@ -67,10 +76,10 @@ func (s *EmailOTPService) SendCode(ctx context.Context, email string) (*SendEmai
 		return nil, err
 	}
 	code := randomDigits(6)
-	if err := s.cache.SetTemp(ctx, "email_otp:register:"+email, code, 10*time.Minute); err != nil {
+	if err := s.cache.SetTemp(ctx, registerCodeKey(email), code, 10*time.Minute); err != nil {
 		return nil, err
 	}
-	_ = s.cache.SetTemp(ctx, "email_otp_cooldown:"+email, "1", 60*time.Second)
+	_ = s.cache.SetTemp(ctx, registerCooldownKey(email), "1", 60*time.Second)
 
 	mailCfg := s.mailer.LoadConfig(ctx)
 	debug := s.mailer.IsDebugOTP(ctx) || os.Getenv("EMAIL_OTP_DEBUG") == "true" || os.Getenv("APP_ENV") == "development"
@@ -128,15 +137,36 @@ func (s *EmailOTPService) emailExists(ctx context.Context, email string) (bool, 
 
 // VerifyRegistrationCode validates a registration code without issuing a
 // session or creating an account; the register path creates the account itself
-// only after this succeeds.
+// only after this succeeds. Wrong guesses increment a per-email failure
+// counter; after five mismatches the code is invalidated and the caller must
+// request a fresh one.
 func (s *EmailOTPService) VerifyRegistrationCode(ctx context.Context, email, code string) error {
 	email = strings.TrimSpace(strings.ToLower(email))
 	code = strings.TrimSpace(code)
 	if !emailRe.MatchString(email) || len(code) != 6 {
 		return ErrInvalidEmailCode
 	}
-	stored, ok := s.cache.GetTemp(ctx, "email_otp:register:"+email)
-	if !ok || stored != code {
+	stored, ok := s.cache.GetTemp(ctx, registerCodeKey(email))
+	if !ok {
+		return ErrInvalidEmailCode
+	}
+	if stored != code {
+		// Increment the failure counter.  On the fifth wrong guess, delete
+		// both the code and the counter so even the correct code is rejected
+		// until a fresh one is issued.
+		failsKey := registerFailsKey(email)
+		fails := 1
+		if raw, ok := s.cache.GetTemp(ctx, failsKey); ok {
+			if n, err := strconv.Atoi(raw); err == nil && n > 0 {
+				fails = n + 1
+			}
+		}
+		if fails >= 5 {
+			s.cache.DelTemp(ctx, registerCodeKey(email))
+			s.cache.DelTemp(ctx, failsKey)
+			return ErrEmailCodeTooManyAttempts
+		}
+		_ = s.cache.SetTemp(ctx, failsKey, strconv.Itoa(fails), 10*time.Minute)
 		return ErrInvalidEmailCode
 	}
 	return nil
@@ -162,8 +192,11 @@ func evaluateRegisterSend(exists bool, existsErr error, cooldownActive bool) err
 // ConsumeRegistrationCode invalidates a registration code after the account
 // has been created. Register calls it only after the insert tx commits, so a
 // transient database failure never burns a code the user already received.
+// Also clears the failure counter so a fresh registration for the same
+// address (should it ever be needed) starts clean.
 func (s *EmailOTPService) ConsumeRegistrationCode(ctx context.Context, email string) {
-	s.cache.DelTemp(ctx, "email_otp:register:"+email)
+	s.cache.DelTemp(ctx, registerCodeKey(email))
+	s.cache.DelTemp(ctx, registerFailsKey(email))
 }
 
 func randomDigits(n int) string {

@@ -430,6 +430,10 @@ func (h *Handler) Register(c *gin.Context) {
 		util.BadRequest(c, "邮箱格式不正确")
 		return
 	}
+	if err == service.ErrEmailCodeTooManyAttempts {
+		util.BadRequest(c, "验证码错误次数过多，请重新获取验证码")
+		return
+	}
 	if err == service.ErrInvalidEmailCode {
 		util.BadRequest(c, "邮箱验证码错误或已过期")
 		return

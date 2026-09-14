@@ -87,20 +87,81 @@ func TestVerifyRegistrationCode(t *testing.T) {
 	}
 }
 
+func TestVerifyRegistrationCodeTooManyAttempts(t *testing.T) {
+	ctx := context.Background()
+	const email = "newbie@example.com"
+	c := newFakeTempCache()
+	svc := &EmailOTPService{cache: c}
+	// Seed the correct code.
+	if err := c.SetTemp(ctx, registerCodeKey(email), "123456", 10*time.Minute); err != nil {
+		t.Fatal(err)
+	}
+
+	// Four wrong guesses should each return ErrInvalidEmailCode and leave the
+	// code intact so the correct code still works.
+	for i := 0; i < 4; i++ {
+		err := svc.VerifyRegistrationCode(ctx, email, "000000")
+		if !errors.Is(err, ErrInvalidEmailCode) {
+			t.Fatalf("attempt %d: err=%v want ErrInvalidEmailCode", i+1, err)
+		}
+	}
+	// Code key must still be present after 4 wrong attempts.
+	if _, ok := c.GetTemp(ctx, registerCodeKey(email)); !ok {
+		t.Fatal("code key must survive 4 wrong guesses")
+	}
+	// Fails counter should be at "4".
+	if raw, ok := c.GetTemp(ctx, registerFailsKey(email)); !ok || raw != "4" {
+		t.Fatalf("fails counter after 4 wrong guesses = %q (ok=%v) want \"4\"", raw, ok)
+	}
+	// Correct code still verifies on the 5th try (attempts 1-4 were wrong).
+	if err := svc.VerifyRegistrationCode(ctx, email, "123456"); err != nil {
+		t.Fatalf("correct code must still verify after 4 wrong guesses: %v", err)
+	}
+
+	// Reset: issue the code again and exhaust all 5 attempts.
+	c = newFakeTempCache()
+	svc = &EmailOTPService{cache: c}
+	if err := c.SetTemp(ctx, registerCodeKey(email), "123456", 10*time.Minute); err != nil {
+		t.Fatal(err)
+	}
+	var finalErr error
+	for i := 0; i < 5; i++ {
+		finalErr = svc.VerifyRegistrationCode(ctx, email, "000000")
+	}
+	if !errors.Is(finalErr, ErrEmailCodeTooManyAttempts) {
+		t.Fatalf("5th wrong guess err=%v want ErrEmailCodeTooManyAttempts", finalErr)
+	}
+	// After lockout, even the correct code is rejected (key was deleted).
+	err := svc.VerifyRegistrationCode(ctx, email, "123456")
+	if !errors.Is(err, ErrInvalidEmailCode) {
+		t.Fatalf("correct code after lockout err=%v want ErrInvalidEmailCode", err)
+	}
+	// Fails counter must also be gone.
+	if _, ok := c.GetTemp(ctx, registerFailsKey(email)); ok {
+		t.Fatal("fails counter must be deleted after lockout")
+	}
+}
+
 func TestConsumeRegistrationCode(t *testing.T) {
 	ctx := context.Background()
 	const email = "newbie@example.com"
-	key := "email_otp:register:" + email
 	c := newFakeTempCache()
 	svc := &EmailOTPService{cache: c}
 	// Deleting an absent key is a no-op.
 	svc.ConsumeRegistrationCode(ctx, email)
-	if err := c.SetTemp(ctx, key, "123456", time.Minute); err != nil {
+	if err := c.SetTemp(ctx, registerCodeKey(email), "123456", time.Minute); err != nil {
+		t.Fatal(err)
+	}
+	// Also seed a fails counter to verify Consume clears it.
+	if err := c.SetTemp(ctx, registerFailsKey(email), "2", time.Minute); err != nil {
 		t.Fatal(err)
 	}
 	svc.ConsumeRegistrationCode(ctx, email)
-	if _, present := c.GetTemp(ctx, key); present {
+	if _, present := c.GetTemp(ctx, registerCodeKey(email)); present {
 		t.Fatal("ConsumeRegistrationCode must delete the registration code")
+	}
+	if _, present := c.GetTemp(ctx, registerFailsKey(email)); present {
+		t.Fatal("ConsumeRegistrationCode must delete the fails counter")
 	}
 }
 

@@ -12,6 +12,7 @@ import (
 
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/starai/api/internal/billing"
 	"github.com/starai/api/internal/middleware"
@@ -36,9 +37,10 @@ const (
 	maxPasswordLen = 72
 )
 
-// validateEmailPassword guards the no-verification-code registration path.
-// Deliberately permissive on the address shape — this is a spam/typo guard, not
-// an RFC 5322 parser, and the address is never mailed during signup.
+// validateEmailPassword checks the email+password format on the code-required
+// registration path.  Deliberately permissive on the address shape — this is a
+// spam/typo guard, not an RFC 5322 parser, and the address is mailed only for
+// the ownership-verification code.
 func validateEmailPassword(email, password string) error {
 	if email == "" || len(email) > maxIdentifierLen {
 		return ErrInvalidEmail
@@ -172,6 +174,10 @@ func (s *AuthService) Register(ctx context.Context, email, password, nickname, r
 		`INSERT INTO auth_identities (user_id, provider, identifier, credential_hash, verified) VALUES ($1,'email',$2,$3,true)`,
 		userID, email, string(hash))
 	if err != nil {
+		var pgErr *pgconn.PgError
+		if errors.As(err, &pgErr) && pgErr.Code == "23505" && pgErr.ConstraintName == "auth_identities_provider_identifier_key" {
+			return nil, ErrUserExists
+		}
 		return nil, err
 	}
 	_, err = tx.Exec(ctx, `INSERT INTO wallets (user_id) VALUES ($1)`, userID)
