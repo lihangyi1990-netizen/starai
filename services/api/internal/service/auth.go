@@ -109,7 +109,7 @@ type UserProfile struct {
 	Locale         string  `json:"locale"`
 }
 
-func (s *AuthService) Register(ctx context.Context, email, password, nickname, referralCode string) (*AuthResult, error) {
+func (s *AuthService) Register(ctx context.Context, email, password, nickname, referralCode, emailCode string, otp *EmailOTPService) (*AuthResult, error) {
 	email = normalizeEmail(email)
 	if err := validateEmailPassword(email, password); err != nil {
 		return nil, err
@@ -120,6 +120,14 @@ func (s *AuthService) Register(ctx context.Context, email, password, nickname, r
 		return nil, ErrUserExists
 	}
 	if !errors.Is(err, pgx.ErrNoRows) {
+		return nil, err
+	}
+	// Registration requires proving ownership of the email via a scene-scoped
+	// code; without a valid code we never create the (verified) identity.
+	if otp == nil {
+		return nil, errors.New("注册服务暂不可用")
+	}
+	if err := otp.VerifyRegistrationCode(ctx, email, emailCode); err != nil {
 		return nil, err
 	}
 
