@@ -75,8 +75,8 @@ func (s *EmailOTPService) SendCode(ctx context.Context, email string) (*SendEmai
 	if err := evaluateRegisterSend(exists, err, cooldown); err != nil {
 		return nil, err
 	}
-	code := randomDigits(6)
-	if err := s.cache.SetTemp(ctx, registerCodeKey(email), code, 10*time.Minute); err != nil {
+	code, err := s.issueRegistrationCode(ctx, email)
+	if err != nil {
 		return nil, err
 	}
 	_ = s.cache.SetTemp(ctx, registerCooldownKey(email), "1", 60*time.Second)
@@ -197,6 +197,20 @@ func evaluateRegisterSend(exists bool, existsErr error, cooldownActive bool) err
 func (s *EmailOTPService) ConsumeRegistrationCode(ctx context.Context, email string) {
 	s.cache.DelTemp(ctx, registerCodeKey(email))
 	s.cache.DelTemp(ctx, registerFailsKey(email))
+}
+
+// issueRegistrationCode stores a freshly generated code and resets its attempt
+// counter. SendCode performs all the pre-issue checks (address, existence,
+// cooldown, mail) around it.
+func (s *EmailOTPService) issueRegistrationCode(ctx context.Context, email string) (string, error) {
+	code := randomDigits(6)
+	if err := s.cache.SetTemp(ctx, registerCodeKey(email), code, 10*time.Minute); err != nil {
+		return "", err
+	}
+	// A freshly issued code starts with a clean attempt budget, so a user who
+	// locked an earlier code with five wrong guesses is not stuck after resending.
+	s.cache.DelTemp(ctx, registerFailsKey(email))
+	return code, nil
 }
 
 func randomDigits(n int) string {

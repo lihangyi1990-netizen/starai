@@ -198,3 +198,27 @@ func TestEvaluateRegisterSend(t *testing.T) {
 		})
 	}
 }
+
+func TestIssueRegistrationCodeResetsFailures(t *testing.T) {
+	ctx := context.Background()
+	const email = "newbie@example.com"
+	c := newFakeTempCache()
+	if err := c.SetTemp(ctx, registerFailsKey(email), "4", time.Minute); err != nil {
+		t.Fatal(err)
+	}
+	svc := &EmailOTPService{cache: c}
+	code, err := svc.issueRegistrationCode(ctx, email)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(code) != 6 {
+		t.Fatalf("code length=%d want 6", len(code))
+	}
+	if _, present := c.GetTemp(ctx, registerFailsKey(email)); present {
+		t.Fatal("issuing a fresh code must reset the failed-attempt counter")
+	}
+	stored, ok := c.GetTemp(ctx, registerCodeKey(email))
+	if !ok || stored != code {
+		t.Fatal("issued code must be stored under the register key")
+	}
+}
